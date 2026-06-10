@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Staff Rewards Dashboard | Forever Young Records</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #08111F;
+      color: #FFF8DF;
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    /* Film Grain Background */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+      opacity: 0.06;
+      pointer-events: none;
+      z-index: 0;
+      animation: grainMove 8s steps(2) infinite;
+    }
+
+    @keyframes grainMove {
+      0% { transform: translate(0px, 0px); }
+      25% { transform: translate(-2px, 1px); }
+      50% { transform: translate(2px, -1px); }
+      75% { transform: translate(-1px, 2px); }
+      100% { transform: translate(0px, 0px); }
+    }
+
+    :root {
+      --blue: #0A2C74;
+      --yellow: #FFD447;
+      --cream: #FFF8DF;
+      --dark: #08111F;
+      --green: #2ecc71;
+    }
+
+    header {
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      margin-bottom: 2rem;
+      z-index: 10;
+    }
+
+    header img { height: 50px; }
+    
+    h1 {
+      font-family: 'Oswald', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 2rem;
+      width: 100%;
+      max-width: 800px;
+      z-index: 10;
+    }
+
+    .panel {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 2rem;
+      backdrop-filter: blur(10px);
+    }
+
+    .panel h2 {
+      font-family: 'Oswald', sans-serif;
+      margin-bottom: 1rem;
+      color: var(--yellow);
+    }
+
+    /* Scanner Input */
+    .scanner-box {
+      text-align: center;
+    }
+
+    .scanner-box label {
+      display: block;
+      margin-bottom: 1rem;
+      color: #B6C0D7;
+    }
+
+    #scanner-input {
+      width: 100%;
+      padding: 1rem;
+      background: rgba(0,0,0,0.5);
+      border: 2px solid var(--blue);
+      border-radius: 8px;
+      color: var(--yellow);
+      font-family: monospace;
+      font-size: 1.2rem;
+      text-align: center;
+      transition: all 0.3s;
+    }
+
+    #scanner-input:focus {
+      outline: none;
+      border-color: var(--yellow);
+      box-shadow: 0 0 15px rgba(255,212,71,0.2);
+    }
+
+    /* Customer Profile */
+    #customer-profile {
+      display: none;
+    }
+
+    .profile-info {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .punch-count {
+      font-size: 3rem;
+      font-family: 'Oswald', sans-serif;
+      color: var(--yellow);
+      margin: 1rem 0;
+    }
+
+    button.action-btn {
+      width: 100%;
+      padding: 1rem;
+      background: var(--yellow);
+      color: var(--dark);
+      border: none;
+      border-radius: 8px;
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 700;
+      margin-top: 1rem;
+    }
+
+    button.action-btn:hover {
+      background: #FFF;
+      transform: translateY(-2px);
+    }
+
+    button.action-btn.success {
+      background: var(--green);
+      color: white;
+    }
+
+    .status-msg {
+      margin-top: 1rem;
+      color: var(--green);
+      font-weight: bold;
+      display: none;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: #B6C0D7;
+      padding: 3rem 0;
+      font-style: italic;
+    }
+
+  </style>
+</head>
+<body>
+
+  <header>
+    <img src="XenoHead_logo.png" alt="Forever Young Records">
+    <h1>Staff Dashboard</h1>
+  </header>
+
+  <div class="main-grid">
+    <!-- Scanner Panel -->
+    <div class="panel scanner-box">
+      <h2>Scanner Ready</h2>
+      <label for="scanner-input">Scan Customer Barcode</label>
+      <input type="text" id="scanner-input" placeholder="Waiting for scan..." autofocus autocomplete="off">
+    </div>
+
+    <!-- Customer Profile Panel -->
+    <div class="panel">
+      <h2>Customer Profile</h2>
+      
+      <div id="empty-state" class="empty-state">
+        Scan a customer's rewards card to view their profile.
+      </div>
+
+      <div id="customer-profile">
+        <div class="profile-info" id="customer-name"><strong>Name:</strong> <span>John Doe</span></div>
+        <div class="profile-info" id="customer-phone"><strong>Phone:</strong> <span>(555) 123-4567</span></div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+          <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; text-align: center;">
+            <div style="font-size: 0.9rem; color: #B6C0D7; margin-bottom: 0.5rem;">CD Punches</div>
+            <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;"><span id="punches-cd">0</span> / 10</div>
+            <button class="action-btn punch-btn" data-type="cd" style="font-size: 0.9rem; padding: 0.5rem;">Add CD Punch</button>
+          </div>
+          
+          <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; text-align: center;">
+            <div style="font-size: 0.9rem; color: #B6C0D7; margin-bottom: 0.5rem;">Used Vinyl</div>
+            <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;"><span id="punches-vinyl">0</span> / 10</div>
+            <button class="action-btn punch-btn" data-type="vinyl" style="font-size: 0.9rem; padding: 0.5rem;">Add Vinyl Punch</button>
+          </div>
+          
+          <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; text-align: center;">
+            <div style="font-size: 0.9rem; color: #B6C0D7; margin-bottom: 0.5rem;">Cassettes</div>
+            <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;"><span id="punches-cassette">0</span> / 10</div>
+            <button class="action-btn punch-btn" data-type="cassette" style="font-size: 0.9rem; padding: 0.5rem;">Add Cassette Punch</button>
+          </div>
+          
+          <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; text-align: center;">
+            <div style="font-size: 0.9rem; color: #B6C0D7; margin-bottom: 0.5rem;">45's</div>
+            <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;"><span id="punches-45">0</span> / 10</div>
+            <button class="action-btn punch-btn" data-type="45" style="font-size: 0.9rem; padding: 0.5rem;">Add 45's Punch</button>
+          </div>
+        </div>
+
+        <div class="status-msg" id="status-msg" style="text-align: center;">Punch added successfully!</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const scannerInput = document.getElementById('scanner-input');
+    const customerProfile = document.getElementById('customer-profile');
+    const emptyState = document.getElementById('empty-state');
+    const addPunchBtn = document.getElementById('add-punch-btn');
+    const statusMsg = document.getElementById('status-msg');
+    
+    // Auto-focus the scanner input if they click anywhere on the page
+    document.addEventListener('click', () => {
+      scannerInput.focus();
+    });
+
+    // Listen for the scanner's 'Enter' key
+    scannerInput.addEventListener('keydown', function(event) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        
+        const scannedCode = scannerInput.value.trim();
+        if(scannedCode) {
+          loadCustomerData(scannedCode);
+        }
+        
+        // Clear input for next scan
+        scannerInput.value = '';
+      }
+    });
+
+    function loadCustomerData(barcodeData) {
+      fetch(`/api/punch?phone=${barcodeData}`)
+        .then(res => res.json())
+        .then(data => {
+          if(data.error) {
+            alert(data.error);
+            return;
+          }
+          emptyState.style.display = 'none';
+          customerProfile.style.display = 'block';
+          statusMsg.style.display = 'none';
+          
+          document.querySelector('#customer-name span').textContent = data.user.name;
+          document.querySelector('#customer-phone span').textContent = data.user.phone;
+          document.getElementById('punches-cd').textContent = data.user.punches_cd || 0;
+          document.getElementById('punches-vinyl').textContent = data.user.punches_vinyl || 0;
+          document.getElementById('punches-cassette').textContent = data.user.punches_cassette || 0;
+          document.getElementById('punches-45').textContent = data.user.punches_45 || 0;
+        })
+        .catch(err => console.error("Error fetching user:", err));
+    }
+
+    function checkQueue() {
+      fetch('/api/queue?t=' + Date.now(), { cache: 'no-store' })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.queue && data.queue.length > 0) {
+            const user = data.queue[0]; // Most recent check-in
+            const currentPhone = document.querySelector('#customer-phone span').textContent;
+            
+            // If it's a new person, or if the screen is empty, show them
+            if (emptyState.style.display !== 'none' || currentPhone !== user.phone) {
+              emptyState.style.display = 'none';
+              customerProfile.style.display = 'block';
+              statusMsg.style.display = 'none';
+              
+              document.querySelector('#customer-name span').textContent = user.name;
+              document.querySelector('#customer-phone span').textContent = user.phone;
+              document.getElementById('punches-cd').textContent = user.punches_cd || 0;
+              document.getElementById('punches-vinyl').textContent = user.punches_vinyl || 0;
+              document.getElementById('punches-cassette').textContent = user.punches_cassette || 0;
+              document.getElementById('punches-45').textContent = user.punches_45 || 0;
+            }
+          }
+        })
+        .catch(err => console.error("Error polling queue:", err));
+    }
+
+    // Poll the queue every 3 seconds
+    setInterval(checkQueue, 3000);
+
+    const punchBtns = document.querySelectorAll('.punch-btn');
+    punchBtns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        const phone = document.querySelector('#customer-phone span').textContent;
+        const type = this.getAttribute('data-type');
+        const originalText = this.textContent;
+        
+        fetch('/api/punch', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone, type })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if(data.error) {
+            alert(data.error);
+          } else {
+            document.getElementById(`punches-${type}`).textContent = data.punches;
+            
+            this.classList.add('success');
+            this.textContent = 'Added!';
+            statusMsg.style.display = 'block';
+            
+            setTimeout(() => {
+              this.classList.remove('success');
+              this.textContent = originalText;
+              statusMsg.style.display = 'none';
+            }, 3000);
+          }
+        })
+        .catch(err => console.error("Error adding punch:", err))
+        .finally(() => {
+          scannerInput.focus();
+        });
+      });
+    });
+  </script>
+</body>
+</html>

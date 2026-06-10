@@ -1,0 +1,7 @@
+WARNING
+
+Database Schema Discrepancy: I noticed that 
+
+schema.sql
+ defines the users table without a last_checkin column, but the API handlers (checkin.js, punch.js, queue.js) rely on a last_checkin DATETIME column. If the database is recreated using schema.sql, it will result in SQL errors. We should add last_checkin DATETIME to schema.sql if you plan on deploying fresh migrations.
+
