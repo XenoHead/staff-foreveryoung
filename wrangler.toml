@@ -1,0 +1,7 @@
+name = "foreveryoung-db"
+compatibility_date = "2024-03-20"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "foreveryoung-db"
+database_id = "4977069b-0252-40ab-895f-103ff41a6d22"

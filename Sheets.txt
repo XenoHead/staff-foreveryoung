@@ -1,0 +1,8 @@
+Where: 
+\\192.168.0.108\FYRShare\Tools\Sheets
+
+What:
+IMS*.xls <-- MASTER SHEET of what was sold
+order_sheet*.xls <-- MASTER SHEET of what was ordered
+UNIVERSAL*.xls <-- what Universal sent us and is actually going to the store.
+(other vender spreadsheets will eventually get added)
