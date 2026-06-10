@@ -1,7 +1,33 @@
-WARNING
 
-Database Schema Discrepancy: I noticed that 
+Database Schema Discrepancy:
 
 schema.sql
  defines the users table without a last_checkin column, but the API handlers (checkin.js, punch.js, queue.js) rely on a last_checkin DATETIME column. If the database is recreated using schema.sql, it will result in SQL errors. We should add last_checkin DATETIME to schema.sql if you plan on deploying fresh migrations.
 
+.
+1."Redeem Reward" Button
+What it is: When a customer reaches 10 punches in a category, the cashier needs a way to reset that counter back to 0 (or subtract 10) when they claim their free item.
+Why it's needed: Currently, the API throws a "Max punches reached" error, but there is no button in the UI for the cashier to actually process the redemption.
+
+
+2. Manual Search / Lookup (No-Barcode Fallback)
+What it is: A search bar where the cashier can type in a customer's Name or Phone Number manually.
+Why it's needed: Customers frequently forget their phones, have dead batteries, or can't load the card. The staff needs a search option if they can't scan a barcode.
+
+
+3. Quick Register (Add Customer from Dashboard)
+What it is: A simple "New Customer" button on the dashboard that opens a popup form where the cashier can enter a name and phone number to sign them up right there at the register.
+
+
+Why it's needed: Saves time if a customer wants to join but doesn't want to scan the QR code on their own phone.
+4. "Undo last action" / Decrement Punch
+What it is: An "Undo" button or a minus (-) button next to the add punch button.
+Why it's needed: Cashiers make mistakes. If they accidentally click "Add Vinyl Punch" instead of "Add CD Punch", they need a quick way to correct it without database access.
+
+
+5. Recent Activity / Log Table
+What it is: A small log at the bottom showing the last 5 or 10 punch additions or redemptions (e.g., "John Doe +1 Cassette Punch at 10:45 AM").
+Why it's needed: Helps the cashier confirm that a click went through successfully and lets them review recent transactions if they lose track.
+6. Sound Effects (Beep on Scan)
+What it is: A audio chime that plays when a customer checks in or a barcode is scanned.
+Why it's needed: Physical scanner feedback is incredibly useful in a busy retail environment so the cashier doesn't have to look at the screen to know it worked.
