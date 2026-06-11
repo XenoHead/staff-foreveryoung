@@ -31,3 +31,6 @@ Why it's needed: Helps the cashier confirm that a click went through successfull
 6. Sound Effects (Beep on Scan)
 What it is: A audio chime that plays when a customer checks in or a barcode is scanned.
 Why it's needed: Physical scanner feedback is incredibly useful in a busy retail environment so the cashier doesn't have to look at the screen to know it worked.
+
+
+..
