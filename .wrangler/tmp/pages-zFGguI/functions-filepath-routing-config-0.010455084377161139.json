@@ -1,0 +1,29 @@
+{
+  "routes": [
+    {
+      "routePath": "/api/inventory-search",
+      "mountPath": "/api",
+      "method": "GET",
+      "module": [
+        "api/inventory-search.js:onRequestGet"
+      ]
+    },
+    {
+      "routePath": "/api/sales",
+      "mountPath": "/api",
+      "method": "GET",
+      "module": [
+        "api/sales.js:onRequestGet"
+      ]
+    },
+    {
+      "routePath": "/api/sync",
+      "mountPath": "/api",
+      "method": "POST",
+      "module": [
+        "api/sync.js:onRequestPost"
+      ]
+    }
+  ],
+  "baseURL": "/"
+}
