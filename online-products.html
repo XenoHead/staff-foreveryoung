@@ -965,7 +965,10 @@
 
     // Discogs Lookup Action
     btnDiscogsLookup.addEventListener('click', async () => {
-      const relId = discogsLookupId.value.trim();
+      const rawInput = discogsLookupId.value.trim();
+      const relId = rawInput.replace(/\D/g, '');
+      discogsLookupId.value = relId; // Update input field with cleaned ID
+      
       if (!relId) {
         discogsLookupStatus.textContent = "Please enter a valid Discogs Release ID.";
         discogsLookupStatus.style.color = "var(--red)";
