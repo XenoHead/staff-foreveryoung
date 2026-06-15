@@ -15,6 +15,11 @@ export async function onRequestPost(context) {
 }
 
 export async function onRequestGet(context) {
+  const corsHeaders = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET,HEAD,OPTIONS",
+    "Access-Control-Max-Age": "86400",
+  };
   try {
     const { env } = context;
     const db = env.DB;
@@ -23,11 +28,23 @@ export async function onRequestGet(context) {
     const result = await db.prepare(`SELECT value FROM Settings WHERE key='ticker'`).first();
     
     if (result && result.value) {
-      return new Response(result.value, { status: 200 });
+      return new Response(result.value, { status: 200, headers: corsHeaders });
     } else {
-      return new Response("Welcome to Forever Young Records!", { status: 200 });
+      return new Response("Welcome to Forever Young Records!", { status: 200, headers: corsHeaders });
     }
   } catch(err) {
-    return new Response("Welcome to Forever Young Records!", { status: 200 });
+    return new Response("Welcome to Forever Young Records!", { status: 200, headers: corsHeaders });
   }
+}
+
+export async function onRequestOptions() {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET,HEAD,POST,OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
+      "Access-Control-Max-Age": "86400",
+    }
+  });
 }
