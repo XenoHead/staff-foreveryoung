@@ -400,6 +400,13 @@
           <option value="SONY">SONY</option>
           <!-- Additional options populated dynamically from DB -->
         </select>
+
+        <label for="oop-select" style="color: var(--yellow); font-weight: 500; margin-left: 1rem;">Status:</label>
+        <select id="oop-select" class="vendor-dropdown" style="min-width: 150px;">
+          <option value="">Both (IP & OOP)</option>
+          <option value="IP">IP (In Print)</option>
+          <option value="OOP">OOP (Out of Print)</option>
+        </select>
       </div>
 
       <div class="table-container">
@@ -462,16 +469,25 @@
       }
     });
 
+    const oopSelect = document.getElementById('oop-select');
+
     // Handle vendor dropdown changes
     vendorSelect.addEventListener('change', (e) => {
-      loadSalesData(e.target.value);
+      loadSalesData(e.target.value, oopSelect.value);
     });
 
-    async function loadSalesData(vendor) {
+    oopSelect.addEventListener('change', (e) => {
+      loadSalesData(vendorSelect.value, e.target.value);
+    });
+
+    async function loadSalesData(vendor, oopStatus = '') {
       salesTableBody.innerHTML = '<tr><td colspan="11" style="text-align:center; padding: 3rem;">Loading sales data...</td></tr>';
       
       try {
-        const url = vendor ? `/api/sales?vendor=${encodeURIComponent(vendor)}` : '/api/sales';
+        const urlParams = new URLSearchParams();
+        if (vendor) urlParams.append('vendor', vendor);
+        if (oopStatus) urlParams.append('oop', oopStatus);
+        const url = `/api/sales?${urlParams.toString()}`;
         const res = await fetch(url);
         const data = await res.json();
         

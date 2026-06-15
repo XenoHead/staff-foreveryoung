@@ -5,6 +5,7 @@ export async function onRequestGet(context) {
     const url = new URL(request.url);
     const type = url.searchParams.get('type');
     const vendor = url.searchParams.get('vendor');
+    const oop = url.searchParams.get('oop');
     const db = env.DB;
     
     // Request for distinct vendors for the dropdown
@@ -30,12 +31,19 @@ export async function onRequestGet(context) {
         i.Format, i.Artist, i.Title, i.Vendor_Number, i.OOP, i.Year, i.Vendor
       FROM Sales s
       JOIN Inventory i ON s.inventory_id = i.id
+      WHERE 1=1
     `;
     let bindParams = [];
 
     if (vendor) {
-      query += " WHERE i.Vendor = ?";
+      query += " AND i.Vendor = ?";
       bindParams.push(vendor);
+    }
+
+    if (oop === 'IP') {
+      query += " AND (i.OOP IS NULL OR i.OOP = '' OR i.OOP != 'Y')";
+    } else if (oop === 'OOP') {
+      query += " AND i.OOP = 'Y'";
     }
 
     query += " ORDER BY s.Date_Sold DESC";
