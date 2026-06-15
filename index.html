@@ -352,13 +352,12 @@
       <img src="images/fyr-logo.png" alt="Forever Young Records" style="height: 50px;">
       <h1>Staff Dashboard</h1>
     </div>
-    <div style="display: flex; gap: 1rem;">
-      <a href="activate_qr.png" target="_blank" class="action-btn" style="text-decoration: none; font-size: 1rem; padding: 0.6rem 1.5rem; background: var(--blue); color: var(--yellow);">
-        Activate
-      </a>
-      <a href="checkin_qr.png" target="_blank" class="action-btn" style="text-decoration: none; font-size: 1rem; padding: 0.6rem 1.5rem; background: var(--blue); color: var(--yellow);">
-        Check in
-      </a>
+    <div style="display: flex; gap: 1rem; align-items: center;">
+      <button id="btn-update-ticker" class="action-btn" style="font-size: 1rem; padding: 0.6rem 1.5rem; background: var(--blue); color: var(--yellow); cursor: pointer;">
+        Update Ticker Tape
+      </button>
+      <input type="file" id="ticker-upload" style="display:none;" accept=".txt">
+
       <a href="online-products.html" class="action-btn" style="text-decoration: none; font-size: 1rem; padding: 0.6rem 1.5rem; background: var(--blue); color: var(--yellow);">
         Online Products
       </a>
@@ -530,6 +529,15 @@
     </div>
   </div>
 
+  <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; margin-bottom: 2rem;">
+    <a href="activate_qr.png" target="_blank" class="action-btn" style="text-decoration: none; font-size: 1rem; padding: 0.6rem 1.5rem; background: var(--blue); color: var(--yellow);">
+      Activate Customer Card
+    </a>
+    <a href="checkin_qr.png" target="_blank" class="action-btn" style="text-decoration: none; font-size: 1rem; padding: 0.6rem 1.5rem; background: var(--blue); color: var(--yellow);">
+      Customer Check In
+    </a>
+  </div>
+
   <footer
     style="margin-top: auto; text-align: center; padding-bottom: 2rem; position: relative; z-index: 10; width: 100%;">
     <a href="https://xenohead.com" target="_blank"
@@ -551,7 +559,7 @@
     const statusMsg = document.getElementById('status-msg');
 
     function updateTicker() {
-      fetch('/ticker.txt?t=' + Date.now())
+      fetch('/api/ticker?t=' + Date.now())
         .then(res => {
           if (!res.ok) throw new Error("Ticker file not found");
           return res.text();
@@ -565,6 +573,44 @@
     }
     updateTicker();
     setInterval(updateTicker, 60000); // Check every minute
+
+    // Handle ticker upload
+    document.getElementById('btn-update-ticker').addEventListener('click', () => {
+      document.getElementById('ticker-upload').click();
+    });
+
+    document.getElementById('ticker-upload').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async (ev) => {
+        const text = ev.target.result;
+        if (!text.trim()) {
+          alert('Text file is empty.');
+          return;
+        }
+        
+        try {
+          const res = await fetch('/api/ticker', {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain' },
+            body: text
+          });
+          
+          if (res.ok) {
+            alert('Ticker updated successfully!');
+            updateTicker();
+          } else {
+            alert('Error updating ticker.');
+          }
+        } catch (err) {
+          alert('Network error updating ticker.');
+        }
+      };
+      reader.readAsText(file);
+      e.target.value = ''; // Reset input
+    });
     function checkQueue() {
       fetch('/api/queue?t=' + Date.now(), { cache: 'no-store' })
         .then(res => res.json())
