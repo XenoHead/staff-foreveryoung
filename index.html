@@ -367,44 +367,68 @@
             <div style="font-size: 0.9rem; color: #B6C0D7; margin-bottom: 0.5rem;">CD Punches</div>
             <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;"><span id="punches-cd">0</span> /
               10</div>
-            <button class="action-btn punch-btn" data-type="cd"
-              style="font-size: 0.9rem; padding: 0.5rem; display: flex; align-items: center; justify-content: center; gap: 8px;">
-              <img src="images/btn_cd.png" style="width: 24px; height: 24px; object-fit: contain;">
-              Add CD Punch
-            </button>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="action-btn punch-btn" data-type="cd"
+                style="flex: 1; font-size: 0.8rem; padding: 0.5rem; margin-top: 0; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                <img src="images/btn_cd.png" style="width: 16px; height: 16px; object-fit: contain;">
+                Punch
+              </button>
+              <button class="action-btn redeem-btn" data-type="cd"
+                style="flex: 1; font-size: 0.8rem; padding: 0.5rem; margin-top: 0; background: #e74c3c; color: white; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                Spend
+              </button>
+            </div>
           </div>
 
           <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; text-align: center;">
             <div style="font-size: 0.9rem; color: #B6C0D7; margin-bottom: 0.5rem;">Used Vinyl</div>
             <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;"><span id="punches-vinyl">0</span>
               / 10</div>
-            <button class="action-btn punch-btn" data-type="vinyl"
-              style="font-size: 0.9rem; padding: 0.5rem; display: flex; align-items: center; justify-content: center; gap: 8px;">
-              <img src="images/btn_vinyl.png" style="width: 24px; height: 24px; object-fit: contain;">
-              Add Vinyl Punch
-            </button>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="action-btn punch-btn" data-type="vinyl"
+                style="flex: 1; font-size: 0.8rem; padding: 0.5rem; margin-top: 0; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                <img src="images/btn_vinyl.png" style="width: 16px; height: 16px; object-fit: contain;">
+                Punch
+              </button>
+              <button class="action-btn redeem-btn" data-type="vinyl"
+                style="flex: 1; font-size: 0.8rem; padding: 0.5rem; margin-top: 0; background: #e74c3c; color: white; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                Spend
+              </button>
+            </div>
           </div>
 
           <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; text-align: center;">
             <div style="font-size: 0.9rem; color: #B6C0D7; margin-bottom: 0.5rem;">Cassettes</div>
             <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;"><span
                 id="punches-cassette">0</span> / 10</div>
-            <button class="action-btn punch-btn" data-type="cassette"
-              style="font-size: 0.9rem; padding: 0.5rem; display: flex; align-items: center; justify-content: center; gap: 8px;">
-              <img src="images/btn_cassette.png" style="width: 24px; height: 24px; object-fit: contain;">
-              Add Cassette Punch
-            </button>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="action-btn punch-btn" data-type="cassette"
+                style="flex: 1; font-size: 0.8rem; padding: 0.5rem; margin-top: 0; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                <img src="images/btn_cassette.png" style="width: 16px; height: 16px; object-fit: contain;">
+                Punch
+              </button>
+              <button class="action-btn redeem-btn" data-type="cassette"
+                style="flex: 1; font-size: 0.8rem; padding: 0.5rem; margin-top: 0; background: #e74c3c; color: white; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                Spend
+              </button>
+            </div>
           </div>
 
           <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; text-align: center;">
             <div style="font-size: 0.9rem; color: #B6C0D7; margin-bottom: 0.5rem;">45's</div>
             <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;"><span id="punches-45">0</span> /
               10</div>
-            <button class="action-btn punch-btn" data-type="45"
-              style="font-size: 0.9rem; padding: 0.5rem; display: flex; align-items: center; justify-content: center; gap: 8px;">
-              <img src="images/btn_45.png" style="width: 24px; height: 24px; object-fit: contain;">
-              Add 45's Punch
-            </button>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="action-btn punch-btn" data-type="45"
+                style="flex: 1; font-size: 0.8rem; padding: 0.5rem; margin-top: 0; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                <img src="images/btn_45.png" style="width: 16px; height: 16px; object-fit: contain;">
+                Punch
+              </button>
+              <button class="action-btn redeem-btn" data-type="45"
+                style="flex: 1; font-size: 0.8rem; padding: 0.5rem; margin-top: 0; background: #e74c3c; color: white; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                Spend
+              </button>
+            </div>
           </div>
         </div>
 
@@ -603,6 +627,46 @@
             }
           })
           .catch(err => console.error("Error adding punch:", err))
+          .finally(() => {
+            scannerInput.focus();
+          });
+      });
+    });
+
+    const redeemBtns = document.querySelectorAll('.redeem-btn');
+    redeemBtns.forEach(btn => {
+      btn.addEventListener('click', function () {
+        if (!confirm('Are you sure you want to spend (zero out) punches for this category?')) return;
+        const phone = document.querySelector('#customer-phone span').textContent;
+        const type = this.getAttribute('data-type');
+        const originalHTML = this.innerHTML;
+
+        fetch('/api/redeem', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone, type })
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.error) {
+              alert(data.error);
+            } else {
+              document.getElementById(`punches-${type}`).textContent = data.punches;
+
+              this.classList.add('success');
+              this.textContent = 'Done!';
+              statusMsg.textContent = 'Punches spent successfully!';
+              statusMsg.style.display = 'block';
+
+              setTimeout(() => {
+                this.classList.remove('success');
+                this.innerHTML = originalHTML;
+                statusMsg.textContent = 'Punch added successfully!';
+                statusMsg.style.display = 'none';
+              }, 3000);
+            }
+          })
+          .catch(err => console.error("Error redeeming punch:", err))
           .finally(() => {
             scannerInput.focus();
           });
