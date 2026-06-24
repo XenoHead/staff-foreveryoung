@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Staff Rewards Dashboard | Forever Young Records</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;700&family=Outfit:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #08111F;
+      color: #FFF8DF;
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    /* Brick Background */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: url("images/brick-bg.png");
+      background-size: 300px;
+      /* Adjust scale of bricks */
+      opacity: 0.15;
+      /* Keeps the dark theme readable */
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    :root {
+      --blue: #0A2C74;
+      --yellow: #FFD447;
+      --cream: #FFF8DF;
+      --dark: #08111F;
+      --green: #2ecc71;
+    }
+
+    header {
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 2rem;
+      z-index: 10;
+    }
+
+    header img {
+      height: 50px;
+    }
+
+    h1 {
+      font-family: 'Oswald', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+      z-index: 10;
+    }
+
+    .panel {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 2rem;
+      backdrop-filter: blur(10px);
+    }
+
+    .panel h2 {
+      font-family: 'Oswald', sans-serif;
+      margin-bottom: 1rem;
+      color: var(--yellow);
+    }
+
+    /* Scanner Input */
+    .scanner-box {
+      text-align: center;
+    }
+
+    .scanner-box label {
+      display: block;
+      margin-bottom: 1rem;
+      color: #B6C0D7;
+    }
+
+    #scanner-input {
+      width: 100%;
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.5);
+      border: 2px solid var(--blue);
+      border-radius: 8px;
+      color: var(--yellow);
+      font-family: monospace;
+      font-size: 1.2rem;
+      text-align: center;
+      transition: all 0.3s;
+    }
+
+    #scanner-input:focus {
+      outline: none;
+      border-color: var(--yellow);
+      box-shadow: 0 0 15px rgba(255, 212, 71, 0.2);
+    }
+
+    /* Customer Profile */
+    #customer-profile {
+      display: none;
+    }
+
+    .profile-info {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .punch-count {
+      font-size: 3rem;
+      font-family: 'Oswald', sans-serif;
+      color: var(--yellow);
+      margin: 1rem 0;
+    }
+
+    button.action-btn {
+      width: 100%;
+      padding: 1rem;
+      background: var(--yellow);
+      color: var(--dark);
+      border: none;
+      border-radius: 8px;
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 700;
+      margin-top: 1rem;
+    }
+
+    button.action-btn:hover {
+      background: #FFF;
+      transform: translateY(-2px);
+    }
+
+    button.action-btn.success {
+      background: var(--green);
+      color: white;
+    }
+
+    .status-msg {
+      margin-top: 1rem;
+      color: var(--green);
+      font-weight: bold;
+      display: none;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: #B6C0D7;
+      padding: 3rem 0;
+      font-style: italic;
+    }
+
+    /* Bevel Grouping */
+    .bevel-group {
+      border: 3px outset var(--blue);
+      border-radius: 8px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      width: 100%;
+      max-width: 800px;
+      background: rgba(0, 0, 0, 0.2);
+    }
+    .bevel-group legend {
+      font-family: 'Oswald', sans-serif;
+      color: var(--yellow);
+      padding: 0 10px;
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Ticker Tape */
+    .ticker-wrap {
+      width: 100%;
+      max-width: 800px;
+      margin: -1rem auto 2rem auto;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--blue);
+      border-radius: 6px;
+      overflow: hidden;
+      padding: 0.5rem 0;
+      white-space: nowrap;
+      position: relative;
+    }
+
+    .ticker-content {
+      display: inline-block;
+      white-space: nowrap;
+      padding-left: 100%;
+      animation: ticker 25s linear infinite;
+      color: var(--yellow);
+      font-weight: 500;
+      font-size: 1.1rem;
+      font-family: 'Oswald', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    @keyframes ticker {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-100%); }
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(5px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: rgba(16, 26, 43, 0.95);
+      border: 1px solid var(--blue);
+      border-radius: 12px;
+      width: 90%;
+      max-width: 900px;
+      height: 80vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+    }
+
+    .modal-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h2 {
+      font-family: 'Oswald', sans-serif;
+      color: var(--yellow);
+      font-size: 1.8rem;
+    }
+
+    .icon-btn {
+      background: transparent;
+      border: none;
+      color: #B6C0D7;
+      font-size: 2rem;
+      line-height: 1;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .icon-btn:hover { color: #fff; }
+
+    .modal-toolbar {
+      padding: 1.5rem;
+      background: rgba(0, 0, 0, 0.3);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      align-items: end;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 0.6rem;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--blue);
+      border-radius: 4px;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+    }
+    .search-input:focus {
+      outline: none;
+      border-color: var(--yellow);
+    }
+
+    .table-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
+    }
+
+    .sales-table {
+      width: 100%;
+      border-collapse: collapse;
+      color: #B6C0D7;
+      font-size: 0.9rem;
+    }
+
+    .sales-table th {
+      position: sticky;
+      top: 0;
+      background: #08111F;
+      color: var(--yellow);
+      font-family: 'Oswald', sans-serif;
+      text-transform: uppercase;
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 2px solid var(--blue);
+      z-index: 10;
+    }
+
+    .sales-table td {
+      padding: 0.8rem 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .sales-table tbody tr:hover {
+      background: rgba(35, 84, 146, 0.2);
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div style="display: flex; align-items: center; gap: 1rem;">
+      <img src="images/fyr-logo.png" alt="Forever Young Records" style="height: 50px;">
+      <h1>Staff Dashboard</h1>
+    </div>
+    <div style="display: flex; gap: 1rem; align-items: center;">
+      <button id="btn-update-ticker" class="action-btn" style="font-size: 1rem; padding: 0.6rem 1.5rem; background: var(--blue); color: var(--yellow); cursor: pointer;">
+        Update Ticker Tape
+      </button>
+      <input type="file" id="ticker-upload" style="display:none;" accept=".txt">
+
+      <a href="online-products.html" class="action-btn" style="text-decoration: none; font-size: 1rem; padding: 0.6rem 1.5rem; background: var(--blue); color: var(--yellow);">
+        Online Products
+      </a>
+      <a href="warehouse.html" class="action-btn" style="text-decoration: none; font-size: 1rem; padding: 0.6rem 1.5rem; background: var(--blue); color: var(--yellow);">
+        Warehouse Ops &rarr;
+      </a>
+    </div>
+  </header>
+
+  <div class="ticker-wrap">
+    <div class="ticker-content" id="ticker-text">Loading message...</div>
+  </div>
+
+  <fieldset class="bevel-group">
+    <legend>Customer Loyalty</legend>
+    <div class="main-grid">
+
+
+    <!-- Customer Profile Panel -->
+    <div class="panel" style="position: relative;">
+      <img src="images/art-vinyl-stack.png" alt=""
+        style="position: absolute; right: 20px; top: 20px; width: 80px; opacity: 0.3; pointer-events: none; z-index: 0;">
+      <h2 style="position: relative; z-index: 1;">Customer Profile</h2>
+
+      <div id="empty-state" class="empty-state">
+        Scan a customer's rewards card to view their profile.
+      </div>
+
+      <div id="customer-profile">
+        <div class="profile-info" id="customer-name"><strong>Name:</strong> <span>John Doe</span></div>
+        <div class="profile-info" id="customer-phone"><strong>Phone:</strong> <span>(555) 123-4567</span></div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+          <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; text-align: center;">
+            <div style="font-size: 0.9rem; color: #B6C0D7; margin-bottom: 0.5rem;">CD Punches</div>
+            <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;"><span id="punches-cd">0</span> /
+              10</div>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="action-btn punch-btn" data-type="cd"
+                style="flex: 1; font-size: 0.8rem; padding: 0.5rem; margin-top: 0; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                <img src="images/btn_cd.png" style="width: 16px; height: 16px; object-fit: contain;">
+                Punch
+              </button>
+              <button class="action-btn redeem-btn" data-type="cd"
+                style="flex: 1; font-size: 0.8rem; padding: 0.5rem; margin-top: 0; background: #e74c3c; color: white; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                Spend
+              </button>
+            </div>
+          </div>
+
+          <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; text-align: center;">
+            <div style="font-size: 0.9rem; color: #B6C0D7; margin-bottom: 0.5rem;">Used Vinyl</div>
+            <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;"><span id="punches-vinyl">0</span>
+              / 10</div>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="action-btn punch-btn" data-type="vinyl"
+                style="flex: 1; font-size: 0.8rem; padding: 0.5rem; margin-top: 0; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                <img src="images/btn_vinyl.png" style="width: 16px; height: 16px; object-fit: contain;">
+                Punch
+              </button>
+              <button class="action-btn redeem-btn" data-type="vinyl"
+                style="flex: 1; font-size: 0.8rem; padding: 0.5rem; margin-top: 0; background: #e74c3c; color: white; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                Spend
+              </button>
+            </div>
+          </div>
+
+          <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; text-align: center;">
+            <div style="font-size: 0.9rem; color: #B6C0D7; margin-bottom: 0.5rem;">Cassettes</div>
+            <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;"><span
+                id="punches-cassette">0</span> / 10</div>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="action-btn punch-btn" data-type="cassette"
+                style="flex: 1; font-size: 0.8rem; padding: 0.5rem; margin-top: 0; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                <img src="images/btn_cassette.png" style="width: 16px; height: 16px; object-fit: contain;">
+                Punch
+              </button>
+              <button class="action-btn redeem-btn" data-type="cassette"
+                style="flex: 1; font-size: 0.8rem; padding: 0.5rem; margin-top: 0; background: #e74c3c; color: white; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                Spend
+              </button>
+            </div>
+          </div>
+
+          <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; text-align: center;">
+            <div style="font-size: 0.9rem; color: #B6C0D7; margin-bottom: 0.5rem;">45's</div>
+            <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;"><span id="punches-45">0</span> /
+              10</div>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="action-btn punch-btn" data-type="45"
+                style="flex: 1; font-size: 0.8rem; padding: 0.5rem; margin-top: 0; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                <img src="images/btn_45.png" style="width: 16px; height: 16px; object-fit: contain;">
+                Punch
+              </button>
+              <button class="action-btn redeem-btn" data-type="45"
+                style="flex: 1; font-size: 0.8rem; padding: 0.5rem; margin-top: 0; background: #e74c3c; color: white; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                Spend
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="status-msg" id="status-msg" style="text-align: center;">Punch added successfully!</div>
+      </div>
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset class="bevel-group">
+    <legend>Store Operations</legend>
+    <div style="display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap;">
+      <button id="btn-open-inventory" class="action-btn" style="width: auto; padding: 0.8rem 2.5rem;">
+        Store Inventory Lookup
+      </button>
+      <a href="online-products.html" class="action-btn" style="width: auto; padding: 0.8rem 2.5rem; text-decoration: none; text-align: center; display: inline-flex; align-items: center; justify-content: center;">
+        Online Product Editor
+      </a>
+    </div>
+  </fieldset>
+
+  <!-- Inventory Search Modal -->
+  <div id="inventory-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Store Inventory Search</h2>
+        <button id="btn-close-inventory" class="icon-btn">&times;</button>
+      </div>
+      
+      <div class="modal-toolbar">
+        <div>
+          <label style="display: block; color: var(--yellow); margin-bottom: 5px;">UPC:</label>
+          <input type="text" id="search-upc" class="search-input input-watch" placeholder="e.g. 843930148806">
+        </div>
+        <div>
+          <label style="display: block; color: var(--yellow); margin-bottom: 5px;">Artist:</label>
+          <input type="text" id="search-artist" class="search-input input-watch" placeholder="e.g. Midland">
+        </div>
+        <div>
+          <label style="display: block; color: var(--yellow); margin-bottom: 5px;">Album / Title:</label>
+          <input type="text" id="search-album" class="search-input input-watch" placeholder="e.g. Stages">
+        </div>
+        <div>
+          <label style="display: block; color: var(--yellow); margin-bottom: 5px;">Catalogue #:</label>
+          <input type="text" id="search-catalog" class="search-input input-watch" placeholder="Vendor Number">
+        </div>
+        <div style="grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem;">
+          <button id="btn-clear-search" class="action-btn" style="width: auto; padding: 0.6rem 2rem; background: transparent; border: 1px solid var(--yellow); color: var(--yellow);">Clear</button>
+          <button id="btn-do-search" class="action-btn" style="width: auto; padding: 0.6rem 2rem; opacity: 0.5; cursor: not-allowed;" disabled>Search Database</button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table class="sales-table">
+          <thead>
+            <tr>
+              <th>UPC</th>
+              <th>Artist</th>
+              <th>Title</th>
+              <th>Vendor</th>
+              <th>Qty</th>
+              <th>SRP</th>
+            </tr>
+          </thead>
+          <tbody id="inventory-results">
+            <tr><td colspan="6" style="text-align:center; padding: 2rem; font-style: italic;">Enter search criteria above to view inventory.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; margin-bottom: 2rem;">
+    <a href="activate_qr.png" target="_blank" class="action-btn" style="text-decoration: none; font-size: 1rem; padding: 0.6rem 1.5rem; background: var(--blue); color: var(--yellow);">
+      Activate Customer Card
+    </a>
+    <a href="checkin_qr.png" target="_blank" class="action-btn" style="text-decoration: none; font-size: 1rem; padding: 0.6rem 1.5rem; background: var(--blue); color: var(--yellow);">
+      Customer Check In
+    </a>
+  </div>
+
+  <footer
+    style="margin-top: auto; text-align: center; padding-bottom: 2rem; position: relative; z-index: 10; width: 100%;">
+    <a href="https://xenohead.com" target="_blank"
+      style="text-decoration: none; color: #B6C0D7; display: inline-flex; flex-direction: column; align-items: center; gap: 0.5rem; transition: all 0.3s; opacity: 0.8;"
+      onmouseover="this.style.opacity=1; this.style.transform='translateY(-2px)';"
+      onmouseout="this.style.opacity=0.8; this.style.transform='translateY(0)';">
+      <img src="images/xenohead_logo.png" alt="XenoHead" style="height: 40px;">
+      <span
+        style="font-family: 'Oswald', sans-serif; letter-spacing: 1px; font-size: 0.9rem; text-transform: uppercase;">A
+        XenoHead Creation</span>
+    </a>
+  </footer>
+
+  <script>
+
+    const customerProfile = document.getElementById('customer-profile');
+    const emptyState = document.getElementById('empty-state');
+    const addPunchBtn = document.getElementById('add-punch-btn');
+    const statusMsg = document.getElementById('status-msg');
+
+    function updateTicker() {
+      fetch('/api/ticker?t=' + Date.now())
+        .then(res => {
+          if (!res.ok) throw new Error("Ticker file not found");
+          return res.text();
+        })
+        .then(text => {
+          document.getElementById('ticker-text').textContent = text.trim();
+        })
+        .catch(err => {
+          document.getElementById('ticker-text').textContent = "Welcome to Forever Young Records!";
+        });
+    }
+    updateTicker();
+    setInterval(updateTicker, 60000); // Check every minute
+
+    // Handle ticker upload
+    document.getElementById('btn-update-ticker').addEventListener('click', () => {
+      document.getElementById('ticker-upload').click();
+    });
+
+    document.getElementById('ticker-upload').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async (ev) => {
+        const text = ev.target.result;
+        if (!text.trim()) {
+          alert('Text file is empty.');
+          return;
+        }
+        
+        try {
+          const res = await fetch('/api/ticker', {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain' },
+            body: text
+          });
+          
+          if (res.ok) {
+            alert('Ticker updated successfully!');
+            updateTicker();
+          } else {
+            alert('Error updating ticker.');
+          }
+        } catch (err) {
+          alert('Network error updating ticker.');
+        }
+      };
+      reader.readAsText(file);
+      e.target.value = ''; // Reset input
+    });
+    function checkQueue() {
+      fetch('/api/queue?t=' + Date.now(), { cache: 'no-store' })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.queue && data.queue.length > 0) {
+            const user = data.queue[0]; // Most recent check-in
+            const currentPhone = document.querySelector('#customer-phone span').textContent;
+
+            // If it's a new person, or if the screen is empty, show them
+            if (emptyState.style.display !== 'none' || currentPhone !== user.phone) {
+              emptyState.style.display = 'none';
+              customerProfile.style.display = 'block';
+              statusMsg.style.display = 'none';
+
+              document.querySelector('#customer-name span').textContent = user.name;
+              document.querySelector('#customer-phone span').textContent = user.phone;
+              document.getElementById('punches-cd').textContent = user.punches_cd || 0;
+              document.getElementById('punches-vinyl').textContent = user.punches_vinyl || 0;
+              document.getElementById('punches-cassette').textContent = user.punches_cassette || 0;
+              document.getElementById('punches-45').textContent = user.punches_45 || 0;
+            }
+          }
+        })
+        .catch(err => console.error("Error polling queue:", err));
+    }
+
+    // Poll the queue every 3 seconds
+    setInterval(checkQueue, 3000);
+
+    const punchBtns = document.querySelectorAll('.punch-btn');
+    punchBtns.forEach(btn => {
+      btn.addEventListener('click', function () {
+        const phone = document.querySelector('#customer-phone span').textContent;
+        const type = this.getAttribute('data-type');
+        const originalText = this.textContent;
+
+        fetch('/api/punch', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone, type })
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.error) {
+              alert(data.error);
+            } else {
+              document.getElementById(`punches-${type}`).textContent = data.punches;
+
+              this.classList.add('success');
+              this.textContent = 'Added!';
+              statusMsg.style.display = 'block';
+
+              setTimeout(() => {
+                this.classList.remove('success');
+                this.textContent = originalText;
+                statusMsg.style.display = 'none';
+              }, 3000);
+            }
+          })
+          .catch(err => console.error("Error adding punch:", err));
+      });
+    });
+
+    const redeemBtns = document.querySelectorAll('.redeem-btn');
+    redeemBtns.forEach(btn => {
+      btn.addEventListener('click', function () {
+        if (!confirm('Are you sure you want to spend (zero out) punches for this category?')) return;
+        const phone = document.querySelector('#customer-phone span').textContent;
+        const type = this.getAttribute('data-type');
+        const originalHTML = this.innerHTML;
+
+        fetch('/api/redeem', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone, type })
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.error) {
+              alert(data.error);
+            } else {
+              document.getElementById(`punches-${type}`).textContent = data.punches;
+
+              this.classList.add('success');
+              this.textContent = 'Done!';
+              statusMsg.textContent = 'Punches spent successfully!';
+              statusMsg.style.display = 'block';
+
+              setTimeout(() => {
+                this.classList.remove('success');
+                this.innerHTML = originalHTML;
+                statusMsg.textContent = 'Punch added successfully!';
+                statusMsg.style.display = 'none';
+              }, 3000);
+            }
+          })
+          .catch(err => console.error("Error redeeming punch:", err));
+      });
+    });
+
+    // Store Inventory Modal Logic
+    const inventoryModal = document.getElementById('inventory-modal');
+    const inputs = document.querySelectorAll('.input-watch');
+    const searchBtn = document.getElementById('btn-do-search');
+    const resultsBody = document.getElementById('inventory-results');
+
+    document.getElementById('btn-open-inventory').addEventListener('click', () => {
+      inventoryModal.style.display = 'flex';
+    });
+
+    document.getElementById('btn-close-inventory').addEventListener('click', () => {
+      inventoryModal.style.display = 'none';
+    });
+
+    // Close on outside click
+    inventoryModal.addEventListener('click', (e) => {
+      if (e.target === inventoryModal) {
+        inventoryModal.style.display = 'none';
+      }
+    });
+
+    // Enable search button only if at least one input has value
+    inputs.forEach(input => {
+      input.addEventListener('input', () => {
+        const hasValue = Array.from(inputs).some(i => i.value.trim() !== '');
+        searchBtn.disabled = !hasValue;
+        searchBtn.style.opacity = hasValue ? '1' : '0.5';
+        searchBtn.style.cursor = hasValue ? 'pointer' : 'not-allowed';
+      });
+
+      // Trigger search on Enter key
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !searchBtn.disabled) {
+          searchBtn.click();
+        }
+      });
+    });
+
+    // Clear Search Logic
+    document.getElementById('btn-clear-search').addEventListener('click', () => {
+      inputs.forEach(i => i.value = '');
+      resultsBody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 2rem; font-style: italic;">Enter search criteria above to view inventory.</td></tr>';
+      searchBtn.disabled = true;
+      searchBtn.style.opacity = '0.5';
+      searchBtn.style.cursor = 'not-allowed';
+    });
+
+    // Execute Search
+    searchBtn.addEventListener('click', async () => {
+      resultsBody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 2rem;">Searching...</td></tr>';
+      
+      const upc = document.getElementById('search-upc').value.trim();
+      const artist = document.getElementById('search-artist').value.trim();
+      const album = document.getElementById('search-album').value.trim();
+      const catalog = document.getElementById('search-catalog').value.trim();
+
+      const params = new URLSearchParams();
+      if (upc) params.append('upc', upc);
+      if (artist) params.append('artist', artist);
+      if (album) params.append('album', album);
+      if (catalog) params.append('catalog', catalog);
+
+      try {
+        const res = await fetch('/api/inventory-search?' + params.toString());
+        const data = await res.json();
+
+        if (data.success && data.results) {
+          if (data.results.length === 0) {
+            resultsBody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 2rem; font-style: italic;">No items found matching criteria.</td></tr>';
+            return;
+          }
+
+          resultsBody.innerHTML = data.results.map(i => `
+            <tr>
+              <td>${i.UPC}</td>
+              <td>${i.Artist}</td>
+              <td>${i.Title}</td>
+              <td>${i.Vendor}</td>
+              <td style="font-weight: bold; color: ${i.Quantity > 0 ? 'var(--green)' : 'var(--red)'}">${i.Quantity}</td>
+              <td>${i.SRP}</td>
+            </tr>
+          `).join('');
+        } else {
+          resultsBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--red);">Error searching inventory.</td></tr>';
+        }
+      } catch (err) {
+        resultsBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--red);">Network error connecting to database.</td></tr>';
+      }
+    });
+  </script>
+</body>
+
+</html>
