@@ -242,27 +242,51 @@ async function handleInventorySearch(request, env) {
   const artist = url.searchParams.get('artist') || '';
   const title = url.searchParams.get('album') || '';
   const catalog = url.searchParams.get('catalog') || '';
+  const queryVal = url.searchParams.get('query') || '';
+  const letterVal = url.searchParams.get('letter') || '';
 
-  if (!upc && !artist && !title && !catalog)
-    return json({ error: 'At least one search parameter must be provided.' }, 400);
+  let limit = parseInt(url.searchParams.get('limit') || '10');
+  if (![10, 20, 40, 80].includes(limit)) limit = 10;
+  let page = parseInt(url.searchParams.get('page') || '1');
+  if (page < 1) page = 1;
+  const offset = (page - 1) * limit;
 
-  let query = 'SELECT * FROM Inventory WHERE 1=1';
-  const params = [];
-  if (upc)    { query += ' AND UPC LIKE ?';           params.push(`%${upc}%`); }
-  if (artist) { query += ' AND Artist LIKE ?';        params.push(`%${artist}%`); }
-  if (title)  { query += ' AND Title LIKE ?';         params.push(`%${title}%`); }
-  if (catalog){ query += ' AND Vendor_Number = ?';    params.push(catalog); }
-  query += ' LIMIT 50';
+  let filterSql = '', bindParams = [];
 
-  const results = await db.prepare(query).bind(...params).all();
-  return json({ success: true, results: results.results });
+  if (letterVal) {
+    if (letterVal === '0-9') {
+      filterSql += " AND (substr(Artist,1,1) BETWEEN '0' AND '9' OR Artist GLOB '[0-9]*')";
+    } else {
+      filterSql += ' AND (substr(Artist,1,1) = ? OR substr(Artist,1,1) = ?)';
+      bindParams.push(letterVal.toLowerCase(), letterVal.toUpperCase());
+    }
+  }
+
+  if (queryVal) {
+    filterSql += ' AND (Artist LIKE ? OR Title LIKE ? OR UPC LIKE ? OR Vendor_Number LIKE ?)';
+    bindParams.push(`%${queryVal}%`, `%${queryVal}%`, `%${queryVal}%`, `%${queryVal}%`);
+  } else {
+    if (upc)    { filterSql += ' AND UPC LIKE ?';           bindParams.push(`%${upc}%`); }
+    if (artist) { filterSql += ' AND Artist LIKE ?';        bindParams.push(`%${artist}%`); }
+    if (title)  { filterSql += ' AND Title LIKE ?';         bindParams.push(`%${title}%`); }
+    if (catalog){ filterSql += ' AND Vendor_Number = ?';    bindParams.push(catalog); }
+  }
+
+  const countQ = `SELECT COUNT(*) as total FROM Inventory WHERE 1=1${filterSql}`;
+  const countResult = await (bindParams.length
+    ? db.prepare(countQ).bind(...bindParams)
+    : db.prepare(countQ)).first();
+  const total = countResult?.total || 0;
+
+  const dataQ = `SELECT * FROM Inventory WHERE 1=1${filterSql} ORDER BY Artist ASC, Title ASC LIMIT ? OFFSET ?`;
+  const results = await db.prepare(dataQ).bind(...bindParams, limit, offset).all();
+  return json({ success: true, results: results.results, total, page, limit });
 }
 
 async function handleOnlineSearch(request, env) {
   const db = env.DB;
   const url = new URL(request.url);
   const queryVal  = url.searchParams.get('query')  || '';
-  const typeVal   = url.searchParams.get('type')   || 'artist';
   const formatVal = url.searchParams.get('format') || '%';
   const letterVal = url.searchParams.get('letter') || '';
 
@@ -284,18 +308,8 @@ async function handleOnlineSearch(request, env) {
   }
 
   if (queryVal) {
-    const typeMap = {
-      artist: 'Artist', title: 'Title', label: 'Label', genre: 'Genre',
-      barcode: 'Bar_Code', ref: 'Seller_Reference_Number',
-    };
-    const col = typeMap[typeVal];
-    if (col) {
-      filterSql += ` AND ${col} LIKE ?`;
-      bindParams.push(`%${queryVal}%`);
-    } else {
-      filterSql += ' AND (Artist LIKE ? OR Title LIKE ?)';
-      bindParams.push(`%${queryVal}%`, `%${queryVal}%`);
-    }
+    filterSql += ' AND (Artist LIKE ? OR Title LIKE ? OR Discogs_ID LIKE ? OR Seller_Reference_Number LIKE ?)';
+    bindParams.push(`%${queryVal}%`, `%${queryVal}%`, `%${queryVal}%`, `%${queryVal}%`);
   }
 
   if (formatVal && formatVal !== '%') {

@@ -1,1 +1,5 @@
 \data\*
+
+local-db-export.sql
+production_export.sql
+*.sql

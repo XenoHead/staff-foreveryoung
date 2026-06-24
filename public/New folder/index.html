@@ -143,7 +143,7 @@
       margin: 1rem 0;
     }
 
-    .action-btn {
+    button.action-btn {
       width: 100%;
       padding: 1rem;
       background: var(--yellow);
@@ -158,15 +158,10 @@
       transition: all 0.3s;
       font-weight: 700;
       margin-top: 1rem;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
     }
 
-    .action-btn:hover {
+    button.action-btn:hover {
       background: #FFF;
-      color: var(--dark);
       transform: translateY(-2px);
     }
 
@@ -474,10 +469,10 @@
   <fieldset class="bevel-group">
     <legend>Store Operations</legend>
     <div style="display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap;">
-      <a href="instore-products.html" class="action-btn" style="width: auto; padding: 0.8rem 2.5rem; margin-top: 0; text-decoration: none;">
+      <button id="btn-open-inventory" class="action-btn" style="width: auto; padding: 0.8rem 2.5rem;">
         Store Inventory Lookup
-      </a>
-      <a href="online-products.html" class="action-btn" style="width: auto; padding: 0.8rem 2.5rem; margin-top: 0; text-decoration: none;">
+      </button>
+      <a href="online-products.html" class="action-btn" style="width: auto; padding: 0.8rem 2.5rem; text-decoration: none; text-align: center; display: inline-flex; align-items: center; justify-content: center;">
         Online Product Editor
       </a>
     </div>

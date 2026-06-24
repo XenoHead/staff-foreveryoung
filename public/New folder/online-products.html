@@ -574,7 +574,38 @@
         <div class="search-input-wrapper">
           <input type="text" id="search-query" placeholder="Search our online database (Artist, Title, Ref #)...">
         </div>
+        
+        <div style="flex: 1; min-width: 150px;">
+          <select id="search-type">
+            <option value="artist">Artist Search</option>
+            <option value="title">Title Search</option>
+            <option value="label">Label Search</option>
+            <option value="genre">Genre Search</option>
+            <option value="barcode">Barcode Search</option>
+            <option value="ref">Seller Reference #</option>
+          </select>
+        </div>
 
+        <div style="flex: 1; min-width: 150px;">
+          <select id="search-format">
+            <option value="%">All Formats</option>
+            <option disabled>-----------------</option>
+            <option value="vinyl">All Vinyl Formats</option>
+            <option value="cd">All CD Formats</option>
+            <option disabled>-----------------</option>
+            <option value="vinyllp">Vinyl - LP</option>
+            <option value="vinyl7">Vinyl - 45 & 7"</option>
+            <option value="vinyl10">Vinyl - 10"</option>
+            <option value="vinyl12">Vinyl - 12"</option>
+            <option value="vinyl78">Vinyl - 78</option>
+            <option disabled>-----------------</option>
+            <option value="cdsing">CD Single & CD EP</option>
+            <option value="ep">Vinyl EP & Mini LP</option>
+            <option value="cassette">Cassette</option>
+            <option value="video">Video</option>
+            <option value="book">Book</option>
+          </select>
+        </div>
 
         <div style="flex: 0 1 140px; min-width: 120px;">
           <select id="search-limit">
@@ -813,6 +844,8 @@
     // DOM Elements
     const searchForm = document.getElementById('search-form');
     const searchQuery = document.getElementById('search-query');
+    const searchType = document.getElementById('search-type');
+    const searchFormat = document.getElementById('search-format');
     const searchLimit = document.getElementById('search-limit');
     const letterIndex = document.getElementById('letter-index');
     const resultsList = document.getElementById('results-list');
@@ -1112,6 +1145,8 @@
 
       const urlParams = new URLSearchParams();
       if (params.query) urlParams.set('query', params.query);
+      if (params.type) urlParams.set('type', params.type);
+      if (params.format) urlParams.set('format', params.format);
       if (params.letter) urlParams.set('letter', params.letter);
       
       urlParams.set('page', currentPage);
@@ -1209,7 +1244,9 @@
       document.querySelectorAll('.browse-letters a').forEach(a => a.classList.remove('active'));
 
       lastSearchParams = {
-        query: searchQuery.value.trim()
+        query: searchQuery.value.trim(),
+        type: searchType.value,
+        format: searchFormat.value
       };
       executeSearch();
     });
