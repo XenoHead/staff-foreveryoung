@@ -5,4 +5,8 @@ production_export.sql
 *.sql
 .env
 enrichment_log.txt
+*.db
+*.sqlite
+*.sqlite3
+
 

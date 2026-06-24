@@ -13,3 +13,7 @@ enrich_inventory.js
 import_to_d1.js
 import_to_d1.py
 .local_data/
+*.db
+*.sqlite
+*.sqlite3
+
