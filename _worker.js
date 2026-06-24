@@ -176,32 +176,95 @@ async function handleFeaturedGet(request, env) {
   const db = env.DB;
   const url = new URL(request.url);
   const type = url.searchParams.get('type');
+  
   await db.prepare(`CREATE TABLE IF NOT EXISTS Settings (key TEXT PRIMARY KEY, value TEXT)`).run();
-  const result = await db.prepare(`SELECT value FROM Settings WHERE key='featured_items'`).first();
-  const value = result?.value || '';
+  
+  const keys = ['featured_new', 'featured_hot', 'featured_rare'];
+  const settings = {};
+  for (const k of keys) {
+    const res = await db.prepare(`SELECT value FROM Settings WHERE key=?`).bind(k).first();
+    settings[k] = res?.value || '';
+  }
+  
+  const compatRes = await db.prepare(`SELECT value FROM Settings WHERE key='featured_items'`).first();
+  const compatValue = compatRes?.value || '';
 
   if (type === 'details') {
-    let items = [];
-    if (value) {
-      const refs = value.split(',').map(r => r.trim()).filter(Boolean);
-      if (refs.length) {
-        const ph = refs.map(() => '?').join(',');
-        const q = `SELECT * FROM Online_Inventory WHERE Seller_Reference_Number IN (${ph}) OR Bar_Code IN (${ph})`;
-        const d = await db.prepare(q).bind(...refs, ...refs).all();
-        items = d.results;
+    const details = {
+      new: { value: settings.featured_new, items: [] },
+      hot: { value: settings.featured_hot, items: [] },
+      rare: { value: settings.featured_rare, items: [] }
+    };
+    
+    for (const k of ['new', 'hot', 'rare']) {
+      const val = settings['featured_' + k];
+      if (val) {
+        const refs = val.split(',').map(r => r.trim()).filter(Boolean);
+        if (refs.length) {
+          // 1. Fetch from Online_Inventory
+          const ph = refs.map(() => '?').join(',');
+          const q = `SELECT * FROM Online_Inventory WHERE Seller_Reference_Number IN (${ph}) OR Bar_Code IN (${ph})`;
+          const d = await db.prepare(q).bind(...refs, ...refs).all();
+          const onlineItems = (d.results || []).map(item => ({ ...item, _source: 'online' }));
+          
+          // Identify missing references/UPCs
+          const foundRefs = new Set();
+          onlineItems.forEach(item => {
+            if (item.Seller_Reference_Number) foundRefs.add(item.Seller_Reference_Number.toLowerCase());
+            if (item.Bar_Code) foundRefs.add(item.Bar_Code.toLowerCase());
+          });
+          
+          const missingRefs = refs.filter(r => !foundRefs.has(r.toLowerCase()));
+          let instoreItems = [];
+          
+          if (missingRefs.length > 0) {
+            // 2. Fetch from Inventory (In-Store)
+            const instorePh = missingRefs.map(() => '?').join(',');
+            const instoreQuery = `SELECT * FROM Inventory WHERE UPC IN (${instorePh}) OR Vendor_Number IN (${instorePh})`;
+            const instoreResult = await db.prepare(instoreQuery).bind(...missingRefs, ...missingRefs).all();
+            
+            instoreItems = (instoreResult.results || []).map(item => ({
+              id: item.id,
+              Artist: item.Artist,
+              Title: item.Title,
+              Format: item.Format,
+              Price: parseFloat(item.SRP) || 0.00,
+              Bar_Code: item.UPC,
+              Quantity: item.Quantity,
+              _source: 'instore'
+            }));
+          }
+          
+          details[k].items = [...onlineItems, ...instoreItems];
+        }
       }
     }
-    return json({ success: true, value, items });
+    return json({ success: true, ...details, compatValue });
   }
-  return json({ success: true, value });
+  
+  return json({ success: true, ...settings, compatValue });
 }
 
 async function handleFeaturedPost(request, env) {
   const db = env.DB;
   await db.prepare(`CREATE TABLE IF NOT EXISTS Settings (key TEXT PRIMARY KEY, value TEXT)`).run();
   const body = await request.json();
-  const value = body.value || '';
-  await db.prepare(`INSERT INTO Settings (key, value) VALUES ('featured_items', ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value`).bind(value).run();
+  
+  for (const k of ['new', 'hot', 'rare']) {
+    const valKey = 'featured_' + k;
+    if (body[k] !== undefined) {
+      await db.prepare(`INSERT INTO Settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value`)
+        .bind(valKey, body[k])
+        .run();
+    }
+  }
+  
+  if (body.new !== undefined) {
+    await db.prepare(`INSERT INTO Settings (key, value) VALUES ('featured_items', ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value`)
+      .bind(body.new)
+      .run();
+  }
+  
   return json({ success: true });
 }
 
