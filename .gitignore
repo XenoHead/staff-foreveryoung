@@ -3,3 +3,6 @@
 local-db-export.sql
 production_export.sql
 *.sql
+.env
+enrichment_log.txt
+
