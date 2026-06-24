@@ -355,6 +355,50 @@
       </div>
     </div>
 
+    <!-- Featured Crate Settings Panel -->
+    <div class="panel">
+      <h2>Featured Crate (New Releases / Hot Albums)</h2>
+      <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 1rem;">
+        <p style="color: #B6C0D7; font-size: 0.9rem; line-height: 1.4;">
+          Manage the items featured on the store home page. Enter comma-separated Seller Reference Numbers or search for products to add them directly.
+        </p>
+        
+        <div>
+          <label style="display: block; color: var(--yellow); margin-bottom: 5px; font-weight: 500;">Featured Seller Reference Numbers:</label>
+          <textarea id="featured-refs" style="width: 100%; height: 80px; padding: 0.8rem; background: rgba(0,0,0,0.5); border: 1px solid var(--blue); border-radius: 8px; color: #FFF; font-family: monospace; font-size: 1rem; resize: vertical;" placeholder="e.g. 1518-LR2019-0610-0123, 8043-TW2024-0123-1020"></textarea>
+        </div>
+
+        <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+          <button id="btn-save-featured" class="action-btn" style="padding: 0.6rem 2rem;">Save Crate</button>
+        </div>
+        
+        <div id="featured-status" class="status-msg"></div>
+
+        <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; margin-top: 0.5rem;">
+          <h3 style="font-family: 'Oswald', sans-serif; color: var(--yellow); margin-bottom: 1rem; font-size: 1.2rem;">Search & Add to Crate</h3>
+          <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+            <select id="featured-search-mode" style="background: #08111F; color: #fff; border: 1px solid var(--blue); padding: 0 0.5rem;">
+              <option value="all">All</option>
+              <option value="ref">By Ref #</option>
+              <option value="upc">By UPC</option>
+            </select>
+            <input type="text" id="featured-search-input" class="search-input" style="flex: 1;" placeholder="Search artist or title in online catalog...">
+            <button id="btn-featured-search" class="action-btn" style="padding: 0.5rem 1.5rem; margin-top: 0; width: auto;">Search</button>
+          </div>
+          <div id="featured-search-results" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 200px; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 8px; padding: 0.5rem;">
+            <div style="text-align: center; color: #B6C0D7; font-style: italic; padding: 1rem; font-size: 0.9rem;">Search for items to display results here.</div>
+          </div>
+        </div>
+
+        <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; margin-top: 0.5rem;">
+          <h3 style="font-family: 'Oswald', sans-serif; color: var(--yellow); margin-bottom: 1rem; font-size: 1.2rem;">Currently Featured Items</h3>
+          <div id="featured-items-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem;">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Master Sales Panel -->
     <div class="panel">
       <h2>Master Sales Tools</h2>
@@ -568,6 +612,194 @@
         btn.innerHTML = '<span style="font-size: 1.5rem; margin-right: 10px;">↻</span> Sync Now';
       }
     });
+
+    // Featured Crate Logic
+    const featuredRefs = document.getElementById('featured-refs');
+    const btnSaveFeatured = document.getElementById('btn-save-featured');
+    const featuredStatus = document.getElementById('featured-status');
+    const featuredItemsList = document.getElementById('featured-items-list');
+    const featuredSearchInput = document.getElementById('featured-search-input');
+    const featuredSearchMode = document.getElementById('featured-search-mode');
+    const featuredSearchResults = document.getElementById('featured-search-results');
+    const btnFeaturedSearch = document.getElementById('btn-featured-search');
+
+    async function loadFeaturedData() {
+      try {
+        const res = await fetch('/api/featured?type=details');
+        const data = await res.json();
+        if (data.success) {
+          featuredRefs.value = data.value || "";
+          
+          if (!data.items || data.items.length === 0) {
+            featuredItemsList.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #B6C0D7; font-style: italic; padding: 1rem;">No items currently featured.</div>';
+            return;
+          }
+          
+          featuredItemsList.innerHTML = data.items.map(item => {
+            let artHtml = '';
+            if (item.Front_Image_URL && item.Front_Image_URL !== 'NULL' && item.Front_Image_URL.startsWith('http')) {
+              artHtml = `<img src="${item.Front_Image_URL}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">`;
+            } else {
+              artHtml = `<div style="width: 50px; height: 50px; background: var(--blue); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; color: #fff;">${item.Format || 'LP'}</div>`;
+            }
+            return `
+              <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 0.8rem; display: flex; gap: 0.8rem; align-items: center; justify-content: space-between;">
+                <div style="display: flex; gap: 0.8rem; align-items: center; overflow: hidden; flex: 1;">
+                  ${artHtml}
+                  <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.85rem;">
+                    <div style="font-weight: bold; color: #FFF;" title="${item.Title}">${item.Title}</div>
+                    <div style="color: var(--yellow);" title="${item.Artist}">${item.Artist}</div>
+                    <div style="color: #B6C0D7; font-size: 0.75rem;">
+                      Ref: ${item.Seller_Reference_Number || 'N/A'}<br>
+                      UPC: ${item.Bar_Code || 'N/A'}
+                    </div>
+                  </div>
+                </div>
+                <button class="remove-featured-btn icon-btn" data-ref="${item.Seller_Reference_Number || ''}" data-upc="${item.Bar_Code || ''}" style="color: var(--red); font-size: 1.5rem; padding: 0.2rem; cursor: pointer; border: none; background: transparent; line-height: 1;" title="Remove from featured crate">&times;</button>
+              </div>
+            `;
+          }).join('');
+          
+          // Add click handlers for remove buttons
+          document.querySelectorAll('.remove-featured-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const refToRemove = btn.getAttribute('data-ref');
+              const upcToRemove = btn.getAttribute('data-upc');
+              let refsList = featuredRefs.value.split(',').map(r => r.trim()).filter(r => r.length > 0);
+              refsList = refsList.filter(r => r !== refToRemove && r !== upcToRemove);
+              featuredRefs.value = refsList.join(', ');
+              saveFeaturedData();
+            });
+          });
+        }
+      } catch (err) {
+        console.error("Error loading featured items", err);
+      }
+    }
+
+    async function saveFeaturedData() {
+      const value = featuredRefs.value.trim();
+      featuredStatus.style.display = 'block';
+      featuredStatus.className = 'status-msg';
+      featuredStatus.style.color = '#B6C0D7';
+      featuredStatus.textContent = 'Saving featured crate...';
+      
+      try {
+        const res = await fetch('/api/featured', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ value })
+        });
+        const data = await res.json();
+        if (data.success) {
+          featuredStatus.textContent = 'Featured crate updated successfully!';
+          featuredStatus.className = 'status-msg success';
+          setTimeout(() => { featuredStatus.style.display = 'none'; }, 3000);
+          loadFeaturedData();
+        } else {
+          featuredStatus.textContent = 'Error saving: ' + (data.error || 'Unknown error');
+          featuredStatus.style.color = 'var(--red)';
+        }
+      } catch (err) {
+        featuredStatus.textContent = 'Network error saving featured items.';
+        featuredStatus.style.color = 'var(--red)';
+      }
+    }
+
+    btnSaveFeatured.addEventListener('click', saveFeaturedData);
+
+    // Featured search functionality
+    featuredSearchMode.addEventListener('change', () => {
+      featuredSearchInput.placeholder = featuredSearchMode.value === 'upc' ? 'Enter UPC...' : 'Search for title/artist...';
+    });
+
+    async function searchFeatured() {
+      const query = featuredSearchInput.value.trim();
+      const mode = featuredSearchMode.value;
+      if (!query) return;
+      featuredSearchResults.innerHTML = '<div style="text-align: center; color: #B6C0D7; padding: 1rem;">Searching...</div>';
+
+      try {
+        let onlineResults = [];
+        let instoreResults = [];
+        const fetches = [];
+
+        if (mode === 'all' || mode === 'ref') {
+          const type = mode === 'ref' ? 'ref' : 'all';
+          fetches.push(
+            fetch(`/api/online-search?query=${encodeURIComponent(query)}&type=${type}&limit=10`)
+              .then(r => r.json())
+              .then(d => { if (d.success && d.results) onlineResults = d.results.map(r => ({...r, _src: 'online'})); })
+          );
+        }
+
+        if (mode === 'all' || mode === 'upc') {
+          const instoreUrl = mode === 'upc'
+            ? `/api/instore-search?upc=${encodeURIComponent(query)}&limit=10`
+            : `/api/instore-search?query=${encodeURIComponent(query)}&limit=10`;
+          fetches.push(
+            fetch(instoreUrl)
+              .then(r => r.json())
+              .then(d => { if (d.success && d.results) instoreResults = d.results.map(r => ({...r, _src: 'instore'})); })
+          );
+        }
+
+        await Promise.all(fetches);
+        const allResults = [...onlineResults, ...instoreResults];
+
+        if (allResults.length > 0) {
+          featuredSearchResults.innerHTML = allResults.map(item => {
+            const refVal = item.Seller_Reference_Number || '';
+            const upcVal = item.Bar_Code || item.UPC || '';
+            const srcBadge = item._src === 'online'
+              ? `<span style="font-size:0.68rem;background:rgba(44,108,255,0.35);color:#7aadff;padding:1px 5px;border-radius:3px;margin-left:5px;">Online</span>`
+              : `<span style="font-size:0.68rem;background:rgba(46,204,113,0.25);color:#2ecc71;padding:1px 5px;border-radius:3px;margin-left:5px;">In-Store</span>`;
+            const refBtn = refVal ? `<button class="add-to-crate-btn action-btn" data-ref="${refVal}" style="padding:0.2rem 0.6rem;font-size:0.75rem;width:auto;margin-top:0;">+ Ref</button>` : '';
+            const upcBtn = upcVal ? `<button class="add-to-crate-btn action-btn" data-ref="${upcVal}" style="padding:0.2rem 0.6rem;font-size:0.75rem;width:auto;margin-top:0;background:rgba(35,84,146,0.8);border-color:var(--blue);">+ UPC</button>` : '';
+            return `
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:0.4rem;border-bottom:1px solid rgba(255,255,255,0.05);font-size:0.85rem;">
+                <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;margin-right:1rem;">
+                  <strong style="color:#FFF;">${item.Title || 'Unknown'}</strong>${srcBadge}
+                  <span style="color:var(--yellow);"> — ${item.Artist || 'Unknown'}</span>
+                  <span style="color:#B6C0D7;"> (${item.Format || 'N/A'})</span>
+                  <br><span style="color:#B6C0D7;font-size:0.72rem;">Ref: ${refVal || 'N/A'} | UPC: ${upcVal || 'N/A'}</span>
+                </div>
+                <div style="display:flex;gap:0.4rem;flex-shrink:0;">${refBtn}${upcBtn}</div>
+              </div>`;
+          }).join('');
+
+          document.querySelectorAll('.add-to-crate-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const refToAdd = btn.getAttribute('data-ref');
+              let refsList = featuredRefs.value.split(',').map(r => r.trim()).filter(r => r.length > 0);
+              if (!refsList.includes(refToAdd)) {
+                refsList.push(refToAdd);
+                featuredRefs.value = refsList.join(', ');
+                saveFeaturedData();
+              } else {
+                alert('Already in the featured crate.');
+              }
+            });
+          });
+        } else {
+          featuredSearchResults.innerHTML = '<div style="text-align: center; color: #B6C0D7; padding: 1rem;">No matching items found.</div>';
+        }
+      } catch (err) {
+        console.error(err);
+        featuredSearchResults.innerHTML = '<div style="text-align: center; color: var(--red); padding: 1rem;">Error searching catalog.</div>';
+      }
+    }
+
+    btnFeaturedSearch.addEventListener('click', searchFeatured);
+    featuredSearchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        searchFeatured();
+      }
+    });
+
+    // Call on load
+    loadFeaturedData();
   </script>
 </body>
 </html>
