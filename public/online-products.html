@@ -7,7 +7,9 @@
   <title>Online Product Editor | Forever Young Records</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;700&family=Outfit:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
   <style>
     :root {
       --dark: #08111F;
@@ -37,7 +39,6 @@
       padding: 2rem;
     }
 
-    /* Brick Background */
     body::before {
       content: "";
       position: fixed;
@@ -126,7 +127,6 @@
       box-shadow: 0 0 15px rgba(193, 42, 48, 0.4);
     }
 
-    /* Panel UI */
     .panel {
       background: var(--panel-bg);
       border: 1px solid var(--blue);
@@ -147,7 +147,6 @@
       display: inline-block;
     }
 
-    /* Search Form UI */
     .search-row {
       display: flex;
       flex-wrap: wrap;
@@ -160,7 +159,10 @@
       min-width: 250px;
     }
 
-    input[type="text"], input[type="number"], select, textarea {
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea {
       width: 100%;
       background: rgba(0, 0, 0, 0.4);
       border: 1px solid var(--blue);
@@ -171,8 +173,11 @@
       font-family: 'Outfit', sans-serif;
       transition: all 0.3s;
     }
-    
-    input[type="text"]:focus, input[type="number"]:focus, select:focus, textarea:focus {
+
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    select:focus,
+    textarea:focus {
       outline: none;
       border-color: var(--yellow);
       box-shadow: 0 0 12px rgba(255, 212, 71, 0.25);
@@ -193,7 +198,6 @@
       color: #FFF;
     }
 
-    /* Browse A-Z */
     .browse-letters {
       margin-top: 1.5rem;
       display: flex;
@@ -201,7 +205,7 @@
       gap: 0.4rem;
       justify-content: center;
       padding-top: 1.2rem;
-      border-top: 1px solid rgba(255,255,255,0.06);
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
     }
 
     .browse-letters a {
@@ -229,7 +233,6 @@
       font-weight: 700;
     }
 
-    /* Results list */
     .results-list {
       display: flex;
       flex-direction: column;
@@ -250,7 +253,7 @@
     .record-card:hover {
       border-color: var(--blue);
       background: rgba(35, 84, 146, 0.1);
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     }
 
     .record-art {
@@ -353,10 +356,11 @@
     }
 
     @keyframes spin {
-      to { transform: rotate(360deg); }
+      to {
+        transform: rotate(360deg);
+      }
     }
 
-    /* Modal Styles */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -373,8 +377,9 @@
       border: 2px solid var(--blue);
       border-radius: 12px;
       width: 95%;
-      max-width: 900px;
-      height: 90vh;
+      max-width: 680px;
+      height: auto;
+      max-height: 95vh;
       display: flex;
       flex-direction: column;
       box-shadow: 0 10px 50px rgba(0, 0, 0, 0.8);
@@ -382,7 +387,7 @@
     }
 
     .modal-header {
-      padding: 1.5rem;
+      padding: 0.6rem 1rem;
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       display: flex;
       justify-content: space-between;
@@ -392,58 +397,40 @@
     .modal-header h2 {
       font-family: 'Oswald', sans-serif;
       color: var(--yellow);
-      font-size: 1.8rem;
+      font-size: 1.3rem;
     }
 
     .icon-btn {
       background: transparent;
       border: none;
       color: #B6C0D7;
-      font-size: 2rem;
+      font-size: 1.6rem;
       line-height: 1;
       cursor: pointer;
       transition: color 0.2s;
     }
 
-    .icon-btn:hover { color: #fff; }
+    .icon-btn:hover {
+      color: #fff;
+    }
 
     .modal-body-scroll {
       flex: 1;
       overflow-y: auto;
-      padding: 2rem;
-    }
-
-    .editor-layout {
-      display: grid;
-      grid-template-columns: 1.2fr 2fr;
-      gap: 2rem;
-    }
-
-    @media (max-width: 768px) {
-      .editor-layout {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .editor-sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-      align-items: center;
+      padding: 1rem;
     }
 
     .img-preview-box {
-      width: 100%;
-      aspect-ratio: 1;
-      max-width: 250px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 8px;
+      width: 65px;
+      height: 65px;
+      flex-shrink: 0;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
       background: #040912;
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
-      position: relative;
     }
 
     .img-preview-box img {
@@ -452,39 +439,16 @@
       object-fit: contain;
     }
 
-    .editor-fields-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem 1.5rem;
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.3rem;
-    }
-
-    .form-group.full-width {
-      grid-column: span 2;
-    }
-
-    .form-group label {
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #B6C0D7;
-      font-weight: 500;
-    }
-
     .modal-footer {
-      padding: 1.5rem 2rem;
+      padding: 0.75rem 1rem;
       border-top: 1px solid rgba(255, 255, 255, 0.1);
       display: flex;
-      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
       background: rgba(0, 0, 0, 0.3);
     }
 
-    /* Pagination Styles */
     .pagination-container {
       display: flex;
       justify-content: center;
@@ -567,14 +531,31 @@
       </div>
     </header>
 
-    <!-- Search Panel -->
     <div class="panel">
       <h2>Online Product Lookup</h2>
       <form id="search-form" class="search-row" action="#" method="GET">
         <div class="search-input-wrapper">
-          <input type="text" id="search-query" placeholder="Search our online database (Artist, Title, Ref #)...">
+          <input type="text" id="search-query" placeholder="Search our online database (Artist, Title, SKU)...">
         </div>
 
+        <div style="flex: 0 1 180px; min-width: 140px;">
+          <select id="search-format">
+            <option value="%">All Formats</option>
+            <option value="vinyl">Vinyl (All)</option>
+            <option value="vinyllp">Vinyl LP</option>
+            <option value="vinyl7">Vinyl 7"</option>
+            <option value="vinyl10">Vinyl 10"</option>
+            <option value="vinyl12">Vinyl 12"</option>
+            <option value="cd">CD (All)</option>
+            <option value="cdsing">CD Single</option>
+            <option value="cassette">Cassette</option>
+            <option value="ep">EP</option>
+            <option value="video">Video/DVD/VHS</option>
+            <option value="book">Book</option>
+            <option value="clothing">Clothing</option>
+            <option value="memorabilia">Memorabilia</option>
+          </select>
+        </div>
 
         <div style="flex: 0 1 140px; min-width: 120px;">
           <select id="search-limit">
@@ -585,12 +566,18 @@
           </select>
         </div>
 
+        <div style="display: flex; align-items: center; gap: 0.5rem; color: #B6C0D7; margin-left: 0.5rem;">
+          <input type="checkbox" id="hide-zeros" checked>
+          <label for="hide-zeros" style="font-family: 'Outfit', sans-serif; cursor: pointer;">Hide Quantity: 0</label>
+        </div>
+
         <button type="submit" class="action-btn" style="background: var(--blue); color: var(--yellow);">Search</button>
         <button type="button" id="btn-add-product" class="action-btn success">+ Add Product</button>
       </form>
 
       <div class="browse-letters" id="letter-index">
-        <span style="color: #B6C0D7; display: flex; align-items: center; margin-right: 0.5rem; font-family: 'Oswald', sans-serif;">BROWSE:</span>
+        <span
+          style="color: #B6C0D7; display: flex; align-items: center; margin-right: 0.5rem; font-family: 'Oswald', sans-serif;">BROWSE:</span>
         <a href="#">#</a>
         <a href="#">A</a>
         <a href="#">B</a>
@@ -621,7 +608,6 @@
       </div>
     </div>
 
-    <!-- Status Banner for alerts -->
     <div id="status-banner" class="status-banner"></div>
 
     <div class="loading-state" id="loading-spinner">
@@ -629,12 +615,9 @@
       <p>Loading database entries...</p>
     </div>
 
-    <!-- Results Panel -->
     <div class="results-list" id="results-list">
-      <!-- Records injected dynamically -->
     </div>
 
-    <!-- Pagination controls -->
     <div class="pagination-container" id="pagination-controls" style="display: none;">
       <button class="page-btn" id="prev-page-btn" disabled>&laquo; Previous</button>
       <span class="page-info" id="page-info">Page 1 of 1</span>
@@ -644,176 +627,316 @@
 
   <!-- Edit / Create Product Modal -->
   <div id="editor-modal" class="modal-overlay" style="display: none;">
-    <div class="modal-content">
-      <div class="modal-header">
+    <div class="modal-content" style="max-width: 680px; height: auto; max-height: 95vh;">
+      <div class="modal-header" style="padding: 0.6rem 1rem;">
         <h2 id="modal-title-text">Edit Online Product</h2>
-        <button id="modal-close" class="icon-btn">&times;</button>
+        <button id="modal-close" class="icon-btn" style="font-size: 1.6rem;">&times;</button>
       </div>
-      
-      <div class="modal-body-scroll">
-        <!-- Discogs Lookup Section -->
-        <div id="discogs-lookup-container" style="background: rgba(35, 84, 146, 0.15); border: 1px solid var(--blue); border-radius: 8px; padding: 1.25rem; margin-bottom: 1.5rem;">
-          <div style="display: flex; align-items: flex-end; gap: 1rem; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 0.4rem;">
-              <label for="discogs-lookup-id" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--yellow); font-weight: 600;">Import Metadata from Discogs</label>
-              <input type="text" id="discogs-lookup-id" placeholder="Enter Discogs Release ID (e.g. 2028757)" style="padding: 0.6rem 0.8rem; border-color: rgba(255, 212, 71, 0.3);">
-            </div>
-            <button type="button" id="btn-discogs-lookup" class="action-btn" style="padding: 0.6rem 1.5rem; height: 38px; border-color: var(--yellow); color: var(--yellow); background: rgba(0,0,0,0.2); font-weight: 700; display: inline-flex; align-items: center; justify-content: center;">
-              Search Discogs
-            </button>
-          </div>
-          <div id="discogs-lookup-status" style="font-size: 0.85rem; color: #B6C0D7; margin-top: 0.5rem; min-height: 1.2rem;"></div>
-        </div>
 
-        <form id="product-form" class="editor-layout">
-          <!-- Sidebar: Images & Links -->
-          <div class="editor-sidebar">
+      <style>
+        .spec-form {
+          font-size: 0.85rem;
+          padding: 0.75rem 1rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.6rem;
+        }
+
+        .spec-row {
+          display: flex;
+          gap: 0.4rem;
+          align-items: center;
+          flex-wrap: wrap;
+        }
+
+        .spec-form input[type="text"],
+        .spec-form input[type="number"],
+        .spec-form textarea {
+          padding: 0.3rem 0.5rem;
+          font-size: 0.85rem;
+          border-radius: 4px;
+          background: rgba(0, 0, 0, 0.5);
+          border: 1px solid var(--blue);
+          color: #FFF;
+          height: 28px;
+        }
+
+        .spec-form textarea {
+          height: auto;
+        }
+
+        .spec-label {
+          font-weight: 600;
+          font-size: 0.85rem;
+          color: #B6C0D7;
+        }
+
+        .inline-label {
+          font-size: 0.75rem;
+          color: #B6C0D7;
+          text-transform: uppercase;
+          font-weight: 600;
+          margin-right: 0.2rem;
+        }
+
+        .spec-divider {
+          color: var(--blue);
+          font-weight: bold;
+          padding: 0 0.1rem;
+        }
+
+        .sub-accordion {
+          border: 1px dashed rgba(35, 84, 146, 0.5);
+          border-radius: 4px;
+          margin-top: 0.2rem;
+          overflow: hidden;
+          width: 100%;
+        }
+
+        .sub-toggle {
+          display: none;
+        }
+
+        .sub-header {
+          background: rgba(35, 84, 146, 0.1);
+          padding: 0.25rem 0.5rem;
+          cursor: pointer;
+          display: flex;
+          font-weight: 500;
+          font-size: 0.75rem;
+          color: var(--yellow);
+        }
+
+        .sub-content {
+          max-height: 0;
+          overflow: hidden;
+          transition: max-height 0.2s ease-out;
+          background: rgba(0, 0, 0, 0.2);
+          display: flex;
+          flex-direction: column;
+          gap: 0.4rem;
+        }
+
+        .sub-toggle:checked~.sub-header+.sub-content {
+          max-height: 350px;
+          padding: 0.5rem;
+        }
+      </style>
+
+      <div class="modal-body-scroll" style="padding: 0;">
+        <form id="product-form" class="spec-form">
+          <input type="hidden" id="f-id">
+          <input type="hidden" id="f-genre">
+          <input type="hidden" id="f-num-in-set">
+
+          <div
+            style="display: flex; gap: 1rem; align-items: center; padding-bottom: 0.2rem; border-bottom: 1px solid rgba(255,255,255,0.05)">
             <div class="img-preview-box">
-              <img id="img-preview" src="images/fyr-logo.png" alt="Product Image Preview">
+              <img id="img-preview" src="images/fyr-logo.png" alt="Preview">
             </div>
-            
-            <a href="https://www.musicstack.com/seller/image_upload.cgi" target="_blank" class="action-btn" style="width: 100%; text-align: center; display: block; padding: 0.5rem; font-size: 0.9rem; margin-bottom: 0.5rem;">
-              Upload Image to MusicStack
-            </a>
-            <div class="form-group" style="width: 100%;">
-              <label for="f-front-img">Front Image URL</label>
-              <input type="text" id="f-front-img" placeholder="http://...">
-            </div>
+            <span style="font-size: 0.75rem; color: #B6C0D7; font-style: italic;">Cover Image Loaded</span>
+          </div>
 
-            <div class="form-group" style="width: 100%;">
-              <label for="f-back-img">Back Image URL</label>
-              <input type="text" id="f-back-img" placeholder="http://...">
-            </div>
+          <div class="spec-row" style="margin-top: 0.3rem;">
+            <input type="text" id="f-artist" required placeholder="Artist" style="width: 170px;">
+            <span class="spec-divider">/</span>
+            <input type="text" id="f-title" required placeholder="Album Title" style="width: 210px;">
+            <span class="spec-divider">-</span>
+            <input type="number" min="0" id="f-quantity" required placeholder="Count"
+              style="width: 55px; text-align: center;">
+            <span class="spec-divider">/</span>
+            <span style="position: relative; display: inline-flex; align-items: center;">
+              <span
+                style="position: absolute; left: 0.4rem; color: var(--green); font-weight: bold; font-size: 0.8rem;">$</span>
+              <input type="number" step="0.01" min="0" id="f-price" required placeholder="Price"
+                style="width: 75px; padding-left: 1rem; color: var(--green); font-weight: bold;">
+            </span>
+          </div>
 
-            <div class="form-group" style="width: 100%;">
-              <label for="f-audio-urls">Audio / YouTube URLs (Comma-separated)</label>
-              <textarea id="f-audio-urls" rows="2" placeholder="http://..."></textarea>
+          <!-- Folder 1: Identity -->
+          <div class="sub-accordion">
+            <input type="checkbox" id="toggle-row2" class="sub-toggle" checked>
+            <label for="toggle-row2" class="sub-header">Identity</label>
+            <div class="sub-content spec-row">
+              <span class="inline-label">Sku:</span>
+              <input type="text" id="f-ref" placeholder="SKU / Seller Ref" style="width: 130px;">
+              <span class="spec-divider">-</span>
+              <span class="inline-label">UPC:</span>
+              <input type="text" id="f-barcode" placeholder="UPC / Barcode" style="width: 150px;">
+              <span class="spec-divider">-</span>
+              <span class="inline-label">Discogs Id:</span>
+              <input type="text" id="f-discogs" placeholder="Discogs ID" style="width: 100px;">
             </div>
           </div>
 
-          <!-- Main inputs -->
-          <div class="editor-fields-grid">
-            <!-- Hidden input for ID -->
-            <input type="hidden" id="f-id">
+          <div class="spec-row" style="margin-top: 0.2rem;">
+            <input type="text" id="f-discogs-url" placeholder="Discogs URL" style="flex: 1; min-width: 200px;">
+            <a id="discogs-go-btn" href="#" target="_blank" class="action-btn"
+              style="padding: 0 0.6rem; font-size: 0.75rem; height: 28px; display: none; background: rgba(255, 212, 71, 0.1); border-color: var(--yellow); color: var(--yellow); align-items: center;">
+              Open URL ↗
+            </a>
+          </div>
 
-            <div class="form-group">
-              <label for="f-artist">Artist *</label>
-              <input type="text" id="f-artist" required placeholder="e.g. Taylor Swift">
+          <!-- Folder 2: Pressing -->
+          <div style="margin-top: 0.2rem;">
+            <span class="spec-label">Label:</span>
+            <input type="text" id="f-label" placeholder="e.g. Capitol Records"
+              style="width: 190px; display: inline-block; margin-left: 0.4rem;">
+
+            <div class="sub-accordion">
+              <input type="checkbox" id="toggle-label-set" class="sub-toggle">
+              <label for="toggle-label-set" class="sub-header">Pressing:</label>
+              <div class="sub-content spec-row">
+                <span class="inline-label">Cat#:</span>
+                <input type="text" id="f-catalog" placeholder="CAT #" style="width: 120px;">
+                <span class="spec-divider">-</span>
+                <span class="inline-label">Country:</span>
+                <input type="text" id="f-country" placeholder="Country" style="width: 100px;">
+                <span class="spec-divider">-</span>
+                <span class="inline-label">Release date:</span>
+                <input type="text" id="f-date" placeholder="Release Date / Year" style="width: 120px;">
+              </div>
             </div>
+          </div>
 
-            <div class="form-group">
-              <label for="f-title">Title *</label>
-              <input type="text" id="f-title" required placeholder="e.g. 1989">
+          <!-- Folder 3: Conditions -->
+          <div style="margin-top: 0.2rem;">
+            <span class="spec-label">Format:</span>
+            <input type="text" id="f-format" placeholder="e.g. LP, CD"
+              style="width: 100px; display: inline-block; margin-left: 0.4rem;">
+
+            <div class="sub-accordion">
+              <input type="checkbox" id="toggle-format-set" class="sub-toggle">
+              <label for="toggle-format-set" class="sub-header">Conditions:</label>
+              <div class="sub-content" style="gap: 0.5rem;">
+                <div class="spec-row">
+                  <span class="inline-label">Media Condition:</span>
+                  <input type="text" id="f-cond-media" placeholder="e.g. VG+" style="width: 140px;">
+                  <span class="spec-divider">/</span>
+                  <span class="inline-label">Sleeve Condition:</span>
+                  <input type="text" id="f-cond-sleeve" placeholder="e.g. VG" style="width: 140px;">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 0.1rem;">
+                  <span class="inline-label">Condition Description & Notes:</span>
+                  <textarea id="f-description" rows="2" placeholder="Attributes, listings, or defects..."></textarea>
+                </div>
+              </div>
             </div>
+          </div>
 
-            <div class="form-group">
-              <label for="f-format">Format</label>
-              <input type="text" id="f-format" placeholder="e.g. LP, Vinyl, CD Single">
-            </div>
-
-            <div class="form-group">
-              <label for="f-genre">Genre</label>
-              <input type="text" id="f-genre" placeholder="e.g. Rock, Pop, Jazz">
-            </div>
-
-            <div class="form-group">
-              <label for="f-price">Price ($) *</label>
-              <input type="number" step="0.01" min="0" id="f-price" required placeholder="e.g. 24.99">
-            </div>
-
-            <div class="form-group">
-              <label for="f-quantity">Quantity Available *</label>
-              <input type="number" min="0" id="f-quantity" required placeholder="e.g. 1">
-            </div>
-
-            <div class="form-group">
-              <label for="f-barcode">Barcode / UPC</label>
-              <input type="text" id="f-barcode" placeholder="e.g. 602537902721">
-            </div>
-
-            <div class="form-group">
-              <label for="f-ref">Seller Reference Number</label>
-              <input type="text" id="f-ref" placeholder="e.g. REF-12345">
-            </div>
-
-            <div class="form-group">
-              <label for="f-label">Label</label>
-              <input type="text" id="f-label" placeholder="e.g. Capitol Records">
-            </div>
-
-            <div class="form-group">
-              <label for="f-catalog">Catalog / Release Number</label>
-              <input type="text" id="f-catalog" placeholder="e.g. ST-1234">
-            </div>
-
-            <div class="form-group">
-              <label for="f-country">Release Country</label>
-              <input type="text" id="f-country" placeholder="e.g. US, UK, Japan">
-            </div>
-
-            <div class="form-group">
-              <label for="f-date">Release Date / Year</label>
-              <input type="text" id="f-date" placeholder="e.g. 2014 or 1982-11-30">
-            </div>
-
-            <div class="form-group">
-              <label for="f-cond-media">Media Condition</label>
-              <input type="text" id="f-cond-media" placeholder="e.g. Mint (M), Very Good (VG)">
-            </div>
-
-            <div class="form-group">
-              <label for="f-cond-sleeve">Sleeve Condition</label>
-              <input type="text" id="f-cond-sleeve" placeholder="e.g. Near Mint (NM), Generic">
-            </div>
-
-            <div class="form-group">
-              <label for="f-discogs">Discogs ID</label>
-              <input type="text" id="f-discogs" placeholder="e.g. 6220803">
-            </div>
-
-            <div class="form-group">
-              <label for="f-num-in-set">Number in Set</label>
-              <input type="text" id="f-num-in-set" placeholder="e.g. 1 or 2 LP">
-            </div>
-
-            <div class="form-group full-width">
-              <label for="f-description">Condition Description & Notes</label>
-              <textarea id="f-description" rows="3" placeholder="Condition description, track listings, specific attributes..."></textarea>
+          <!-- Folder 4: media -->
+          <div style="margin-top: 0.2rem;">
+            <span class="spec-label">Media:</span>
+            <div class="sub-accordion">
+              <input type="checkbox" id="toggle-media-set" class="sub-toggle">
+              <label for="toggle-media-set" class="sub-header">media</label>
+              <div class="sub-content" style="gap: 0.4rem;">
+                <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+                  <div class="img-preview-box">
+                    <img id="img-preview-sub" src="images/fyr-logo.png" alt="Preview">
+                  </div>
+                  <div style="flex: 1; display: flex; flex-direction: column; gap: 0.3rem;">
+                    <div style="display: flex; flex-direction: column; gap: 0.1rem;">
+                      <span class="inline-label">Front Image URL:</span>
+                      <input type="text" id="f-front-img" placeholder="http://..." style="width: 100%;">
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 0.1rem;">
+                      <span class="inline-label">Back Image URL:</span>
+                      <input type="text" id="f-back-img" placeholder="http://..." style="width: 100%;">
+                    </div>
+                  </div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 0.1rem; margin-top: 0.1rem;">
+                  <span class="inline-label">Audio / YouTube URLs:</span>
+                  <textarea id="f-audio-urls" rows="1" placeholder="Audio / YouTube URLs (Comma-separated)"
+                    style="width: 100%; resize: vertical;"></textarea>
+                </div>
+                <a href="https://www.musicstack.com/seller/image_upload.cgi" target="_blank" class="action-btn"
+                  style="padding: 0.2rem; font-size: 0.7rem; width: 100%; text-align: center; justify-content: center; margin-top: 0.1rem; height: auto;">
+                  Upload Image to MusicStack
+                </a>
+              </div>
             </div>
           </div>
         </form>
       </div>
 
+      <!-- Control Panel Strip -->
       <div class="modal-footer">
-        <button id="btn-delete-product" class="action-btn danger" style="margin-right: auto;">Delete Product</button>
-        <button id="btn-cancel" class="action-btn" style="border-color: rgba(255,255,255,0.2);">Cancel</button>
-        <button id="btn-save" class="action-btn success">Save Product</button>
+        <button id="btn-delete-product" class="action-btn danger"
+          style="padding: 0.3rem 0.6rem; font-size: 0.8rem; height: 30px;">Zero Out</button>
+        <button type="button" id="btn-discogs-auto" class="action-btn"
+          style="padding: 0.3rem 0.6rem; height: 30px; border-color: #2ecc71; color: #2ecc71; background: rgba(0,0,0,0.2); font-weight: 700; font-size: 0.8rem;">
+          Auto Pop
+        </button>
+
+        <input type="text" id="discogs-lookup-id" placeholder="DiscogsID"
+          style="padding: 0.3rem; font-size: 0.85rem; width: 95px; background: rgba(0,0,0,0.5); border: 1px solid var(--blue); color: #fff; border-radius: 4px; height: 30px;">
+
+        <button type="button" id="btn-discogs-lookup" class="action-btn"
+          style="padding: 0.3rem 0.6rem; height: 30px; border-color: var(--yellow); color: var(--yellow); background: rgba(0,0,0,0.2); font-weight: 700; font-size: 0.8rem;">
+          Manual Pop
+        </button>
+
+        <div style="display: flex; gap: 0.4rem; margin-left: auto;">
+          <button id="btn-cancel" class="action-btn"
+            style="border-color: rgba(255,255,255,0.2); padding: 0.3rem 0.6rem; font-size: 0.8rem; height: 30px;">Cancel</button>
+          <button id="btn-save" class="action-btn success"
+            style="padding: 0.3rem 0.6rem; font-size: 0.8rem; height: 30px;">Save</button>
+        </div>
+        <div id="discogs-lookup-status"
+          style="font-size: 0.75rem; color: #B6C0D7; width: 100%; margin-top: 0.1rem; min-height: 0.9rem;"></div>
       </div>
     </div>
   </div>
 
-  <footer style="margin-top: auto; text-align: center; padding-top: 2rem; padding-bottom: 2rem; position: relative; z-index: 10; width: 100%;">
+  <!-- Enrichment Failed Modal -->
+  <div id="enrich-failed-modal" class="modal-overlay" style="display: none; z-index: 2000;">
+    <div class="modal-content" style="max-width: 500px; height: auto;">
+      <div class="modal-header">
+        <h2 style="font-size: 1.5rem; color: var(--red);">Enrichment Failed</h2>
+        <button id="enrich-failed-close" class="icon-btn">&times;</button>
+      </div>
+      <div class="modal-body-scroll">
+        <p style="margin-bottom: 1rem; color: #B6C0D7;">The item could not be found automatically. Please manually enter
+          a Discogs ID, or remove it from inventory (set quantity to 0).</p>
+        <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.5rem;">
+          <input type="text" id="enrich-manual-id" placeholder="Discogs ID" style="width: 100%;">
+          <button id="btn-enrich-manual" class="action-btn"
+            style="border-color: var(--yellow); color: var(--yellow);">Enrich with ID</button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="btn-enrich-remove" class="action-btn danger">Remove from Inventory (Qty 0)</button>
+      </div>
+    </div>
+  </div>
+
+  <footer
+    style="margin-top: auto; text-align: center; padding-top: 2rem; padding-bottom: 2rem; position: relative; z-index: 10; width: 100%;">
     <a href="https://xenohead.com" target="_blank"
       style="text-decoration: none; color: #B6C0D7; display: inline-flex; flex-direction: column; align-items: center; gap: 0.5rem; transition: all 0.3s; opacity: 0.8;"
       onmouseover="this.style.opacity=1; this.style.transform='translateY(-2px)';"
       onmouseout="this.style.opacity=0.8; this.style.transform='translateY(0)';">
       <img src="images/xenohead_logo.png" alt="XenoHead" style="height: 40px;">
-      <span style="font-family: 'Oswald', sans-serif; letter-spacing: 1px; font-size: 0.9rem; text-transform: uppercase;">A XenoHead Creation</span>
+      <span
+        style="font-family: 'Oswald', sans-serif; letter-spacing: 1px; font-size: 0.9rem; text-transform: uppercase;">A
+        XenoHead Creation</span>
     </a>
   </footer>
 
   <script>
-    // State management
     let currentPage = 1;
     let currentLimit = 10;
     let activeLetter = '';
     let lastSearchParams = {};
     let loadedProducts = [];
 
-    // DOM Elements
     const searchForm = document.getElementById('search-form');
     const searchQuery = document.getElementById('search-query');
+    const searchFormat = document.getElementById('search-format');
     const searchLimit = document.getElementById('search-limit');
+    const hideZeros = document.getElementById('hide-zeros');
     const letterIndex = document.getElementById('letter-index');
     const resultsList = document.getElementById('results-list');
     const loadingSpinner = document.getElementById('loading-spinner');
@@ -823,7 +946,6 @@
     const pageInfo = document.getElementById('page-info');
     const statusBanner = document.getElementById('status-banner');
 
-    // Modal DOM Elements
     const editorModal = document.getElementById('editor-modal');
     const modalTitleText = document.getElementById('modal-title-text');
     const modalClose = document.getElementById('modal-close');
@@ -832,12 +954,20 @@
     const btnDelete = document.getElementById('btn-delete-product');
     const productForm = document.getElementById('product-form');
     const imgPreview = document.getElementById('img-preview');
+    const imgPreviewSub = document.getElementById('img-preview-sub');
     const frontImgInput = document.getElementById('f-front-img');
     const discogsLookupId = document.getElementById('discogs-lookup-id');
+    const btnDiscogsAuto = document.getElementById('btn-discogs-auto');
     const btnDiscogsLookup = document.getElementById('btn-discogs-lookup');
     const discogsLookupStatus = document.getElementById('discogs-lookup-status');
+    const discogsGoBtn = document.getElementById('discogs-go-btn');
 
-    // Fields
+    const enrichFailedModal = document.getElementById('enrich-failed-modal');
+    const btnEnrichFailedClose = document.getElementById('enrich-failed-close');
+    const btnEnrichManual = document.getElementById('btn-enrich-manual');
+    const btnEnrichRemove = document.getElementById('btn-enrich-remove');
+    const enrichManualId = document.getElementById('enrich-manual-id');
+
     const fId = document.getElementById('f-id');
     const fArtist = document.getElementById('f-artist');
     const fTitle = document.getElementById('f-title');
@@ -854,18 +984,35 @@
     const fCondMedia = document.getElementById('f-cond-media');
     const fCondSleeve = document.getElementById('f-cond-sleeve');
     const fDiscogs = document.getElementById('f-discogs');
+    const fDiscogsUrl = document.getElementById('f-discogs-url');
     const fNumInSet = document.getElementById('f-num-in-set');
     const fDescription = document.getElementById('f-description');
     const fBackImg = document.getElementById('f-back-img');
     const fAudioUrls = document.getElementById('f-audio-urls');
 
-    // Live image preview
     frontImgInput.addEventListener('input', (e) => {
       const url = e.target.value.trim();
-      imgPreview.src = (url.startsWith('http')) ? url : 'images/fyr-logo.png';
+      const targetSrc = (url.startsWith('http')) ? url : 'images/fyr-logo.png';
+      imgPreview.src = targetSrc;
+      if (imgPreviewSub) imgPreviewSub.src = targetSrc;
     });
 
-    // Flash status message
+    fDiscogs.addEventListener('input', () => {
+      const id = fDiscogs.value.trim();
+      discogsLookupId.value = id;
+      if (id && /^\d+$/.test(id)) {
+        discogsGoBtn.href = `https://www.discogs.com/release/${id}`;
+        discogsGoBtn.style.display = 'inline-flex';
+      } else {
+        discogsGoBtn.style.display = 'none';
+      }
+    });
+
+    discogsLookupId.addEventListener('input', () => {
+      fDiscogs.value = discogsLookupId.value.trim();
+      fDiscogs.dispatchEvent(new Event('input'));
+    });
+
     function showStatus(message, isSuccess = true) {
       statusBanner.textContent = message;
       statusBanner.className = `status-banner ${isSuccess ? 'success' : 'error'}`;
@@ -875,20 +1022,16 @@
       }, 5000);
     }
 
-    // Modal controls
     function openModal(item = null) {
       productForm.reset();
-      
       discogsLookupStatus.textContent = '';
       discogsLookupStatus.style.color = '#B6C0D7';
 
       if (item) {
         modalTitleText.textContent = "Edit Online Product";
         btnDelete.style.display = 'block';
-        
         discogsLookupId.value = item.Discogs_ID || '';
 
-        // Populate fields
         fId.value = item.id;
         fArtist.value = item.Artist || '';
         fTitle.value = item.Title || '';
@@ -905,23 +1048,32 @@
         fCondMedia.value = item.Condition_Media || '';
         fCondSleeve.value = item.Condition_Sleeve || '';
         fDiscogs.value = item.Discogs_ID || '';
+        fDiscogsUrl.value = item.Discogs_url || '';
         fNumInSet.value = item.Number_In_Set || '';
         fDescription.value = item.Description || '';
         frontImgInput.value = item.Front_Image_URL === 'NULL' ? '' : (item.Front_Image_URL || '');
         fBackImg.value = item.Back_Image_URL === 'NULL' ? '' : (item.Back_Image_URL || '');
         fAudioUrls.value = item.YouTube_Audio_Image_URLs === 'NULL' ? '' : (item.YouTube_Audio_Image_URLs || '');
 
-        imgPreview.src = (frontImgInput.value.startsWith('http')) ? frontImgInput.value : 'images/fyr-logo.png';
+        const activeImg = (frontImgInput.value.startsWith('http')) ? frontImgInput.value : 'images/fyr-logo.png';
+
+        // Safeguard both image layout elements to prevent crashes
+        if (imgPreview) imgPreview.src = activeImg;
+        if (imgPreviewSub) imgPreviewSub.src = activeImg;
+
+        fDiscogs.dispatchEvent(new Event('input'));
       } else {
         modalTitleText.textContent = "Create New Online Product";
         btnDelete.style.display = 'none';
         discogsLookupId.value = '';
         fId.value = '';
-        imgPreview.src = 'images/fyr-logo.png';
+        if (imgPreview) imgPreview.src = 'images/fyr-logo.png';
+        if (imgPreviewSub) imgPreviewSub.src = 'images/fyr-logo.png';
+        fDiscogs.dispatchEvent(new Event('input'));
       }
-      
       editorModal.style.display = 'flex';
     }
+
 
     function closeModal() {
       editorModal.style.display = 'none';
@@ -930,12 +1082,12 @@
     modalClose.addEventListener('click', closeModal);
     btnCancel.addEventListener('click', closeModal);
 
-    // Discogs Lookup Action
     btnDiscogsLookup.addEventListener('click', async () => {
       const rawInput = discogsLookupId.value.trim();
       const relId = rawInput.replace(/\D/g, '');
-      discogsLookupId.value = relId; // Update input field with cleaned ID
-      
+      discogsLookupId.value = relId;
+      fDiscogs.value = relId;
+
       if (!relId) {
         discogsLookupStatus.textContent = "Please enter a valid Discogs Release ID.";
         discogsLookupStatus.style.color = "var(--red)";
@@ -953,8 +1105,7 @@
 
         if (data.success && data.result) {
           const info = data.result;
-          
-          // Populate form fields
+
           fArtist.value = info.Artist || '';
           fTitle.value = info.Title || '';
           fFormat.value = info.Format || '';
@@ -967,50 +1118,145 @@
           fNumInSet.value = info.Number_In_Set || '';
           fDescription.value = info.Description || '';
           fDiscogs.value = info.Discogs_ID || '';
-          
+          fDiscogsUrl.value = info.Discogs_url || '';
+
           if (info.Front_Image_URL && info.Front_Image_URL !== 'NULL') {
             frontImgInput.value = info.Front_Image_URL;
             imgPreview.src = info.Front_Image_URL;
+            if (imgPreviewSub) imgPreviewSub.src = info.Front_Image_URL;
           } else {
             frontImgInput.value = '';
             imgPreview.src = 'images/fyr-logo.png';
+            if (imgPreviewSub) imgPreviewSub.src = 'images/fyr-logo.png';
           }
-          
-          if (info.Back_Image_URL && info.Back_Image_URL !== 'NULL') {
-            fBackImg.value = info.Back_Image_URL;
-          } else {
-            fBackImg.value = '';
-          }
-          
-          if (info.YouTube_Audio_Image_URLs && info.YouTube_Audio_Image_URLs !== 'NULL') {
-            fAudioUrls.value = info.YouTube_Audio_Image_URLs;
-          } else {
-            fAudioUrls.value = '';
-          }
+
+          fBackImg.value = (info.Back_Image_URL && info.Back_Image_URL !== 'NULL') ? info.Back_Image_URL : '';
+          fAudioUrls.value = (info.YouTube_Audio_Image_URLs && info.YouTube_Audio_Image_URLs !== 'NULL') ? info.YouTube_Audio_Image_URLs : '';
 
           discogsLookupStatus.textContent = "Metadata imported successfully!";
           discogsLookupStatus.style.color = "var(--green)";
+          fDiscogs.dispatchEvent(new Event('input'));
         } else {
           discogsLookupStatus.textContent = data.error || "Lookup failed.";
           discogsLookupStatus.style.color = "var(--red)";
+          if (confirm("Delete Quantity? (Item Not Found on Discogs under this SKU/ID)")) {
+            fQuantity.value = 0;
+            btnSave.click();
+          }
         }
       } catch (err) {
         console.error(err);
         discogsLookupStatus.textContent = "Error connecting to lookup API.";
         discogsLookupStatus.style.color = "var(--red)";
+        if (confirm("Delete Quantity? (Item Not Found on Discogs under this SKU/ID)")) {
+          fQuantity.value = 0;
+          btnSave.click();
+        }
       } finally {
         btnDiscogsLookup.disabled = false;
-        btnDiscogsLookup.textContent = "Search Discogs";
+        btnDiscogsLookup.textContent = "Manual Pop";
       }
     });
+
+    btnDiscogsAuto.addEventListener('click', async () => {
+      try {
+        btnDiscogsAuto.disabled = true;
+        btnDiscogsAuto.textContent = "Searching...";
+        discogsLookupStatus.textContent = "Auto-Enriching via Discogs...";
+        discogsLookupStatus.style.color = "#B6C0D7";
+
+        const payload = {
+          id: fId.value || null,
+          artist: fArtist.value,
+          title: fTitle.value,
+          format: fFormat.value,
+          barcode: fBarcode.value,
+          description: fDescription.value
+        };
+
+        const res = await fetch('/api/enrich', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        if (data.success && data.details) {
+          const info = data.details;
+
+          fArtist.value = info.Artist || fArtist.value;
+          fTitle.value = info.Title || fTitle.value;
+          fFormat.value = info.Format || fFormat.value;
+          fGenre.value = info.Genre || fGenre.value;
+          fLabel.value = info.Label || fLabel.value;
+          fCatalog.value = info.Release_Catalog_Number || fCatalog.value;
+          fCountry.value = info.Release_Country || fCountry.value;
+          fDate.value = info.Release_Date || fDate.value;
+          fBarcode.value = info.Bar_Code || fBarcode.value;
+          fNumInSet.value = info.Number_In_Set || fNumInSet.value;
+          fDescription.value = info.Description || fDescription.value;
+          fDiscogs.value = info.Discogs_ID || fDiscogs.value;
+          fDiscogsUrl.value = info.Discogs_url || fDiscogsUrl.value;
+
+          if (info.Front_Image_URL) {
+            frontImgInput.value = info.Front_Image_URL;
+            imgPreview.src = info.Front_Image_URL;
+            if (imgPreviewSub) imgPreviewSub.src = info.Front_Image_URL;
+          }
+          if (info.Back_Image_URL) fBackImg.value = info.Back_Image_URL;
+          if (info.YouTube_Audio_Image_URLs) fAudioUrls.value = info.YouTube_Audio_Image_URLs;
+
+          discogsLookupStatus.textContent = "Auto-Enrichment successful!";
+          discogsLookupStatus.style.color = "var(--green)";
+          fDiscogs.dispatchEvent(new Event('input'));
+        } else {
+          discogsLookupStatus.textContent = "Auto-Enrichment failed (Not Found).";
+          discogsLookupStatus.style.color = "var(--red)";
+          if (confirm("Delete Quantity? (Item Not Found on Discogs under this SKU/ID)")) {
+            fQuantity.value = 0;
+            btnSave.click();
+          } else {
+            enrichFailedModal.style.display = 'flex';
+          }
+        }
+      } catch (err) {
+        console.error(err);
+        discogsLookupStatus.textContent = "Error during Auto-Enrichment.";
+        discogsLookupStatus.style.color = ("var(--red)");
+        if (confirm("Delete Quantity? (Item Not Found on Discogs under this SKU/ID)")) {
+          fQuantity.value = 0;
+          btnSave.click();
+        } else {
+          enrichFailedModal.style.display = 'flex';
+        }
+      } finally {
+        btnDiscogsAuto.disabled = false;
+        btnDiscogsAuto.textContent = "Auto Pop";
+      }
+    });
+
+    btnEnrichFailedClose.addEventListener('click', () => {
+      enrichFailedModal.style.display = 'none';
+    });
+
+    btnEnrichManual.addEventListener('click', () => {
+      discogsLookupId.value = enrichManualId.value;
+      enrichFailedModal.style.display = 'none';
+      btnDiscogsLookup.click();
+    });
+
+    btnEnrichRemove.addEventListener('click', () => {
+      fQuantity.value = 0;
+      enrichFailedModal.style.display = 'none';
+      showStatus("Quantity set to 0. Please click Save to apply.", false);
+    });
+
     document.getElementById('btn-add-product').addEventListener('click', () => openModal(null));
 
-    // Close on overlay click
     editorModal.addEventListener('click', (e) => {
       if (e.target === editorModal) closeModal();
     });
 
-    // Form submit / Save logic
     btnSave.addEventListener('click', async (e) => {
       if (!productForm.checkValidity()) {
         productForm.reportValidity();
@@ -1034,6 +1280,7 @@
         Condition_Media: fCondMedia.value.trim(),
         Condition_Sleeve: fCondSleeve.value.trim(),
         Discogs_ID: fDiscogs.value.trim(),
+        Discogs_url: fDiscogsUrl.value.trim(),
         Number_In_Set: fNumInSet.value.trim(),
         Description: fDescription.value.trim(),
         Front_Image_URL: frontImgInput.value.trim() || 'NULL',
@@ -1055,7 +1302,6 @@
         if (data.success) {
           showStatus(data.message || "Product saved successfully!", true);
           closeModal();
-          // Reload current search view
           executeSearch();
         } else {
           alert("Error saving: " + data.error);
@@ -1065,21 +1311,20 @@
         alert("Failed to connect to update server.");
       } finally {
         btnSave.disabled = false;
-        btnSave.textContent = "Save Product";
+        btnSave.textContent = "Save";
       }
     });
 
-    // Delete Product logic
     btnDelete.addEventListener('click', async () => {
       const id = fId.value;
       if (!id) return;
-      
-      const confirmDelete = confirm(`Are you sure you want to permanently delete: "${fTitle.value}" by ${fArtist.value}?`);
+
+      const confirmDelete = confirm(`Are you sure you want to zero out stock for: "${fTitle.value}"? This will delist it from public web listings.`);
       if (!confirmDelete) return;
 
       try {
         btnDelete.disabled = true;
-        btnDelete.textContent = "Deleting...";
+        btnDelete.textContent = "Zeroing...";
 
         const response = await fetch('/api/online-update?action=delete', {
           method: 'POST',
@@ -1089,22 +1334,21 @@
         const data = await response.json();
 
         if (data.success) {
-          showStatus(data.message || "Product deleted successfully!", true);
+          showStatus(data.message || "Product zeroed out successfully!", true);
           closeModal();
           executeSearch();
         } else {
-          alert("Error deleting: " + data.error);
+          alert("Error zeroing out: " + data.error);
         }
       } catch (err) {
         console.error("Delete Error:", err);
         alert("Failed to connect to delete server.");
       } finally {
         btnDelete.disabled = false;
-        btnDelete.textContent = "Delete Product";
+        btnDelete.textContent = "Zero Out";
       }
     });
 
-    // Search Execution
     async function performSearch(params = {}) {
       resultsList.innerHTML = '';
       loadingSpinner.style.display = 'block';
@@ -1113,24 +1357,24 @@
       const urlParams = new URLSearchParams();
       if (params.query) urlParams.set('query', params.query);
       if (params.letter) urlParams.set('letter', params.letter);
-      
+      if (params.format) urlParams.set('format', params.format);
       urlParams.set('page', currentPage);
       urlParams.set('limit', currentLimit);
+      urlParams.set('hideZeros', hideZeros.checked);
 
       try {
         const response = await fetch(`/api/online-search?${urlParams.toString()}`);
         const data = await response.json();
-        
+
         loadingSpinner.style.display = 'none';
 
         if (data.success && data.results && data.results.length > 0) {
           loadedProducts = data.results;
-          
+
           data.results.forEach(item => {
             const card = document.createElement('div');
             card.className = 'record-card';
-            
-            // Choose image
+
             let artHtml = '';
             if (item.Front_Image_URL && item.Front_Image_URL !== 'NULL' && item.Front_Image_URL.startsWith('http')) {
               artHtml = `<img src="${item.Front_Image_URL}" alt="${item.Title}">`;
@@ -1156,7 +1400,7 @@
                 <div class="record-details">
                   <span><strong>Format:</strong> ${item.Format || 'N/A'}</span>
                   <span><strong>Label:</strong> ${item.Label || 'N/A'} (${item.Release_Catalog_Number || 'N/A'})</span>
-                  <span><strong>Ref #:</strong> ${item.Seller_Reference_Number || 'N/A'}</span>
+                  <span><strong>SKU:</strong> ${item.Seller_Reference_Number || 'N/A'}</span>
                   <span><strong>Quantity:</strong> ${item.Quantity}</span>
                   <span><strong>Media/Sleeve:</strong> ${item.Condition_Media || 'N/A'} / ${item.Condition_Sleeve || 'N/A'}</span>
                 </div>
@@ -1166,22 +1410,19 @@
                 </div>
               </div>
             `;
-            
-            resultsList.appendChild(card);
 
-            // Connect edit button
+            resultsList.appendChild(card);
             card.querySelector('.edit-btn').addEventListener('click', () => {
               openModal(item);
             });
           });
 
-          // Show & update pagination controls
           const totalPages = Math.ceil(data.total / currentLimit) || 1;
           pageInfo.textContent = `Page ${currentPage} of ${totalPages} (${data.total} total items)`;
           prevPageBtn.disabled = currentPage === 1;
           nextPageBtn.disabled = currentPage === totalPages;
           paginationControls.style.display = 'flex';
-          
+
         } else {
           resultsList.innerHTML = '<div style="text-align: center; padding: 3rem; color: #B6C0D7; font-size: 1.2rem; font-style: italic;">No matching online products found.</div>';
           paginationControls.style.display = 'none';
@@ -1198,45 +1439,31 @@
       performSearch(lastSearchParams);
     }
 
-    // Form submission listener
     searchForm.addEventListener('submit', (e) => {
       e.preventDefault();
       currentPage = 1;
       currentLimit = parseInt(searchLimit.value, 10);
       activeLetter = '';
-      
-      // Remove active class from letters
       document.querySelectorAll('.browse-letters a').forEach(a => a.classList.remove('active'));
-
-      lastSearchParams = {
-        query: searchQuery.value.trim()
-      };
+      lastSearchParams = { query: searchQuery.value.trim(), format: searchFormat.value };
       executeSearch();
     });
 
-    // Letter index listener
     const letterLinks = document.querySelectorAll('.browse-letters a');
     letterLinks.forEach(letterLink => {
       const letter = letterLink.textContent.trim();
       letterLink.addEventListener('click', (e) => {
         e.preventDefault();
-        
-        // Toggle active letter state
         letterLinks.forEach(a => a.classList.remove('active'));
         letterLink.classList.add('active');
-        
         currentPage = 1;
         currentLimit = parseInt(searchLimit.value, 10);
-        searchQuery.value = ''; // Clear search text when letter-browsing
-        
-        lastSearchParams = {
-          letter: letter === '#' ? '0-9' : letter
-        };
+        searchQuery.value = '';
+        lastSearchParams = { letter: letter === '#' ? '0-9' : letter, format: searchFormat.value };
         executeSearch();
       });
     });
 
-    // Pagination button listeners
     prevPageBtn.addEventListener('click', () => {
       if (currentPage > 1) {
         currentPage--;
@@ -1251,7 +1478,17 @@
       window.scrollTo({ top: searchForm.offsetTop - 50, behavior: 'smooth' });
     });
 
-    // Load initial empty list placeholder
+    searchLimit.addEventListener('change', () => {
+      currentLimit = parseInt(searchLimit.value, 10);
+      currentPage = 1;
+      executeSearch();
+    });
+
+    hideZeros.addEventListener('change', () => {
+      currentPage = 1;
+      executeSearch();
+    });
+
     resultsList.innerHTML = '<div style="text-align: center; padding: 3rem; color: #B6C0D7; font-size: 1.2rem; font-style: italic;">Use the lookup fields above to search Online products.</div>';
   </script>
 </body>

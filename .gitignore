@@ -10,3 +10,7 @@ enrichment_log.txt
 *.sqlite3
 
 
+/.wrangler
+/.wrangler/cache
+/.wrangler
+/.wrangler

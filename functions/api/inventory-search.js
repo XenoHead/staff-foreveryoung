@@ -14,7 +14,11 @@ export async function onRequestGet(context) {
       return new Response(JSON.stringify({ error: "At least one search parameter must be provided." }), { status: 400 });
     }
 
+    const hideZeros = url.searchParams.get('hideZeros') === 'true';
     let query = "SELECT * FROM Inventory WHERE 1=1";
+    if (hideZeros) {
+      query += " AND Quantity > 0";
+    }
     let bindParams = [];
 
     if (upc) {

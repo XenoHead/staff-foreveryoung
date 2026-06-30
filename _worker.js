@@ -52,6 +52,10 @@ export default {
       if (path === '/api/inventory-search' && method === 'GET')
         return await handleInventorySearch(request, env);
 
+      // /api/enrich
+      if (path === '/api/enrich' && method === 'POST')
+        return await handleEnrich(request, env);
+
       // /api/online-search
       if (path === '/api/online-search' && method === 'GET')
         return await handleOnlineSearch(request, env);
@@ -99,6 +103,170 @@ export default {
 };
 
 // ─── Handlers ────────────────────────────────────────────────────────────────
+
+// ─── Enrich helpers ──────────────────────────────────────────────────────────
+
+async function enrichFetchWithRetry(url, options = {}, retries = 3, delay = 2000) {
+  for (let i = 0; i < retries; i++) {
+    const resp = await fetch(url, options);
+    if (resp.status === 429) {
+      const retryAfter = resp.headers.get('Retry-After');
+      const waitTime = retryAfter ? parseInt(retryAfter, 10) * 1000 : delay * Math.pow(2, i);
+      await new Promise(r => setTimeout(r, waitTime));
+      continue;
+    }
+    return resp;
+  }
+  throw new Error(`Rate limited by Discogs API after ${retries} retries.`);
+}
+
+async function enrichSearchDiscogs(artist, title, format, barcode, description, token) {
+  const headers = { 'User-Agent': 'ForeverYoungStaffPortal/1.0 +https://www.foreveryoungrecords.com' };
+
+  const trySearch = async (searchUrl) => {
+    try {
+      const resp = await enrichFetchWithRetry(searchUrl, { headers });
+      if (!resp.ok) return null;
+      const data = await resp.json();
+      return (data.results && data.results.length > 0) ? data.results[0].id : null;
+    } catch (e) { return null; }
+  };
+
+  // 1. Barcode
+  if (barcode) {
+    const clean = barcode.replace(/[^0-9X]/gi, '');
+    if (clean) {
+      const id = await trySearch(`https://api.discogs.com/database/search?barcode=${encodeURIComponent(clean)}&token=${token}`);
+      if (id) return id;
+    }
+  }
+
+  // 2. Catalog number from description
+  if (description && description.includes(' - ')) {
+    const parts = description.split(' - ');
+    const lastPart = parts[parts.length - 1].trim();
+    if (!/out of print|factory sealed/i.test(lastPart) && lastPart.length < 30) {
+      const words = lastPart.split(' ');
+      const possibleCat = words[words.length - 1].trim();
+      if (possibleCat && possibleCat.length > 2 && /[0-9A-Z]/i.test(possibleCat)) {
+        const id = await trySearch(`https://api.discogs.com/database/search?catno=${encodeURIComponent(possibleCat)}&token=${token}`);
+        if (id) return id;
+      }
+    }
+  }
+
+  // 3. Artist + Title
+  if (artist && title) {
+    const q = `${artist} ${title}`;
+    const id = await trySearch(`https://api.discogs.com/database/search?q=${encodeURIComponent(q)}&type=release&format=${encodeURIComponent(format || '')}&token=${token}`);
+    if (id) return id;
+  }
+
+  return null;
+}
+
+async function enrichFetchReleaseDetails(releaseId, token) {
+  const url = `https://api.discogs.com/releases/${releaseId}${token ? `?token=${token}` : ''}`;
+  const resp = await enrichFetchWithRetry(url, { headers: { 'User-Agent': 'ForeverYoungStaffPortal/1.0 +https://www.foreveryoungrecords.com' } });
+  if (!resp.ok) throw new Error(`Discogs returned: ${resp.status}`);
+  const data = await resp.json();
+
+  let frontImg = '', backImg = '';
+  if (data.images?.length) {
+    const primary = data.images.find(i => i.type === 'primary') || data.images[0];
+    frontImg = primary.uri || '';
+    const secondary = data.images.find(i => i.type === 'secondary');
+    if (secondary) backImg = secondary.uri;
+  }
+
+  let label = '', catno = '';
+  if (data.labels?.length) {
+    label = data.labels[0].name || '';
+    catno = data.labels[0].catno || '';
+    if (catno === 'none') catno = '';
+  }
+
+  const dateStr = data.released || data.year || '';
+  const genre = (data.genres?.length) ? data.genres.join(', ') : '';
+  const country = data.country || '';
+  const audioUrls = data.videos ? data.videos.map(v => v.uri) : [];
+
+  let numInSet = '';
+  if (data.formats?.length) {
+    const fmt = data.formats[0];
+    if (fmt.qty && parseInt(fmt.qty) > 1) numInSet = `${fmt.qty} ${fmt.name}`;
+  }
+
+  let tracklist = '';
+  if (data.tracklist?.length) {
+    tracklist = data.tracklist.map(t => `${t.position || ''} ${t.title || ''} ${t.duration || ''}`).join('\n').trim();
+  }
+  let fullDesc = data.notes || '';
+  if (tracklist) fullDesc += (fullDesc ? '\n\n' : '') + 'Tracklist:\n' + tracklist;
+
+  const barcode = data.identifiers?.find(i => i.type === 'Barcode')?.value || '';
+
+  return {
+    Discogs_ID: releaseId.toString(),
+    Discogs_url: `https://www.discogs.com/release/${releaseId}`,
+    Front_Image_URL: frontImg, Back_Image_URL: backImg,
+    Label: label, Release_Catalog_Number: catno,
+    Release_Country: country, Release_Date: dateStr.toString(),
+    Genre: genre, YouTube_Audio_Image_URLs: audioUrls.join(', '),
+    Number_In_Set: numInSet, Description: fullDesc, Bar_Code: barcode,
+  };
+}
+
+async function handleEnrich(request, env) {
+  try {
+    const body = await request.json();
+    const { id, artist, title, format, barcode, description, discogs_id } = body;
+    const token = env.DISCOGS_TOKEN || '';
+
+    let releaseId = discogs_id;
+    if (!releaseId) {
+      releaseId = await enrichSearchDiscogs(artist, title, format, barcode, description, token);
+    }
+
+    if (!releaseId) {
+      return json({ success: false, error: 'not_found' });
+    }
+
+    const details = await enrichFetchReleaseDetails(releaseId, token);
+
+    if (id) {
+      const db = env.DB;
+      await db.prepare(`
+        UPDATE Online_Inventory SET
+          Discogs_ID = coalesce(NULLIF(?, ''), Discogs_ID),
+          Discogs_url = coalesce(NULLIF(?, ''), Discogs_url),
+          Bar_Code = coalesce(NULLIF(?, ''), Bar_Code),
+          Front_Image_URL = coalesce(NULLIF(?, ''), Front_Image_URL),
+          Back_Image_URL = coalesce(NULLIF(?, ''), Back_Image_URL),
+          Label = coalesce(NULLIF(?, ''), Label),
+          Release_Catalog_Number = coalesce(NULLIF(?, ''), Release_Catalog_Number),
+          Release_Country = coalesce(NULLIF(?, ''), Release_Country),
+          Release_Date = coalesce(NULLIF(?, ''), Release_Date),
+          Genre = coalesce(NULLIF(?, ''), Genre),
+          YouTube_Audio_Image_URLs = coalesce(NULLIF(?, ''), YouTube_Audio_Image_URLs),
+          Number_In_Set = coalesce(NULLIF(?, ''), Number_In_Set),
+          Description = coalesce(NULLIF(?, ''), Description)
+        WHERE id = ?
+      `).bind(
+        details.Discogs_ID, details.Discogs_url,
+        details.Bar_Code, details.Front_Image_URL, details.Back_Image_URL,
+        details.Label, details.Release_Catalog_Number, details.Release_Country,
+        details.Release_Date, details.Genre, details.YouTube_Audio_Image_URLs,
+        details.Number_In_Set, details.Description, id
+      ).run();
+    }
+
+    return json({ success: true, details });
+  } catch (err) {
+    return json({ success: false, error: err.message }, 500);
+  }
+}
+
 
 async function handleDiscogsLookup(request) {
   const url = new URL(request.url);
@@ -169,6 +337,7 @@ async function handleDiscogsLookup(request) {
     Release_Date: dateStr, Bar_Code: barcodeStr, Front_Image_URL: frontImg,
     Back_Image_URL: backImg, YouTube_Audio_Image_URLs: youtubeStr,
     Number_In_Set: numInSet, Description: descLines.join('\n'), Discogs_ID: String(data.id),
+    Discogs_url: `https://www.discogs.com/release/${data.id}`,
   }});
 }
 
@@ -179,7 +348,7 @@ async function handleFeaturedGet(request, env) {
   
   await db.prepare(`CREATE TABLE IF NOT EXISTS Settings (key TEXT PRIMARY KEY, value TEXT)`).run();
   
-  const keys = ['featured_new', 'featured_hot', 'featured_rare'];
+  const keys = ['featured_new', 'featured_new_releases', 'featured_hot', 'featured_rare', 'featured_temp1', 'featured_temp2', 'featured_genres'];
   const settings = {};
   for (const k of keys) {
     const res = await db.prepare(`SELECT value FROM Settings WHERE key=?`).bind(k).first();
@@ -192,11 +361,15 @@ async function handleFeaturedGet(request, env) {
   if (type === 'details') {
     const details = {
       new: { value: settings.featured_new, items: [] },
+      new_releases: { value: settings.featured_new_releases, items: [] },
       hot: { value: settings.featured_hot, items: [] },
-      rare: { value: settings.featured_rare, items: [] }
+      rare: { value: settings.featured_rare, items: [] },
+      temp1: { value: settings.featured_temp1, items: [] },
+      temp2: { value: settings.featured_temp2, items: [] },
+      genres: { value: settings.featured_genres, items: [] }
     };
     
-    for (const k of ['new', 'hot', 'rare']) {
+    for (const k of ['new', 'new_releases', 'hot', 'rare', 'temp1', 'temp2', 'genres']) {
       const val = settings['featured_' + k];
       if (val) {
         const refs = val.split(',').map(r => r.trim()).filter(Boolean);
@@ -250,7 +423,7 @@ async function handleFeaturedPost(request, env) {
   await db.prepare(`CREATE TABLE IF NOT EXISTS Settings (key TEXT PRIMARY KEY, value TEXT)`).run();
   const body = await request.json();
   
-  for (const k of ['new', 'hot', 'rare']) {
+  for (const k of ['new', 'new_releases', 'hot', 'rare', 'temp1', 'temp2', 'genres']) {
     const valKey = 'featured_' + k;
     if (body[k] !== undefined) {
       await db.prepare(`INSERT INTO Settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value`)
@@ -359,7 +532,11 @@ async function handleOnlineSearch(request, env) {
   if (page < 1) page = 1;
   const offset = (page - 1) * limit;
 
-  let filterSql = '', bindParams = [];
+  // Hide zero-quantity items when requested
+  const hideZeros = url.searchParams.get('hideZeros') === 'true';
+
+  let filterSql = hideZeros ? ' AND COALESCE(Quantity, 0) > 0' : '';
+  let bindParams = [];
 
   if (letterVal) {
     if (letterVal === '0-9') {
@@ -407,7 +584,9 @@ async function handleOnlineSearch(request, env) {
   const total = countResult?.total || 0;
 
   const dataQ = `SELECT * FROM Online_Inventory WHERE 1=1${filterSql} ORDER BY Artist ASC, Title ASC LIMIT ? OFFSET ?`;
-  const results = await db.prepare(dataQ).bind(...bindParams, limit, offset).all();
+  const results = await (bindParams.length
+    ? db.prepare(dataQ).bind(...bindParams, limit, offset)
+    : db.prepare(dataQ).bind(limit, offset)).all();
   return json({ success: true, results: results.results, total, page, limit });
 }
 
@@ -420,12 +599,12 @@ async function handleOnlineUpdate(request, env) {
   if (action === 'delete') {
     const id = parseInt(body.id);
     if (!id) return json({ error: 'Missing product ID for deletion.' }, 400);
-    await db.prepare('DELETE FROM Online_Inventory WHERE id = ?').bind(id).run();
-    return json({ success: true, message: 'Product deleted successfully.' });
+    await db.prepare('UPDATE Online_Inventory SET Quantity = 0 WHERE id = ?').bind(id).run();
+    return json({ success: true, message: 'Product removed from inventory (Quantity set to 0).' });
   }
 
   const id = body.id ? parseInt(body.id) : null;
-  const { Artist='', Title='', Format='', Discogs_ID='', Description='',
+  const { Artist='', Title='', Format='', Discogs_ID='', Discogs_url='', Description='',
     Condition_Media='', Condition_Sleeve='', Seller_Reference_Number='', Label='',
     Release_Catalog_Number='', Release_Country='', Release_Date='', Genre='',
     Front_Image_URL='', Back_Image_URL='', YouTube_Audio_Image_URLs='', Bar_Code='', Number_In_Set='',
@@ -435,14 +614,14 @@ async function handleOnlineUpdate(request, env) {
 
   if (!Title && !Artist) return json({ error: 'Artist or Title must be provided.' }, 400);
 
-  const fields = [Artist, Title, Format, Discogs_ID, Price, Description, Condition_Media,
+  const fields = [Artist, Title, Format, Discogs_ID, Discogs_url, Price, Description, Condition_Media,
     Condition_Sleeve, Seller_Reference_Number, Quantity, Label, Release_Catalog_Number,
     Release_Country, Release_Date, Genre, Front_Image_URL, Back_Image_URL,
     YouTube_Audio_Image_URLs, Bar_Code, Number_In_Set];
 
   if (id) {
     await db.prepare(`UPDATE Online_Inventory SET
-      Artist=?,Title=?,Format=?,Discogs_ID=?,Price=?,Description=?,Condition_Media=?,
+      Artist=?,Title=?,Format=?,Discogs_ID=?,Discogs_url=?,Price=?,Description=?,Condition_Media=?,
       Condition_Sleeve=?,Seller_Reference_Number=?,Quantity=?,Label=?,Release_Catalog_Number=?,
       Release_Country=?,Release_Date=?,Genre=?,Front_Image_URL=?,Back_Image_URL=?,
       YouTube_Audio_Image_URLs=?,Bar_Code=?,Number_In_Set=? WHERE id=?`
@@ -450,10 +629,10 @@ async function handleOnlineUpdate(request, env) {
     return json({ success: true, message: 'Product updated successfully.', id });
   } else {
     await db.prepare(`INSERT INTO Online_Inventory
-      (Artist,Title,Format,Discogs_ID,Price,Description,Condition_Media,Condition_Sleeve,
+      (Artist,Title,Format,Discogs_ID,Discogs_url,Price,Description,Condition_Media,Condition_Sleeve,
        Seller_Reference_Number,Quantity,Label,Release_Catalog_Number,Release_Country,Release_Date,
        Genre,Front_Image_URL,Back_Image_URL,YouTube_Audio_Image_URLs,Bar_Code,Number_In_Set)
-      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
     ).bind(...fields).run();
     const newRow = await db.prepare('SELECT last_insert_rowid() as id').first();
     return json({ success: true, message: 'Product created successfully.', id: newRow?.id });

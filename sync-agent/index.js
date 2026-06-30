@@ -5,6 +5,7 @@ const xlsx = require('xlsx');
 const cron = require('node-cron');
 const express = require('express');
 const cors = require('cors');
+const multer = require('multer');
 
 const app = express();
 app.use(cors()); // Allow Warehouse UI to trigger
@@ -88,7 +89,7 @@ function standardizeData(dataRow, fileName) {
   }
 
   // Set default vendor based on filename if missing
-  if (!vendor && fileName.toLowerCase().includes('universal')) {
+  if (!vendor && fileName.toLowerCase().includes('stock')) {
     vendor = 'UNIVERSAL MUSIC DISTRIBUTION';
   }
 
@@ -138,13 +139,14 @@ async function runSyncProcess() {
 
     const standardizedData = rawData.map(row => standardizeData(row, file));
 
-    if (file.toLowerCase().startsWith('ims')) {
+    const fLower = file.toLowerCase();
+    if (fLower.startsWith('ims') || fLower.startsWith('sold')) {
       payload.sales.push(...standardizedData);
       processedFiles.push(filePath);
-    } else if (file.toLowerCase().startsWith('order_sheet')) {
+    } else if (fLower.startsWith('order_sheet') || fLower.startsWith('online_inv')) {
       payload.orders.push(...standardizedData);
       processedFiles.push(filePath);
-    } else if (file.toLowerCase().startsWith('universal')) {
+    } else if (fLower.startsWith('stock')) {
       payload.receipts.push(...standardizedData);
       processedFiles.push(filePath);
     }
@@ -196,6 +198,49 @@ cron.schedule('0 6 * * *', () => {
 // ---------------------------------------------------------
 // 2. Local Web Server (Listens for UI clicks)
 // ---------------------------------------------------------
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    if (!fs.existsSync(SHEETS_DIR)) {
+      fs.mkdirSync(SHEETS_DIR, { recursive: true });
+    }
+    cb(null, SHEETS_DIR);
+  },
+  filename: function (req, file, cb) {
+    const ext = path.extname(file.originalname);
+    if (req.body.fileType) {
+      const prefix = req.body.fileType.replace(/\s+/g, '_');
+      cb(null, `${prefix}_${Date.now()}${ext}`);
+    } else {
+      cb(null, file.originalname);
+    }
+  }
+});
+const upload = multer({ storage: storage });
+
+app.post('/upload-and-sync', upload.single('file'), async (req, res) => {
+  console.log('⚡ Received file upload and sync trigger from UI');
+  if (!req.file) {
+    return res.status(400).json({ success: false, error: 'No file uploaded' });
+  }
+  const result = await runSyncProcess();
+  if (result.success) {
+    // Attempt to delete original file from network share
+    const networkSharePath = '\\\\192.168.0.108\\FYRShare\\Tools\\Sheets';
+    const originalFile = path.join(networkSharePath, req.file.originalname);
+    try {
+      if (fs.existsSync(originalFile)) {
+        fs.unlinkSync(originalFile);
+        console.log(`Deleted original file from share: ${originalFile}`);
+      }
+    } catch (err) {
+      console.error(`Could not delete file from share: ${originalFile}`, err);
+    }
+    res.json(result);
+  } else {
+    res.status(500).json(result);
+  }
+});
+
 app.post('/trigger-sync', async (req, res) => {
   console.log('⚡ Received manual sync trigger from UI');
   const result = await runSyncProcess();

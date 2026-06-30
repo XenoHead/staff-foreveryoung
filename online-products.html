@@ -576,6 +576,25 @@
         </div>
 
 
+        <div style="flex: 0 1 180px; min-width: 140px;">
+          <select id="search-format">
+            <option value="%">All Formats</option>
+            <option value="vinyl">Vinyl (All)</option>
+            <option value="vinyllp">Vinyl LP</option>
+            <option value="vinyl7">Vinyl 7"</option>
+            <option value="vinyl10">Vinyl 10"</option>
+            <option value="vinyl12">Vinyl 12"</option>
+            <option value="cd">CD (All)</option>
+            <option value="cdsing">CD Single</option>
+            <option value="cassette">Cassette</option>
+            <option value="ep">EP</option>
+            <option value="video">Video/DVD/VHS</option>
+            <option value="book">Book</option>
+            <option value="clothing">Clothing</option>
+            <option value="memorabilia">Memorabilia</option>
+          </select>
+        </div>
+
         <div style="flex: 0 1 140px; min-width: 120px;">
           <select id="search-limit">
             <option value="10" selected>10 per page</option>
@@ -643,154 +662,197 @@
   </div>
 
   <!-- Edit / Create Product Modal -->
-  <div id="editor-modal" class="modal-overlay" style="display: none;">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 id="modal-title-text">Edit Online Product</h2>
-        <button id="modal-close" class="icon-btn">&times;</button>
+ <div id="editor-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content" style="max-width: 750px; height: auto; max-height: 90vh;">
+      <div class="modal-header" style="padding: 0.8rem 1.2rem;">
+        <h2 id="modal-title-text" style="font-size: 1.4rem;">Edit Online Product</h2>
+        <button id="modal-close" class="icon-btn" style="font-size: 1.5rem;">&times;</button>
       </div>
       
-      <div class="modal-body-scroll">
-        <!-- Discogs Lookup Section -->
-        <div id="discogs-lookup-container" style="background: rgba(35, 84, 146, 0.15); border: 1px solid var(--blue); border-radius: 8px; padding: 1.25rem; margin-bottom: 1.5rem;">
-          <div style="display: flex; align-items: flex-end; gap: 1rem; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 0.4rem;">
-              <label for="discogs-lookup-id" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--yellow); font-weight: 600;">Import Metadata from Discogs</label>
-              <input type="text" id="discogs-lookup-id" placeholder="Enter Discogs Release ID (e.g. 2028757)" style="padding: 0.6rem 0.8rem; border-color: rgba(255, 212, 71, 0.3);">
-            </div>
-            <button type="button" id="btn-discogs-lookup" class="action-btn" style="padding: 0.6rem 1.5rem; height: 38px; border-color: var(--yellow); color: var(--yellow); background: rgba(0,0,0,0.2); font-weight: 700; display: inline-flex; align-items: center; justify-content: center;">
+      <style>
+        .compact-form {
+          font-size: 0.85rem;
+          padding: 1rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+        .compact-row {
+          display: flex;
+          gap: 0.5rem;
+          align-items: center;
+          flex-wrap: wrap;
+        }
+        .compact-form input[type="text"],
+        .compact-form input[type="number"],
+        .compact-form textarea {
+          padding: 0.4rem 0.6rem;
+          font-size: 0.85rem;
+          border-radius: 4px;
+          background: rgba(0, 0, 0, 0.5);
+        }
+        .compact-form label {
+          font-size: 0.75rem;
+          color: #B6C0D7;
+          text-transform: uppercase;
+          font-weight: 600;
+        }
+        .inline-divider {
+          color: var(--blue);
+          font-weight: bold;
+          padding: 0 0.2rem;
+        }
+        /* Accordion Styles */
+        .accordion-wrapper {
+          border: 1px solid rgba(35, 84, 146, 0.4);
+          border-radius: 4px;
+          margin-top: 0.5rem;
+          overflow: hidden;
+        }
+        .accordion-toggle {
+          display: none;
+        }
+        .accordion-header {
+          background: rgba(35, 84, 146, 0.2);
+          padding: 0.5rem;
+          cursor: pointer;
+          display: flex;
+          justify-content: space-between;
+          font-weight: 600;
+          font-size: 0.8rem;
+          text-transform: uppercase;
+          color: var(--yellow);
+        }
+        .accordion-header::after {
+          content: '▼';
+          font-size: 0.7rem;
+        }
+        .accordion-toggle:checked ~ .accordion-header::after {
+          content: '▲';
+        }
+        .accordion-content {
+          max-height: 0;
+          overflow: hidden;
+          transition: max-height 0.2s ease-out;
+          background: rgba(0, 0, 0, 0.2);
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+        .accordion-toggle:checked ~ .accordion-content {
+          max-height: 500px;
+          padding: 0.75rem;
+        }
+      </style>
+
+      <div class="modal-body-scroll" style="padding: 0;">
+        <div id="discogs-lookup-container" style="background: rgba(35, 84, 146, 0.15); border-bottom: 1px solid var(--blue); padding: 0.6rem 1rem; margin-bottom: 0;">
+          <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+            <label for="discogs-lookup-id" style="font-size: 0.75rem; color: var(--yellow); text-transform: uppercase; font-weight: 600; white-space: nowrap;">Import from Discogs:</label>
+            <input type="text" id="discogs-lookup-id" placeholder="Release ID (e.g. 2028757)" style="padding: 0.3rem 0.6rem; font-size: 0.85rem; width: 180px; background: rgba(0,0,0,0.4); border: 1px solid var(--blue); color: #fff; border-radius: 4px;">
+            <button type="button" id="btn-discogs-lookup" class="action-btn" style="padding: 0.3rem 1rem; font-size: 0.8rem; height: auto; border-color: var(--yellow); color: var(--yellow);">
               Search Discogs
             </button>
+            <div id="discogs-lookup-status" style="font-size: 0.8rem; color: #B6C0D7; margin-left: 0.5rem;"></div>
           </div>
-          <div id="discogs-lookup-status" style="font-size: 0.85rem; color: #B6C0D7; margin-top: 0.5rem; min-height: 1.2rem;"></div>
         </div>
 
-        <form id="product-form" class="editor-layout">
-          <!-- Sidebar: Images & Links -->
-          <div class="editor-sidebar">
-            <div class="img-preview-box">
-              <img id="img-preview" src="images/fyr-logo.png" alt="Product Image Preview">
-            </div>
+        <form id="product-form" class="compact-form">
+          <input type="hidden" id="f-id">
+
+          <div class="compact-row">
+            <span style="display: inline-flex; align-items: center; gap: 0.2rem;">
+              <span style="color: var(--yellow); font-weight: bold;">(</span>
+              <input type="number" min="0" id="f-quantity" required placeholder="Qty" style="width: 55px; text-align: center;">
+              <span style="color: var(--yellow); font-weight: bold;">)</span>
+            </span>
             
-            <a href="https://www.musicstack.com/seller/image_upload.cgi" target="_blank" class="action-btn" style="width: 100%; text-align: center; display: block; padding: 0.5rem; font-size: 0.9rem; margin-bottom: 0.5rem;">
-              Upload Image to MusicStack
-            </a>
-            <div class="form-group" style="width: 100%;">
-              <label for="f-front-img">Front Image URL</label>
-              <input type="text" id="f-front-img" placeholder="http://...">
-            </div>
-
-            <div class="form-group" style="width: 100%;">
-              <label for="f-back-img">Back Image URL</label>
-              <input type="text" id="f-back-img" placeholder="http://...">
-            </div>
-
-            <div class="form-group" style="width: 100%;">
-              <label for="f-audio-urls">Audio / YouTube URLs (Comma-separated)</label>
-              <textarea id="f-audio-urls" rows="2" placeholder="http://..."></textarea>
-            </div>
+            <input type="text" id="f-artist" required placeholder="Artist" style="flex: 2; min-width: 150px;">
+            <span class="inline-divider">/</span>
+            <input type="text" id="f-title" required placeholder="Title" style="flex: 3; min-width: 180px;">
+            <span class="inline-divider">-</span>
+            <span style="position: relative; display: inline-flex; align-items: center;">
+              <span style="position: absolute; left: 0.5rem; color: var(--green); font-weight: bold;">$</span>
+              <input type="number" step="0.01" min="0" id="f-price" required placeholder="Price" style="width: 85px; padding-left: 1.2rem; color: var(--green); font-weight: bold;">
+            </span>
           </div>
 
-          <!-- Main inputs -->
-          <div class="editor-fields-grid">
-            <!-- Hidden input for ID -->
-            <input type="hidden" id="f-id">
+          <div class="compact-row">
+            <input type="text" id="f-ref" placeholder="SKU / Seller Ref" style="flex: 1;">
+            <span class="inline-divider">/</span>
+            <input type="text" id="f-catalog" placeholder="Catalog #" style="flex: 1;">
+            <span class="inline-divider">/</span>
+            <input type="text" id="f-barcode" placeholder="UPC / Barcode" style="flex: 1.2;">
+          </div>
 
-            <div class="form-group">
-              <label for="f-artist">Artist *</label>
-              <input type="text" id="f-artist" required placeholder="e.g. Taylor Swift">
-            </div>
+          <div class="compact-row">
+            <label for="f-format" style="white-space: nowrap;">Format:</label>
+            <input type="text" id="f-format" placeholder="e.g. LP, CD" style="width: 120px;">
+            <span class="inline-divider">:</span>
+            <input type="text" id="f-cond-media" placeholder="Media Condition (e.g. VG+)" style="flex: 1;">
+            <span class="inline-divider">/</span>
+            <input type="text" id="f-cond-sleeve" placeholder="Sleeve Condition (e.g. VG)" style="flex: 1;">
+          </div>
 
-            <div class="form-group">
-              <label for="f-title">Title *</label>
-              <input type="text" id="f-title" required placeholder="e.g. 1989">
-            </div>
+          <div style="display: flex; flex-direction: column; gap: 0.2rem;">
+            <textarea id="f-description" rows="2" placeholder="Condition Description & Notes..." style="width: 100%; resize: vertical;"></textarea>
+          </div>
 
-            <div class="form-group">
-              <label for="f-format">Format</label>
-              <input type="text" id="f-format" placeholder="e.g. LP, Vinyl, CD Single">
-            </div>
+          <div class="compact-row">
+            <input type="text" id="f-label" placeholder="Label" style="flex: 2;">
+            <span class="inline-divider">-</span>
+            <input type="text" id="f-country" placeholder="Country" style="flex: 1; max-width: 120px;">
+            <span class="inline-divider">-</span>
+            <input type="text" id="f-date" placeholder="Release Date / Year" style="flex: 1; max-width: 150px;">
+          </div>
 
-            <div class="form-group">
-              <label for="f-genre">Genre</label>
-              <input type="text" id="f-genre" placeholder="e.g. Rock, Pop, Jazz">
-            </div>
+          <div class="compact-row">
+            <label for="f-discogs" style="white-space: nowrap;">Discogs ID:</label>
+            <input type="text" id="f-discogs" placeholder="e.g. 6220803" style="width: 120px;">
+            <a id="discogs-go-btn" href="#" target="_blank" class="action-btn" style="padding: 0.3rem 0.8rem; font-size: 0.75rem; height: auto; display: none; background: rgba(255, 212, 71, 0.1); border-color: var(--yellow); color: var(--yellow);">
+              Go to Discogs ↗
+            </a>
+          </div>
 
-            <div class="form-group">
-              <label for="f-price">Price ($) *</label>
-              <input type="number" step="0.01" min="0" id="f-price" required placeholder="e.g. 24.99">
-            </div>
-
-            <div class="form-group">
-              <label for="f-quantity">Quantity Available *</label>
-              <input type="number" min="0" id="f-quantity" required placeholder="e.g. 1">
-            </div>
-
-            <div class="form-group">
-              <label for="f-barcode">Barcode / UPC</label>
-              <input type="text" id="f-barcode" placeholder="e.g. 602537902721">
-            </div>
-
-            <div class="form-group">
-              <label for="f-ref">Seller Reference Number</label>
-              <input type="text" id="f-ref" placeholder="e.g. REF-12345">
-            </div>
-
-            <div class="form-group">
-              <label for="f-label">Label</label>
-              <input type="text" id="f-label" placeholder="e.g. Capitol Records">
-            </div>
-
-            <div class="form-group">
-              <label for="f-catalog">Catalog / Release Number</label>
-              <input type="text" id="f-catalog" placeholder="e.g. ST-1234">
-            </div>
-
-            <div class="form-group">
-              <label for="f-country">Release Country</label>
-              <input type="text" id="f-country" placeholder="e.g. US, UK, Japan">
-            </div>
-
-            <div class="form-group">
-              <label for="f-date">Release Date / Year</label>
-              <input type="text" id="f-date" placeholder="e.g. 2014 or 1982-11-30">
-            </div>
-
-            <div class="form-group">
-              <label for="f-cond-media">Media Condition</label>
-              <input type="text" id="f-cond-media" placeholder="e.g. Mint (M), Very Good (VG)">
-            </div>
-
-            <div class="form-group">
-              <label for="f-cond-sleeve">Sleeve Condition</label>
-              <input type="text" id="f-cond-sleeve" placeholder="e.g. Near Mint (NM), Generic">
-            </div>
-
-            <div class="form-group">
-              <label for="f-discogs">Discogs ID</label>
-              <input type="text" id="f-discogs" placeholder="e.g. 6220803">
-            </div>
-
-            <div class="form-group">
-              <label for="f-num-in-set">Number in Set</label>
-              <input type="text" id="f-num-in-set" placeholder="e.g. 1 or 2 LP">
-            </div>
-
-            <div class="form-group full-width">
-              <label for="f-description">Condition Description & Notes</label>
-              <textarea id="f-description" rows="3" placeholder="Condition description, track listings, specific attributes..."></textarea>
+          <div class="accordion-wrapper">
+            <input type="checkbox" id="media-accordion-toggle" class="accordion-toggle">
+            <label for="media-accordion-toggle" class="accordion-header">Media & Images</label>
+            <div class="accordion-content">
+              <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                <div class="img-preview-box" style="width: 70px; height: 70px; flex-shrink: 0; margin-bottom: 0;">
+                  <img id="img-preview" src="images/fyr-logo.png" alt="Preview" style="object-fit: contain; width: 100%; height: 100%;">
+                </div>
+                <div style="flex: 1; display: flex; flex-direction: column; gap: 0.4rem;">
+                  <div style="display: flex; flex-direction: column; gap: 0.1rem;">
+                    <label for="f-front-img">Front Image URL</label>
+                    <input type="text" id="f-front-img" placeholder="http://...">
+                  </div>
+                  <div style="display: flex; flex-direction: column; gap: 0.1rem;">
+                    <label for="f-back-img">Back Image URL</label>
+                    <input type="text" id="f-back-img" placeholder="http://...">
+                  </div>
+                </div>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 0.1rem; margin-top: 0.2rem;">
+                <label for="f-audio-urls">Audio / YouTube URLs (Comma-separated)</label>
+                <textarea id="f-audio-urls" rows="1" placeholder="http://..."></textarea>
+              </div>
+              <a href="https://www.musicstack.com/seller/image_upload.cgi" target="_blank" class="action-btn" style="padding: 0.3rem; font-size: 0.75rem; width: 100%; text-align: center; justify-content: center; margin-top: 0.2rem;">
+                Upload Image to MusicStack
+              </a>
             </div>
           </div>
         </form>
       </div>
 
-      <div class="modal-footer">
-        <button id="btn-delete-product" class="action-btn danger" style="margin-right: auto;">Delete Product</button>
-        <button id="btn-cancel" class="action-btn" style="border-color: rgba(255,255,255,0.2);">Cancel</button>
-        <button id="btn-save" class="action-btn success">Save Product</button>
+      <div class="modal-footer" style="padding: 0.8rem 1.2rem;">
+        <button id="btn-delete-product" class="action-btn danger" style="margin-right: auto; padding: 0.4rem 1rem; font-size: 0.85rem;">Zero Out Stock</button>
+        <button id="btn-cancel" class="action-btn" style="border-color: rgba(255,255,255,0.2); padding: 0.4rem 1rem; font-size: 0.85rem;">Cancel</button>
+        <button id="btn-save" class="action-btn success" style="padding: 0.4rem 1rem; font-size: 0.85rem;">Save Product</button>
       </div>
     </div>
   </div>
+
 
   <footer style="margin-top: auto; text-align: center; padding-top: 2rem; padding-bottom: 2rem; position: relative; z-index: 10; width: 100%;">
     <a href="https://xenohead.com" target="_blank"
@@ -813,6 +875,7 @@
     // DOM Elements
     const searchForm = document.getElementById('search-form');
     const searchQuery = document.getElementById('search-query');
+      const searchFormat = document.getElementById('search-format');
     const searchLimit = document.getElementById('search-limit');
     const letterIndex = document.getElementById('letter-index');
     const resultsList = document.getElementById('results-list');
@@ -835,6 +898,7 @@
     const frontImgInput = document.getElementById('f-front-img');
     const discogsLookupId = document.getElementById('discogs-lookup-id');
     const btnDiscogsLookup = document.getElementById('btn-discogs-lookup');
+      const discogsGoBtn = document.getElementById('discogs-go-btn');
     const discogsLookupStatus = document.getElementById('discogs-lookup-status');
 
     // Fields
@@ -864,6 +928,17 @@
       const url = e.target.value.trim();
       imgPreview.src = (url.startsWith('http')) ? url : 'images/fyr-logo.png';
     });
+
+      // Discogs Go Button logic
+      fDiscogs.addEventListener('input', () => {
+        const id = fDiscogs.value.trim();
+        if (id && /^\d+$/.test(id)) {
+          discogsGoBtn.href = `https://www.discogs.com/release/${id}`;
+          discogsGoBtn.style.display = 'inline-flex';
+        } else {
+          discogsGoBtn.style.display = 'none';
+        }
+      });
 
     // Flash status message
     function showStatus(message, isSuccess = true) {
@@ -912,6 +987,9 @@
         fAudioUrls.value = item.YouTube_Audio_Image_URLs === 'NULL' ? '' : (item.YouTube_Audio_Image_URLs || '');
 
         imgPreview.src = (frontImgInput.value.startsWith('http')) ? frontImgInput.value : 'images/fyr-logo.png';
+
+        // Trigger input event to show/hide Discogs button
+        fDiscogs.dispatchEvent(new Event('input'));
       } else {
         modalTitleText.textContent = "Create New Online Product";
         btnDelete.style.display = 'none';
@@ -920,6 +998,9 @@
         imgPreview.src = 'images/fyr-logo.png';
       }
       
+      // Trigger input event to show/hide Discogs button on new products too
+      fDiscogs.dispatchEvent(new Event('input'));
+
       editorModal.style.display = 'flex';
     }
 
@@ -1074,7 +1155,7 @@
       const id = fId.value;
       if (!id) return;
       
-      const confirmDelete = confirm(`Are you sure you want to permanently delete: "${fTitle.value}" by ${fArtist.value}?`);
+      const confirmDelete = confirm(`Are you sure you want to set the quantity for this item to 0? This will remove it from public listings.`);
       if (!confirmDelete) return;
 
       try {
@@ -1113,6 +1194,7 @@
       const urlParams = new URLSearchParams();
       if (params.query) urlParams.set('query', params.query);
       if (params.letter) urlParams.set('letter', params.letter);
+      if (params.format) urlParams.set('format', params.format);
       
       urlParams.set('page', currentPage);
       urlParams.set('limit', currentLimit);
@@ -1156,7 +1238,7 @@
                 <div class="record-details">
                   <span><strong>Format:</strong> ${item.Format || 'N/A'}</span>
                   <span><strong>Label:</strong> ${item.Label || 'N/A'} (${item.Release_Catalog_Number || 'N/A'})</span>
-                  <span><strong>Ref #:</strong> ${item.Seller_Reference_Number || 'N/A'}</span>
+                  <span><strong>SKU:</strong> ${item.Seller_Reference_Number || 'N/A'}</span>
                   <span><strong>Quantity:</strong> ${item.Quantity}</span>
                   <span><strong>Media/Sleeve:</strong> ${item.Condition_Media || 'N/A'} / ${item.Condition_Sleeve || 'N/A'}</span>
                 </div>
@@ -1209,7 +1291,8 @@
       document.querySelectorAll('.browse-letters a').forEach(a => a.classList.remove('active'));
 
       lastSearchParams = {
-        query: searchQuery.value.trim()
+        query: searchQuery.value.trim(),
+        format: searchFormat.value
       };
       executeSearch();
     });
@@ -1230,7 +1313,8 @@
         searchQuery.value = ''; // Clear search text when letter-browsing
         
         lastSearchParams = {
-          letter: letter === '#' ? '0-9' : letter
+          letter: letter === '#' ? '0-9' : letter,
+          format: searchFormat.value
         };
         executeSearch();
       });
