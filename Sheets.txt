@@ -4,5 +4,5 @@ Where:
 What:
 IMS*.xls <-- MASTER SHEET of what was sold
 order_sheet*.xls <-- MASTER SHEET of what was ordered
-STOCK*.xls <-- what Universal sent us and is actually going to the store.
+STOCK*.xls <-- what distributers have sent us and is actually going to the store.
 (other vender spreadsheets will eventually get added)
