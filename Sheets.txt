@@ -6,3 +6,30 @@ IMS*.xls <-- MASTER SHEET of what was sold
 order_sheet*.xls <-- MASTER SHEET of what was ordered
 UNIVERSAL*.xls <-- what Universal sent us and is actually going to the store.
 (other vender spreadsheets will eventually get added)
+
+
+UPC,Quantity,Format,Artist,Title,Vendor,OOP,Year,Vendor Number,Flag,Modified,SRP,Flag
+4262428351317,1,Vinyl,APOCALYPTICA,PLAYS METALLICA,IIP-DDS BV,(x or blank),62,21,FYR,6/5/2026 08:15 AM,$41.98, (will: IMS, ORD or RECD)
+
+
+
+Add anew button to the main Staffer Page
+we are going to need ALL those columns displayed and we only have like 6 or 7 venders so use column I as the vender of record
+
+
+WebAMI = 21, 38, 30
+Lasgo = 15
+UNIVERSAL MUSIC DISTRIBUTION = any 50#
+Sony = All other 30's that WEBAMI doesnt use
+Orchard = 4,42,41,40
+RedEye = 27,72,71
+Warner = 60, 64, 65, 62
+
+That should be all, if not let me know
+
+
+On the Main page .\foreveryoung\index.html
+split the "Search For Music To Buy" into two buttons:
+Grouped together under a  "Search:" bevel
+Online Product <-- Discogs like it is now
+In Store Product <-- Our new DB we are building
