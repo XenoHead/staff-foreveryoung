@@ -487,7 +487,8 @@ async function handleInventorySearch(request, env) {
   if (page < 1) page = 1;
   const offset = (page - 1) * limit;
 
-  let filterSql = '', bindParams = [];
+  const hideZeros = url.searchParams.get('hideZeros') === 'true';
+  let filterSql = hideZeros ? ' AND COALESCE(Quantity, 0) > 0' : '', bindParams = [];
 
   if (letterVal) {
     if (letterVal === '0-9') {
