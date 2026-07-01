@@ -199,6 +199,7 @@
       max-width: 800px;
       background: rgba(0, 0, 0, 0.2);
     }
+
     .bevel-group legend {
       font-family: 'Oswald', sans-serif;
       color: var(--yellow);
@@ -236,8 +237,13 @@
     }
 
     @keyframes ticker {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-100%); }
+      0% {
+        transform: translateX(0);
+      }
+
+      100% {
+        transform: translateX(-100%);
+      }
     }
 
     /* Modal Styles */
@@ -288,7 +294,9 @@
       transition: color 0.2s;
     }
 
-    .icon-btn:hover { color: #fff; }
+    .icon-btn:hover {
+      color: #fff;
+    }
 
     .modal-toolbar {
       padding: 1.5rem;
@@ -308,6 +316,7 @@
       color: #fff;
       font-family: 'Outfit', sans-serif;
     }
+
     .search-input:focus {
       outline: none;
       border-color: var(--yellow);
@@ -358,15 +367,14 @@
       <h1>Staff Dashboard</h1>
     </div>
     <div style="display: flex; gap: 1rem; align-items: center;">
-      <button id="btn-update-ticker" class="action-btn" style="font-size: 1rem; padding: 0.6rem 1.5rem; background: var(--blue); color: var(--yellow); cursor: pointer;">
+      <button id="btn-update-ticker" class="action-btn"
+        style="font-size: 1rem; padding: 0.6rem 1.5rem; background: var(--blue); color: var(--yellow); cursor: pointer;">
         Update Ticker Tape
       </button>
       <input type="file" id="ticker-upload" style="display:none;" accept=".txt">
 
-      <a href="online-products.html" class="action-btn" style="text-decoration: none; font-size: 1rem; padding: 0.6rem 1.5rem; background: var(--blue); color: var(--yellow);">
-        Online Products
-      </a>
-      <a href="warehouse.html" class="action-btn" style="text-decoration: none; font-size: 1rem; padding: 0.6rem 1.5rem; background: var(--blue); color: var(--yellow);">
+      <a href="warehouse.html" class="action-btn"
+        style="text-decoration: none; font-size: 1rem; padding: 0.6rem 1.5rem; background: var(--blue); color: var(--yellow);">
         Warehouse Ops &rarr;
       </a>
     </div>
@@ -381,92 +389,93 @@
     <div class="main-grid">
 
 
-    <!-- Customer Profile Panel -->
-    <div class="panel" style="position: relative;">
-      <img src="images/art-vinyl-stack.png" alt=""
-        style="position: absolute; right: 20px; top: 20px; width: 80px; opacity: 0.3; pointer-events: none; z-index: 0;">
-      <h2 style="position: relative; z-index: 1;">Customer Profile</h2>
+      <!-- Customer Profile Panel -->
+      <div class="panel" style="position: relative;">
+        <img src="images/art-vinyl-stack.png" alt=""
+          style="position: absolute; right: 20px; top: 20px; width: 80px; opacity: 0.3; pointer-events: none; z-index: 0;">
+        <h2 style="position: relative; z-index: 1;">Customer Profile</h2>
 
-      <div id="empty-state" class="empty-state">
-        Scan a customer's rewards card to view their profile.
-      </div>
-
-      <div id="customer-profile">
-        <div class="profile-info" id="customer-name"><strong>Name:</strong> <span>John Doe</span></div>
-        <div class="profile-info" id="customer-phone"><strong>Phone:</strong> <span>(555) 123-4567</span></div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
-          <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; text-align: center;">
-            <div style="font-size: 0.9rem; color: #B6C0D7; margin-bottom: 0.5rem;">CD Punches</div>
-            <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;"><span id="punches-cd">0</span> /
-              10</div>
-            <div style="display: flex; gap: 0.5rem;">
-              <button class="action-btn punch-btn" data-type="cd"
-                style="flex: 1; font-size: 0.8rem; padding: 0.5rem; margin-top: 0; display: flex; align-items: center; justify-content: center; gap: 4px;">
-                <img src="images/btn_cd.png" style="width: 16px; height: 16px; object-fit: contain;">
-                Punch
-              </button>
-              <button class="action-btn redeem-btn" data-type="cd"
-                style="flex: 1; font-size: 0.8rem; padding: 0.5rem; margin-top: 0; background: #e74c3c; color: white; display: flex; align-items: center; justify-content: center; gap: 4px;">
-                Spend
-              </button>
-            </div>
-          </div>
-
-          <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; text-align: center;">
-            <div style="font-size: 0.9rem; color: #B6C0D7; margin-bottom: 0.5rem;">Used Vinyl</div>
-            <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;"><span id="punches-vinyl">0</span>
-              / 10</div>
-            <div style="display: flex; gap: 0.5rem;">
-              <button class="action-btn punch-btn" data-type="vinyl"
-                style="flex: 1; font-size: 0.8rem; padding: 0.5rem; margin-top: 0; display: flex; align-items: center; justify-content: center; gap: 4px;">
-                <img src="images/btn_vinyl.png" style="width: 16px; height: 16px; object-fit: contain;">
-                Punch
-              </button>
-              <button class="action-btn redeem-btn" data-type="vinyl"
-                style="flex: 1; font-size: 0.8rem; padding: 0.5rem; margin-top: 0; background: #e74c3c; color: white; display: flex; align-items: center; justify-content: center; gap: 4px;">
-                Spend
-              </button>
-            </div>
-          </div>
-
-          <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; text-align: center;">
-            <div style="font-size: 0.9rem; color: #B6C0D7; margin-bottom: 0.5rem;">Cassettes</div>
-            <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;"><span
-                id="punches-cassette">0</span> / 10</div>
-            <div style="display: flex; gap: 0.5rem;">
-              <button class="action-btn punch-btn" data-type="cassette"
-                style="flex: 1; font-size: 0.8rem; padding: 0.5rem; margin-top: 0; display: flex; align-items: center; justify-content: center; gap: 4px;">
-                <img src="images/btn_cassette.png" style="width: 16px; height: 16px; object-fit: contain;">
-                Punch
-              </button>
-              <button class="action-btn redeem-btn" data-type="cassette"
-                style="flex: 1; font-size: 0.8rem; padding: 0.5rem; margin-top: 0; background: #e74c3c; color: white; display: flex; align-items: center; justify-content: center; gap: 4px;">
-                Spend
-              </button>
-            </div>
-          </div>
-
-          <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; text-align: center;">
-            <div style="font-size: 0.9rem; color: #B6C0D7; margin-bottom: 0.5rem;">45's</div>
-            <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;"><span id="punches-45">0</span> /
-              10</div>
-            <div style="display: flex; gap: 0.5rem;">
-              <button class="action-btn punch-btn" data-type="45"
-                style="flex: 1; font-size: 0.8rem; padding: 0.5rem; margin-top: 0; display: flex; align-items: center; justify-content: center; gap: 4px;">
-                <img src="images/btn_45.png" style="width: 16px; height: 16px; object-fit: contain;">
-                Punch
-              </button>
-              <button class="action-btn redeem-btn" data-type="45"
-                style="flex: 1; font-size: 0.8rem; padding: 0.5rem; margin-top: 0; background: #e74c3c; color: white; display: flex; align-items: center; justify-content: center; gap: 4px;">
-                Spend
-              </button>
-            </div>
-          </div>
+        <div id="empty-state" class="empty-state">
+          Scan a customer's rewards card to view their profile.
         </div>
 
-        <div class="status-msg" id="status-msg" style="text-align: center;">Punch added successfully!</div>
-      </div>
+        <div id="customer-profile">
+          <div class="profile-info" id="customer-name"><strong>Name:</strong> <span>John Doe</span></div>
+          <div class="profile-info" id="customer-phone"><strong>Phone:</strong> <span>(555) 123-4567</span></div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+            <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; text-align: center;">
+              <div style="font-size: 0.9rem; color: #B6C0D7; margin-bottom: 0.5rem;">CD Punches</div>
+              <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;"><span id="punches-cd">0</span> /
+                10</div>
+              <div style="display: flex; gap: 0.5rem;">
+                <button class="action-btn punch-btn" data-type="cd"
+                  style="flex: 1; font-size: 0.8rem; padding: 0.5rem; margin-top: 0; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                  <img src="images/btn_cd.png" style="width: 16px; height: 16px; object-fit: contain;">
+                  Punch
+                </button>
+                <button class="action-btn redeem-btn" data-type="cd"
+                  style="flex: 1; font-size: 0.8rem; padding: 0.5rem; margin-top: 0; background: #e74c3c; color: white; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                  Spend
+                </button>
+              </div>
+            </div>
+
+            <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; text-align: center;">
+              <div style="font-size: 0.9rem; color: #B6C0D7; margin-bottom: 0.5rem;">Used Vinyl</div>
+              <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;"><span
+                  id="punches-vinyl">0</span>
+                / 10</div>
+              <div style="display: flex; gap: 0.5rem;">
+                <button class="action-btn punch-btn" data-type="vinyl"
+                  style="flex: 1; font-size: 0.8rem; padding: 0.5rem; margin-top: 0; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                  <img src="images/btn_vinyl.png" style="width: 16px; height: 16px; object-fit: contain;">
+                  Punch
+                </button>
+                <button class="action-btn redeem-btn" data-type="vinyl"
+                  style="flex: 1; font-size: 0.8rem; padding: 0.5rem; margin-top: 0; background: #e74c3c; color: white; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                  Spend
+                </button>
+              </div>
+            </div>
+
+            <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; text-align: center;">
+              <div style="font-size: 0.9rem; color: #B6C0D7; margin-bottom: 0.5rem;">Cassettes</div>
+              <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;"><span
+                  id="punches-cassette">0</span> / 10</div>
+              <div style="display: flex; gap: 0.5rem;">
+                <button class="action-btn punch-btn" data-type="cassette"
+                  style="flex: 1; font-size: 0.8rem; padding: 0.5rem; margin-top: 0; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                  <img src="images/btn_cassette.png" style="width: 16px; height: 16px; object-fit: contain;">
+                  Punch
+                </button>
+                <button class="action-btn redeem-btn" data-type="cassette"
+                  style="flex: 1; font-size: 0.8rem; padding: 0.5rem; margin-top: 0; background: #e74c3c; color: white; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                  Spend
+                </button>
+              </div>
+            </div>
+
+            <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; text-align: center;">
+              <div style="font-size: 0.9rem; color: #B6C0D7; margin-bottom: 0.5rem;">45's</div>
+              <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;"><span id="punches-45">0</span> /
+                10</div>
+              <div style="display: flex; gap: 0.5rem;">
+                <button class="action-btn punch-btn" data-type="45"
+                  style="flex: 1; font-size: 0.8rem; padding: 0.5rem; margin-top: 0; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                  <img src="images/btn_45.png" style="width: 16px; height: 16px; object-fit: contain;">
+                  Punch
+                </button>
+                <button class="action-btn redeem-btn" data-type="45"
+                  style="flex: 1; font-size: 0.8rem; padding: 0.5rem; margin-top: 0; background: #e74c3c; color: white; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                  Spend
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="status-msg" id="status-msg" style="text-align: center;">Punch added successfully!</div>
+        </div>
       </div>
     </div>
   </fieldset>
@@ -474,10 +483,12 @@
   <fieldset class="bevel-group">
     <legend>Store Operations</legend>
     <div style="display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap;">
-      <a href="instore-products.html" class="action-btn" style="width: auto; padding: 0.8rem 2.5rem; margin-top: 0; text-decoration: none;">
+      <a href="instore-products.html" class="action-btn"
+        style="width: auto; padding: 0.8rem 2.5rem; margin-top: 0; text-decoration: none;">
         Store Inventory Lookup
       </a>
-      <a href="online-products.html" class="action-btn" style="width: auto; padding: 0.8rem 2.5rem; margin-top: 0; text-decoration: none;">
+      <a href="online-products.html" class="action-btn"
+        style="width: auto; padding: 0.8rem 2.5rem; margin-top: 0; text-decoration: none;">
         Online Product Editor
       </a>
     </div>
@@ -490,7 +501,7 @@
         <h2>Store Inventory Search</h2>
         <button id="btn-close-inventory" class="icon-btn">&times;</button>
       </div>
-      
+
       <div class="modal-toolbar">
         <div>
           <label style="display: block; color: var(--yellow); margin-bottom: 5px;">UPC:</label>
@@ -509,8 +520,11 @@
           <input type="text" id="search-catalog" class="search-input input-watch" placeholder="Vendor Number">
         </div>
         <div style="grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem;">
-          <button id="btn-clear-search" class="action-btn" style="width: auto; padding: 0.6rem 2rem; background: transparent; border: 1px solid var(--yellow); color: var(--yellow);">Clear</button>
-          <button id="btn-do-search" class="action-btn" style="width: auto; padding: 0.6rem 2rem; opacity: 0.5; cursor: not-allowed;" disabled>Search Database</button>
+          <button id="btn-clear-search" class="action-btn"
+            style="width: auto; padding: 0.6rem 2rem; background: transparent; border: 1px solid var(--yellow); color: var(--yellow);">Clear</button>
+          <button id="btn-do-search" class="action-btn"
+            style="width: auto; padding: 0.6rem 2rem; opacity: 0.5; cursor: not-allowed;" disabled>Search
+            Database</button>
         </div>
       </div>
 
@@ -527,7 +541,10 @@
             </tr>
           </thead>
           <tbody id="inventory-results">
-            <tr><td colspan="6" style="text-align:center; padding: 2rem; font-style: italic;">Enter search criteria above to view inventory.</td></tr>
+            <tr>
+              <td colspan="6" style="text-align:center; padding: 2rem; font-style: italic;">Enter search criteria above
+                to view inventory.</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -535,10 +552,12 @@
   </div>
 
   <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; margin-bottom: 2rem;">
-    <a href="activate_qr.png" target="_blank" class="action-btn" style="text-decoration: none; font-size: 1rem; padding: 0.6rem 1.5rem; background: var(--blue); color: var(--yellow);">
+    <a href="activate_qr.png" target="_blank" class="action-btn"
+      style="text-decoration: none; font-size: 1rem; padding: 0.6rem 1.5rem; background: var(--blue); color: var(--yellow);">
       Activate Customer Card
     </a>
-    <a href="checkin_qr.png" target="_blank" class="action-btn" style="text-decoration: none; font-size: 1rem; padding: 0.6rem 1.5rem; background: var(--blue); color: var(--yellow);">
+    <a href="checkin_qr.png" target="_blank" class="action-btn"
+      style="text-decoration: none; font-size: 1rem; padding: 0.6rem 1.5rem; background: var(--blue); color: var(--yellow);">
       Customer Check In
     </a>
   </div>
@@ -595,14 +614,14 @@
           alert('Text file is empty.');
           return;
         }
-        
+
         try {
           const res = await fetch('/api/ticker', {
             method: 'POST',
             headers: { 'Content-Type': 'text/plain' },
             body: text
           });
-          
+
           if (res.ok) {
             alert('Ticker updated successfully!');
             updateTicker();
@@ -766,7 +785,7 @@
     // Execute Search
     searchBtn.addEventListener('click', async () => {
       resultsBody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 2rem;">Searching...</td></tr>';
-      
+
       const upc = document.getElementById('search-upc').value.trim();
       const artist = document.getElementById('search-artist').value.trim();
       const album = document.getElementById('search-album').value.trim();

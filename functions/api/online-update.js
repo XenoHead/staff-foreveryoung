@@ -14,9 +14,9 @@ export async function onRequestPost(context) {
         return new Response(JSON.stringify({ error: "Missing product ID for deletion." }), { status: 400 });
       }
       
-      await db.prepare("DELETE FROM Online_Inventory WHERE id = ?").bind(id).run();
+      await db.prepare("UPDATE Online_Inventory SET Quantity = 0 WHERE id = ?").bind(id).run();
       
-      return new Response(JSON.stringify({ success: true, message: "Product deleted successfully." }), {
+      return new Response(JSON.stringify({ success: true, message: "Product removed from inventory (Quantity set to 0)." }), {
         status: 200,
         headers: { "Content-Type": "application/json" }
       });
@@ -28,12 +28,13 @@ export async function onRequestPost(context) {
     const title = body.Title || '';
     const format = body.Format || '';
     const discogsId = body.Discogs_ID || '';
-    const price = body.Price !== undefined && body.Price !== '' ? parseFloat(body.Price) : null;
+    const discogsUrl = body.Discogs_url || '';
+    const price = (body.Price !== undefined && body.Price !== null && body.Price !== '') ? parseFloat(body.Price) : null;
     const description = body.Description || '';
     const condMedia = body.Condition_Media || '';
     const condSleeve = body.Condition_Sleeve || '';
     const sellerRef = body.Seller_Reference_Number || '';
-    const quantity = body.Quantity !== undefined && body.Quantity !== '' ? parseInt(body.Quantity, 10) : 0;
+    const quantity = (body.Quantity !== undefined && body.Quantity !== null && body.Quantity !== '') ? parseInt(body.Quantity, 10) : 0;
     const label = body.Label || '';
     const catalogNum = body.Release_Catalog_Number || '';
     const country = body.Release_Country || '';
@@ -53,7 +54,7 @@ export async function onRequestPost(context) {
       // Update
       await db.prepare(`
         UPDATE Online_Inventory SET 
-          Artist = ?, Title = ?, Format = ?, Discogs_ID = ?, Price = ?, 
+          Artist = ?, Title = ?, Format = ?, Discogs_ID = ?, Discogs_url = ?, Price = ?, 
           Description = ?, Condition_Media = ?, Condition_Sleeve = ?, 
           Seller_Reference_Number = ?, Quantity = ?, Label = ?, 
           Release_Catalog_Number = ?, Release_Country = ?, Release_Date = ?, 
@@ -61,7 +62,7 @@ export async function onRequestPost(context) {
           YouTube_Audio_Image_URLs = ?, Bar_Code = ?, Number_In_Set = ?
         WHERE id = ?
       `).bind(
-        artist, title, format, discogsId, price,
+        artist, title, format, discogsId, discogsUrl, price,
         description, condMedia, condSleeve,
         sellerRef, quantity, label,
         catalogNum, country, date,
@@ -78,14 +79,14 @@ export async function onRequestPost(context) {
       // Insert
       const result = await db.prepare(`
         INSERT INTO Online_Inventory (
-          Artist, Title, Format, Discogs_ID, Price, 
+          Artist, Title, Format, Discogs_ID, Discogs_url, Price, 
           Description, Condition_Media, Condition_Sleeve, 
           Seller_Reference_Number, Quantity, Label, 
           Release_Catalog_Number, Release_Country, Release_Date, 
           Genre, Front_Image_URL, Back_Image_URL, 
           YouTube_Audio_Image_URLs, Bar_Code, Number_In_Set
         ) VALUES (
-          ?, ?, ?, ?, ?, 
+          ?, ?, ?, ?, ?, ?, 
           ?, ?, ?, 
           ?, ?, ?, 
           ?, ?, ?, 
@@ -93,7 +94,7 @@ export async function onRequestPost(context) {
           ?, ?, ?
         )
       `).bind(
-        artist, title, format, discogsId, price,
+        artist, title, format, discogsId, discogsUrl, price,
         description, condMedia, condSleeve,
         sellerRef, quantity, label,
         catalogNum, country, date,

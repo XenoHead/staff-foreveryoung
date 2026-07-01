@@ -398,6 +398,11 @@
           </select>
         </div>
 
+        <div style="flex: 0 1 auto; min-width: 140px; display: flex; align-items: center; gap: 5px;">
+          <input type="checkbox" id="hide-zeros" checked>
+          <label for="hide-zeros" style="font-family: 'Outfit', sans-serif; cursor: pointer;">Hide Quantity: 0</label>
+        </div>
+
         <button type="submit" class="action-btn" style="background: var(--blue); color: var(--yellow);">Search</button>
       </form>
 
@@ -492,6 +497,9 @@
       const urlParams = new URLSearchParams();
       if (params.query) urlParams.set('query', params.query);
       if (params.letter) urlParams.set('letter', params.letter);
+      
+      const hideZeros = document.getElementById('hide-zeros');
+      if (hideZeros) urlParams.set('hideZeros', hideZeros.checked);
       
       urlParams.set('page', currentPage);
       urlParams.set('limit', currentLimit);
@@ -619,6 +627,15 @@
       executeSearch();
       window.scrollTo({ top: searchForm.offsetTop - 50, behavior: 'smooth' });
     });
+
+    // Checkbox toggle listener
+    const hideZerosCheckbox = document.getElementById('hide-zeros');
+    if (hideZerosCheckbox) {
+      hideZerosCheckbox.addEventListener('change', () => {
+        currentPage = 1;
+        executeSearch();
+      });
+    }
 
     // Load initial empty list placeholder
     resultsList.innerHTML = '<div style="text-align: center; padding: 3rem; color: #B6C0D7; font-size: 1.2rem; font-style: italic;">Use the lookup field above to search In-Store products.</div>';

@@ -143,7 +143,8 @@ export async function onRequestGet(context) {
       YouTube_Audio_Image_URLs: youtubeStr,
       Number_In_Set: numInSet,
       Description: descriptionStr,
-      Discogs_ID: String(data.id)
+      Discogs_ID: String(data.id),
+      Discogs_url: `https://www.discogs.com/release/${data.id}`
     };
 
     return new Response(JSON.stringify({ success: true, result: result }), {

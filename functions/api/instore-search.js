@@ -22,8 +22,8 @@ export async function onRequestGet(context) {
       bindParams = [`%${query}%`, `%${query}%`, `%${query}%`];
     }
 
-    // Base where clause: include zero quantity only for UPC searches
-    const quantityCondition = upcParam ? '' : ' AND Quantity > 0';
+    const hideZeros = url.searchParams.get('hideZeros') === 'true';
+    const quantityCondition = hideZeros ? ' AND Quantity > 0' : '';
 
     // Total count
     const countQuery = 'SELECT COUNT(*) as total FROM Inventory WHERE 1=1' + quantityCondition + filterSql;
