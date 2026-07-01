@@ -578,67 +578,85 @@
         <!-- Live Preview Grid Columns -->
         <div style="flex: 1; display: flex; flex-direction: column; min-height: 250px;">
           <h3 style="font-family: 'Oswald', sans-serif; color: var(--yellow); margin-bottom: 0.8rem; font-size: 1.2rem;">Currently Featured Items</h3>
-          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; flex: 1; min-height: 0; margin-bottom: 1rem;">
+          <div style="display: flex; flex-direction: column; gap: 0.5rem; flex: 1; min-height: 0; margin-bottom: 1rem;">
             
-            <!-- Column 1: New Releases -->
-            <div style="display: flex; flex-direction: column; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 0.8rem;">
-              <h4 style="font-family: 'Oswald', sans-serif; color: var(--yellow); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem; margin-bottom: 0.8rem;">New Releases</h4>
-              <div id="featured-list-new-releases" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem;">
+            <!-- Crate 1: New Releases -->
+            <div style="background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px;">
+              <div onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'flex' : 'none'" style="cursor: pointer; padding: 0.8rem; display: flex; justify-content: space-between; align-items: center;">
+                <h4 style="font-family: 'Oswald', sans-serif; color: var(--yellow); margin: 0;">New Releases</h4>
+                <span style="color: var(--muted); font-size: 0.8rem;">&#9660;</span>
+              </div>
+              <div id="featured-list-new-releases" style="display: none; flex-direction: column; gap: 0.5rem; padding: 0 0.8rem 0.8rem 0.8rem; border-top: 1px solid rgba(255,255,255,0.1); max-height: 300px; overflow-y: auto;">
                 <!-- Rendered dynamically -->
               </div>
             </div>
 
-            <!-- Column 2: Employee Picks -->
-            <div style="display: flex; flex-direction: column; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 0.8rem;">
-              <h4 style="font-family: 'Oswald', sans-serif; color: var(--yellow); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem; margin-bottom: 0.8rem;">Employee Picks</h4>
-              <div id="featured-list-new" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem;">
+            <!-- Crate 2: Employee Picks -->
+            <div style="background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px;">
+              <div onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'flex' : 'none'" style="cursor: pointer; padding: 0.8rem; display: flex; justify-content: space-between; align-items: center;">
+                <h4 style="font-family: 'Oswald', sans-serif; color: var(--yellow); margin: 0;">Employee Picks</h4>
+                <span style="color: var(--muted); font-size: 0.8rem;">&#9660;</span>
+              </div>
+              <div id="featured-list-new" style="display: none; flex-direction: column; gap: 0.5rem; padding: 0 0.8rem 0.8rem 0.8rem; border-top: 1px solid rgba(255,255,255,0.1); max-height: 300px; overflow-y: auto;">
                 <!-- Rendered dynamically -->
               </div>
             </div>
 
-            <!-- Column 3: Genres -->
-            <div style="display: flex; flex-direction: column; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 0.8rem;">
-              <h4 style="font-family: 'Oswald', sans-serif; color: var(--yellow); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem; margin-bottom: 0.8rem;">Genres Crate</h4>
-              <div id="featured-list-genres" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem;">
+            <!-- Crate 3: Genres Crate -->
+            <div style="background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px;">
+              <div onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'flex' : 'none'" style="cursor: pointer; padding: 0.8rem; display: flex; justify-content: space-between; align-items: center;">
+                <h4 style="font-family: 'Oswald', sans-serif; color: var(--yellow); margin: 0;">Genres Crate</h4>
+                <span style="color: var(--muted); font-size: 0.8rem;">&#9660;</span>
+              </div>
+              <div id="featured-list-genres" style="display: none; flex-direction: column; gap: 0.5rem; padding: 0 0.8rem 0.8rem 0.8rem; border-top: 1px solid rgba(255,255,255,0.1); max-height: 300px; overflow-y: auto;">
                 <!-- Rendered dynamically -->
               </div>
             </div>
 
-            <!-- Column 4: Hot Albums -->
-            <div style="display: flex; flex-direction: column; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 0.8rem;">
-              <h4 style="font-family: 'Oswald', sans-serif; color: var(--yellow); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem; margin-bottom: 0.8rem;">Hot Albums</h4>
-              <div id="featured-list-hot" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem;">
-                <!-- Rendered dynamically -->
+            <!-- Crate 4: Hot Albums -->
+            <div style="background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px;">
+              <div onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'flex' : 'none'" style="cursor: pointer; padding: 0.8rem; display: flex; justify-content: space-between; align-items: center;">
+                <h4 style="font-family: 'Oswald', sans-serif; color: var(--yellow); margin: 0;">Hot Albums</h4>
+                <span style="color: var(--muted); font-size: 0.8rem;">&#9660;</span>
               </div>
-            </div>
-          </div>
-
-          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; flex: 1; min-height: 0;">
-            <!-- Column 5: Rare Finds -->
-            <div style="display: flex; flex-direction: column; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 0.8rem;">
-              <h4 style="font-family: 'Oswald', sans-serif; color: var(--yellow); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem; margin-bottom: 0.8rem;">Rare Finds</h4>
-              <div id="featured-list-rare" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem;">
+              <div id="featured-list-hot" style="display: none; flex-direction: column; gap: 0.5rem; padding: 0 0.8rem 0.8rem 0.8rem; border-top: 1px solid rgba(255,255,255,0.1); max-height: 300px; overflow-y: auto;">
                 <!-- Rendered dynamically -->
               </div>
             </div>
 
-            <!-- Column 6: Temp1 -->
-            <div style="display: flex; flex-direction: column; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 0.8rem;">
-              <h4 style="font-family: 'Oswald', sans-serif; color: var(--yellow); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem; margin-bottom: 0.8rem;">Temp1 Crate</h4>
-              <div id="featured-list-temp1" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem;">
+            <!-- Crate 5: Rare Finds -->
+            <div style="background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px;">
+              <div onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'flex' : 'none'" style="cursor: pointer; padding: 0.8rem; display: flex; justify-content: space-between; align-items: center;">
+                <h4 style="font-family: 'Oswald', sans-serif; color: var(--yellow); margin: 0;">Rare Finds</h4>
+                <span style="color: var(--muted); font-size: 0.8rem;">&#9660;</span>
+              </div>
+              <div id="featured-list-rare" style="display: none; flex-direction: column; gap: 0.5rem; padding: 0 0.8rem 0.8rem 0.8rem; border-top: 1px solid rgba(255,255,255,0.1); max-height: 300px; overflow-y: auto;">
                 <!-- Rendered dynamically -->
               </div>
             </div>
 
-            <!-- Column 7: Temp2 -->
-            <div style="display: flex; flex-direction: column; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 0.8rem;">
-              <h4 style="font-family: 'Oswald', sans-serif; color: var(--yellow); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem; margin-bottom: 0.8rem;">Temp2 Crate</h4>
-              <div id="featured-list-temp2" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem;">
+            <!-- Crate 6: Temp1 Crate -->
+            <div style="background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px;">
+              <div onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'flex' : 'none'" style="cursor: pointer; padding: 0.8rem; display: flex; justify-content: space-between; align-items: center;">
+                <h4 style="font-family: 'Oswald', sans-serif; color: var(--yellow); margin: 0;">Temp1 Crate</h4>
+                <span style="color: var(--muted); font-size: 0.8rem;">&#9660;</span>
+              </div>
+              <div id="featured-list-temp1" style="display: none; flex-direction: column; gap: 0.5rem; padding: 0 0.8rem 0.8rem 0.8rem; border-top: 1px solid rgba(255,255,255,0.1); max-height: 300px; overflow-y: auto;">
                 <!-- Rendered dynamically -->
               </div>
             </div>
 
-            <div style="visibility: hidden;"></div>
+            <!-- Crate 7: Temp2 Crate -->
+            <div style="background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px;">
+              <div onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'flex' : 'none'" style="cursor: pointer; padding: 0.8rem; display: flex; justify-content: space-between; align-items: center;">
+                <h4 style="font-family: 'Oswald', sans-serif; color: var(--yellow); margin: 0;">Temp2 Crate</h4>
+                <span style="color: var(--muted); font-size: 0.8rem;">&#9660;</span>
+              </div>
+              <div id="featured-list-temp2" style="display: none; flex-direction: column; gap: 0.5rem; padding: 0 0.8rem 0.8rem 0.8rem; border-top: 1px solid rgba(255,255,255,0.1); max-height: 300px; overflow-y: auto;">
+                <!-- Rendered dynamically -->
+              </div>
+            </div>
+
           </div>
         </div>
 

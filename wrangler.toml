@@ -1,5 +1,5 @@
 name = "staff-foreveryoung"
-main = "_worker.js"
+main = "public/_worker.js"
 compatibility_date = "2024-03-20"
 
 [assets]
