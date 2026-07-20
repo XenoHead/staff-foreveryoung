@@ -361,6 +361,113 @@
       color: #FFF;
       letter-spacing: 0.5px;
     }
+
+    .edit-btn {
+      background: var(--yellow);
+      border: none;
+      color: var(--dark);
+      padding: 0.4rem 1.2rem;
+      border-radius: 4px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .edit-btn:hover {
+      background: #FFF;
+      box-shadow: 0 0 10px rgba(255, 212, 71, 0.4);
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(5px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: rgba(16, 26, 43, 0.95);
+      border: 2px solid var(--blue);
+      border-radius: 12px;
+      width: 95%;
+      max-width: 680px;
+      height: auto;
+      max-height: 95vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 50px rgba(0, 0, 0, 0.8);
+      overflow: hidden;
+    }
+
+    .modal-header {
+      padding: 0.6rem 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h2 {
+      font-family: 'Oswald', sans-serif;
+      color: var(--yellow);
+      font-size: 1.3rem;
+    }
+
+    .icon-btn {
+      background: transparent;
+      border: none;
+      color: #B6C0D7;
+      font-size: 1.6rem;
+      line-height: 1;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .icon-btn:hover {
+      color: #fff;
+    }
+
+    .modal-body-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
+    }
+
+    .modal-footer {
+      padding: 0.75rem 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      justify-content: flex-end;
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .status-banner {
+      margin-top: 1rem;
+      padding: 0.8rem;
+      border-radius: 6px;
+      text-align: center;
+      display: none;
+      font-weight: 600;
+    }
+
+    .status-banner.success {
+      background: rgba(46, 204, 113, 0.2);
+      border: 1px solid var(--green);
+      color: var(--green);
+    }
+
+    .status-banner.error {
+      background: rgba(193, 42, 48, 0.2);
+      border: 1px solid var(--red);
+      color: #FFF;
+    }
   </style>
 </head>
 
@@ -386,7 +493,8 @@
       <h2>In-Store Product Lookup</h2>
       <form id="search-form" class="search-row" action="#" method="GET">
         <div class="search-input-wrapper">
-          <input type="text" id="search-query" placeholder="Search our in-store database (Artist, Title, UPC, Cat #)...">
+          <input type="text" id="search-query"
+            placeholder="Search our in-store database (Artist, Title, UPC, Cat #)...">
         </div>
 
         <div style="flex: 0 1 140px; min-width: 120px;">
@@ -404,10 +512,14 @@
         </div>
 
         <button type="submit" class="action-btn" style="background: var(--blue); color: var(--yellow);">Search</button>
+        <button type="button" id="btn-add-product" class="action-btn success">+ Add Product</button>
       </form>
 
+      <div id="status-banner" class="status-banner"></div>
+
       <div class="browse-letters" id="letter-index">
-        <span style="color: #B6C0D7; display: flex; align-items: center; margin-right: 0.5rem; font-family: 'Oswald', sans-serif;">BROWSE:</span>
+        <span
+          style="color: #B6C0D7; display: flex; align-items: center; margin-right: 0.5rem; font-family: 'Oswald', sans-serif;">BROWSE:</span>
         <a href="#">#</a>
         <a href="#">A</a>
         <a href="#">B</a>
@@ -459,13 +571,122 @@
     </div>
   </div>
 
-  <footer style="margin-top: auto; text-align: center; padding-top: 2rem; padding-bottom: 2rem; position: relative; z-index: 10; width: 100%;">
+  <!-- Edit / Create Product Modal -->
+  <div id="editor-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modal-title-text">Edit In-Store Product</h2>
+        <button id="modal-close" class="icon-btn">&times;</button>
+      </div>
+
+      <div class="modal-body-scroll">
+        <form id="product-form" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <input type="hidden" id="f-id">
+          <div>
+            <label style="display: block; font-size: 0.85rem; color: #B6C0D7; margin-bottom: 5px;">Artist</label>
+            <input type="text" id="f-artist" required>
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; color: #B6C0D7; margin-bottom: 5px;">Title</label>
+            <input type="text" id="f-title" required>
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; color: #B6C0D7; margin-bottom: 5px;">Format</label>
+            <input type="text" id="f-format" required>
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; color: #B6C0D7; margin-bottom: 5px;">Vendor /
+              Label</label>
+            <input type="text" id="f-vendor">
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; color: #B6C0D7; margin-bottom: 5px;">Catalog
+              Number</label>
+            <input type="text" id="f-vendor-number">
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; color: #B6C0D7; margin-bottom: 5px;">UPC</label>
+            <div style="display: flex; gap: 5px;">
+              <input type="text" id="f-upc" style="flex: 1; height: 28px;">
+              <button type="button" id="btn-discogs-upc-lookup" class="action-btn"
+                style="height: 28px; padding: 0 10px; font-size: 0.75rem; margin-top: 0; background: var(--blue); color: var(--yellow); border: 1px solid var(--yellow);">Lookup</button>
+            </div>
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; color: #B6C0D7; margin-bottom: 5px;">Quantity</label>
+            <input type="number" id="f-quantity" required min="0">
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; color: #B6C0D7; margin-bottom: 5px;">Year</label>
+            <input type="text" id="f-year">
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; color: #B6C0D7; margin-bottom: 5px;">OOP (Out of
+              Print)</label>
+            <select id="f-oop">
+              <option value="No">No</option>
+              <option value="Yes">Yes</option>
+            </select>
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; color: #B6C0D7; margin-bottom: 5px;">SRP (Price)</label>
+            <input type="text" id="f-srp">
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button id="btn-delete" class="action-btn danger"
+          style="margin-right: auto; background: var(--red); color: white; border: none; padding: 0.6rem 1.2rem; font-size: 0.85rem;">Zero
+          Out</button>
+        <button id="btn-cancel" class="action-btn"
+          style="border: 1px solid #B6C0D7; color: #B6C0D7; padding: 0.6rem 1.2rem; font-size: 0.85rem;">Cancel</button>
+        <button id="btn-save" class="action-btn success"
+          style="border: none; padding: 0.6rem 1.2rem; font-size: 0.85rem;">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Discogs Match Confirmation Modal -->
+  <div id="discogs-match-modal" class="modal-overlay" style="display: none; z-index: 2000;">
+    <div class="modal-content" style="max-width: 500px; height: auto;">
+      <div class="modal-header">
+        <h2>Discogs Match Found</h2>
+        <button id="match-close" class="icon-btn">&times;</button>
+      </div>
+      <div class="modal-body-scroll" style="display: flex; gap: 1rem; align-items: flex-start;">
+        <div class="img-preview-box"
+          style="width: 100px; height: 100px; border: 1px solid rgba(255, 255, 255, 0.1); background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+          <img id="match-img" src="images/fyr-logo.png" style="width: 100%; height: 100%; object-fit: contain;">
+        </div>
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.9rem;">
+          <div><strong>Artist:</strong> <span id="match-artist"></span></div>
+          <div><strong>Title:</strong> <span id="match-title"></span></div>
+          <div><strong>Format:</strong> <span id="match-format"></span></div>
+          <div><strong>Label:</strong> <span id="match-label"></span></div>
+          <div><strong>Catalog #:</strong> <span id="match-catno"></span></div>
+          <div><strong>Year:</strong> <span id="match-year"></span></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="btn-match-deny" class="action-btn danger"
+          style="padding: 0.6rem 1.2rem; font-size: 0.85rem; border: none; background: var(--red); color: white;">Deny</button>
+        <button id="btn-match-accept" class="action-btn success"
+          style="padding: 0.6rem 1.2rem; font-size: 0.85rem; border: none; background: var(--green); color: white;">Accept</button>
+      </div>
+    </div>
+  </div>
+
+  <footer
+    style="margin-top: auto; text-align: center; padding-top: 2rem; padding-bottom: 2rem; position: relative; z-index: 10; width: 100%;">
     <a href="https://xenohead.com" target="_blank"
       style="text-decoration: none; color: #B6C0D7; display: inline-flex; flex-direction: column; align-items: center; gap: 0.5rem; transition: all 0.3s; opacity: 0.8;"
       onmouseover="this.style.opacity=1; this.style.transform='translateY(-2px)';"
       onmouseout="this.style.opacity=0.8; this.style.transform='translateY(0)';">
       <img src="images/xenohead_logo.png" alt="XenoHead" style="height: 40px;">
-      <span style="font-family: 'Oswald', sans-serif; letter-spacing: 1px; font-size: 0.9rem; text-transform: uppercase;">A XenoHead Creation</span>
+      <span
+        style="font-family: 'Oswald', sans-serif; letter-spacing: 1px; font-size: 0.9rem; text-transform: uppercase;">A
+        XenoHead Creation</span>
     </a>
   </footer>
 
@@ -497,24 +718,24 @@
       const urlParams = new URLSearchParams();
       if (params.query) urlParams.set('query', params.query);
       if (params.letter) urlParams.set('letter', params.letter);
-      
+
       const hideZeros = document.getElementById('hide-zeros');
       if (hideZeros) urlParams.set('hideZeros', hideZeros.checked);
-      
+
       urlParams.set('page', currentPage);
       urlParams.set('limit', currentLimit);
 
       try {
         const response = await fetch(`/api/inventory-search?${urlParams.toString()}`);
         const data = await response.json();
-        
+
         loadingSpinner.style.display = 'none';
 
         if (data.success && data.results && data.results.length > 0) {
           data.results.forEach(item => {
             const card = document.createElement('div');
             card.className = 'record-card';
-            
+
             // Choose placeholder art
             const colors = ['#2C6CFF', '#0A2C74', '#FFD447', '#2ecc71', '#e74c3c', '#9b59b6'];
             const randomColor = colors[item.id % colors.length];
@@ -526,7 +747,10 @@
 
             card.innerHTML = `
               <div class="record-art">
-                ${artHtml}
+                ${item.Image_URL
+                ? `<img src="${item.Image_URL}" alt="Album Art" style="width: 100%; height: 100%; object-fit: cover;">`
+                : `<div class="placeholder-art" style="background: ${randomColor}; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; position: relative;"><span style="font-family: 'Oswald', sans-serif; font-size: 1.2rem; opacity: 0.3; font-weight: 700; color: #fff;">${item.Format || 'LP'}</span></div>`
+              }
               </div>
               <div class="record-info">
                 <div class="record-text">
@@ -543,12 +767,16 @@
                   <span><strong>OOP:</strong> ${item.OOP || 'No'}</span>
                 </div>
                 <div class="record-price">
-                  <span>${item.SRP || 'Call for Price'}</span>
+                  <span>${item.SRP || ''}</span>
+                  <button class="edit-btn">Edit</button>
                 </div>
               </div>
             `;
-            
+
             resultsList.appendChild(card);
+            card.querySelector('.edit-btn').addEventListener('click', () => {
+              openModal(item);
+            });
           });
 
           // Show & update pagination controls
@@ -557,7 +785,7 @@
           prevPageBtn.disabled = currentPage === 1;
           nextPageBtn.disabled = currentPage === totalPages;
           paginationControls.style.display = 'flex';
-          
+
         } else {
           resultsList.innerHTML = '<div style="text-align: center; padding: 3rem; color: #B6C0D7; font-size: 1.2rem; font-style: italic;">No matching in-store products found.</div>';
           paginationControls.style.display = 'none';
@@ -580,7 +808,7 @@
       currentPage = 1;
       currentLimit = parseInt(searchLimit.value, 10);
       activeLetter = '';
-      
+
       // Remove active class from letters
       document.querySelectorAll('.browse-letters a').forEach(a => a.classList.remove('active'));
 
@@ -596,15 +824,15 @@
       const letter = letterLink.textContent.trim();
       letterLink.addEventListener('click', (e) => {
         e.preventDefault();
-        
+
         // Toggle active letter state
         letterLinks.forEach(a => a.classList.remove('active'));
         letterLink.classList.add('active');
-        
+
         currentPage = 1;
         currentLimit = parseInt(searchLimit.value, 10);
         searchQuery.value = ''; // Clear search text when letter-browsing
-        
+
         lastSearchParams = {
           letter: letter === '#' ? '0-9' : letter
         };
@@ -638,7 +866,256 @@
     }
 
     // Load initial empty list placeholder
-    resultsList.innerHTML = '<div style="text-align: center; padding: 3rem; color: #B6C0D7; font-size: 1.2rem; font-style: italic;">Use the lookup field above to search In-Store products.</div>';
+    resultsList.innerHTML = '<div style="text-align: center; padding: 3rem; color: #B6C0D7; font-size: 1.2rem; font-style: italic;">Use the lookup field above to IN-STORE products.</div>';
+
+    // Modal elements
+    const editorModal = document.getElementById('editor-modal');
+    const modalClose = document.getElementById('modal-close');
+    const productForm = document.getElementById('product-form');
+    const btnCancel = document.getElementById('btn-cancel');
+    const btnSave = document.getElementById('btn-save');
+    const btnDelete = document.getElementById('btn-delete');
+    const modalTitleText = document.getElementById('modal-title-text');
+    const statusBanner = document.getElementById('status-banner');
+
+    const fId = document.getElementById('f-id');
+    const fArtist = document.getElementById('f-artist');
+    const fTitle = document.getElementById('f-title');
+    const fFormat = document.getElementById('f-format');
+    const fVendor = document.getElementById('f-vendor');
+    const fVendorNumber = document.getElementById('f-vendor-number');
+    const fUpc = document.getElementById('f-upc');
+    const fQuantity = document.getElementById('f-quantity');
+    const fYear = document.getElementById('f-year');
+    const fOop = document.getElementById('f-oop');
+    const fSrp = document.getElementById('f-srp');
+    let currentImageUrl = '';
+
+    function showStatus(msg, isSuccess = true) {
+      statusBanner.textContent = msg;
+      statusBanner.className = `status-banner ${isSuccess ? 'success' : 'error'}`;
+      statusBanner.style.display = 'block';
+      setTimeout(() => {
+        statusBanner.style.display = 'none';
+      }, 5000);
+    }
+
+    function openModal(item = null) {
+      productForm.reset();
+      if (item) {
+        modalTitleText.textContent = "Edit In-Store Product";
+        fId.value = item.id || '';
+        fArtist.value = item.Artist || '';
+        fTitle.value = item.Title || '';
+        fFormat.value = item.Format || '';
+        fVendor.value = item.Vendor || '';
+        fVendorNumber.value = item.Vendor_Number || '';
+        fUpc.value = item.UPC || '';
+        fQuantity.value = item.Quantity !== undefined ? item.Quantity : 0;
+        fYear.value = item.Year || '';
+        fOop.value = item.OOP || 'No';
+        fSrp.value = item.SRP || '';
+        currentImageUrl = item.Image_URL || '';
+        btnDelete.style.display = 'block';
+      } else {
+        modalTitleText.textContent = "Add In-Store Product";
+        fId.value = '';
+        fQuantity.value = 0;
+        fOop.value = 'No';
+        currentImageUrl = '';
+        btnDelete.style.display = 'none';
+      }
+      editorModal.style.display = 'flex';
+    }
+
+    function closeModal() {
+      editorModal.style.display = 'none';
+    }
+
+    modalClose.addEventListener('click', closeModal);
+    btnCancel.addEventListener('click', closeModal);
+    editorModal.addEventListener('click', (e) => {
+      if (e.target === editorModal) closeModal();
+    });
+
+    document.getElementById('btn-add-product').addEventListener('click', () => openModal(null));
+
+    btnSave.addEventListener('click', async () => {
+      if (!productForm.checkValidity()) {
+        productForm.reportValidity();
+        return;
+      }
+
+      const payload = {
+        id: fId.value || null,
+        Artist: fArtist.value.trim(),
+        Title: fTitle.value.trim(),
+        Format: fFormat.value.trim(),
+        Vendor: fVendor.value.trim(),
+        Vendor_Number: fVendorNumber.value.trim(),
+        UPC: fUpc.value.trim(),
+        Quantity: fQuantity.value ? parseInt(fQuantity.value, 10) : 0,
+        Year: fYear.value.trim(),
+        OOP: fOop.value,
+        SRP: fSrp.value.trim(),
+        Image_URL: currentImageUrl
+      };
+
+      try {
+        btnSave.disabled = true;
+        btnSave.textContent = "Saving...";
+
+        const response = await fetch('/api/instore-update', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+
+        if (data.success) {
+          showStatus(data.message || "Product saved successfully!", true);
+          closeModal();
+          executeSearch();
+        } else {
+          alert("Error saving: " + data.error);
+        }
+      } catch (err) {
+        console.error("Save Error:", err);
+        alert("Failed to connect to update server.");
+      } finally {
+        btnSave.disabled = false;
+        btnSave.textContent = "Save";
+      }
+    });
+
+    btnDelete.addEventListener('click', async () => {
+      const id = fId.value;
+      if (!id) return;
+
+      const confirmDelete = confirm(`Are you sure you want to zero out stock for: "${fTitle.value}"?`);
+      if (!confirmDelete) return;
+
+      try {
+        btnDelete.disabled = true;
+        btnDelete.textContent = "Zeroing...";
+
+        const response = await fetch('/api/instore-update?action=delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: id })
+        });
+        const data = await response.json();
+
+        if (data.success) {
+          showStatus(data.message || "Product quantity zeroed out successfully!", true);
+          closeModal();
+          executeSearch();
+        } else {
+          alert("Error: " + data.error);
+        }
+      } catch (err) {
+        console.error("Delete Error:", err);
+        alert("Failed to connect to server.");
+      } finally {
+        btnDelete.disabled = false;
+        btnDelete.textContent = "Zero Out";
+      }
+    });
+
+    // Discogs UPC Lookup Elements
+    const btnDiscogsUpcLookup = document.getElementById('btn-discogs-upc-lookup');
+    const discogsMatchModal = document.getElementById('discogs-match-modal');
+    const matchClose = document.getElementById('match-close');
+    const matchImg = document.getElementById('match-img');
+    const matchArtist = document.getElementById('match-artist');
+    const matchTitle = document.getElementById('match-title');
+    const matchFormat = document.getElementById('match-format');
+    const matchLabel = document.getElementById('match-label');
+    const matchCatno = document.getElementById('match-catno');
+    const matchYear = document.getElementById('match-year');
+    const btnMatchDeny = document.getElementById('btn-match-deny');
+    const btnMatchAccept = document.getElementById('btn-match-accept');
+
+    let pendingMatchData = null;
+
+    btnDiscogsUpcLookup.addEventListener('click', async () => {
+      const upc = fUpc.value.trim();
+      if (!upc) {
+        alert("Please enter a UPC code first.");
+        return;
+      }
+
+      try {
+        btnDiscogsUpcLookup.disabled = true;
+        btnDiscogsUpcLookup.textContent = "Looking...";
+
+        const response = await fetch('/api/enrich', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ barcode: upc })
+        });
+        const data = await response.json();
+
+        if (data.success && data.details) {
+          pendingMatchData = data.details;
+
+          // Populate match preview
+          matchImg.src = pendingMatchData.Front_Image_URL || 'images/fyr-logo.png';
+          matchArtist.textContent = pendingMatchData.Artist || 'N/A';
+          matchTitle.textContent = pendingMatchData.Title || 'N/A';
+          matchFormat.textContent = pendingMatchData.Format || 'N/A';
+          matchLabel.textContent = pendingMatchData.Label || 'N/A';
+          matchCatno.textContent = pendingMatchData.Release_Catalog_Number || 'N/A';
+          matchYear.textContent = pendingMatchData.Release_Date || 'N/A';
+
+          // Open match modal
+          discogsMatchModal.style.display = 'flex';
+        } else {
+          alert("No match found on Discogs for this UPC.");
+        }
+      } catch (err) {
+        console.error("Discogs Lookup Error:", err);
+        alert("Failed to connect to Discogs lookup service.");
+      } finally {
+        btnDiscogsUpcLookup.disabled = false;
+        btnDiscogsUpcLookup.textContent = "Lookup";
+      }
+    });
+
+    function closeMatchModal() {
+      discogsMatchModal.style.display = 'none';
+      pendingMatchData = null;
+    }
+
+    matchClose.addEventListener('click', closeMatchModal);
+    btnMatchDeny.addEventListener('click', closeMatchModal);
+    discogsMatchModal.addEventListener('click', (e) => {
+      if (e.target === discogsMatchModal) closeMatchModal();
+    });
+
+    btnMatchAccept.addEventListener('click', () => {
+      if (pendingMatchData) {
+        fArtist.value = pendingMatchData.Artist || fArtist.value;
+        fTitle.value = pendingMatchData.Title || fTitle.value;
+        fFormat.value = pendingMatchData.Format || fFormat.value;
+        fVendor.value = pendingMatchData.Label || fVendor.value;
+        fVendorNumber.value = pendingMatchData.Release_Catalog_Number || fVendorNumber.value;
+
+        // Extract year from release date
+        if (pendingMatchData.Release_Date) {
+          const matchYearVal = pendingMatchData.Release_Date.match(/\b\d{4}\b/);
+          fYear.value = matchYearVal ? matchYearVal[0] : pendingMatchData.Release_Date;
+        }
+
+        // Store image URL so it gets saved with the record
+        if (pendingMatchData.Front_Image_URL) {
+          currentImageUrl = pendingMatchData.Front_Image_URL;
+        }
+
+        showStatus("Discogs details applied!", true);
+      }
+      closeMatchModal();
+    });
   </script>
 </body>
 

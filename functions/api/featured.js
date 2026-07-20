@@ -24,24 +24,68 @@ export async function onRequestGet(context) {
     const type = url.searchParams.get('type');
 
     await db.prepare(`CREATE TABLE IF NOT EXISTS Settings (key TEXT PRIMARY KEY, value TEXT)`).run();
-    const result = await db.prepare(`SELECT value FROM Settings WHERE key='featured_items'`).first();
-    const value = result ? result.value || "" : "";
 
-    if (type === 'details') {
-      let items = [];
-      if (value) {
-        const refs = value.split(',').map(r => r.trim()).filter(r => r.length > 0);
-        if (refs.length > 0) {
-          const placeholders = refs.map(() => '?').join(',');
-          const query = `SELECT * FROM Online_Inventory WHERE Seller_Reference_Number IN (${placeholders}) OR Bar_Code IN (${placeholders})`;
-          const detailsResult = await db.prepare(query).bind(...refs, ...refs).all();
-          items = detailsResult.results;
-        }
-      }
-      return new Response(JSON.stringify({ success: true, value, items }), { status: 200, headers: corsHeaders });
+    // Return crate config (names + enabled)
+    if (type === 'config') {
+      const row = await db.prepare(`SELECT value FROM Settings WHERE key='crate_config'`).first();
+      const config = row ? JSON.parse(row.value || '{}') : {};
+      return new Response(JSON.stringify({ success: true, config }), { status: 200, headers: corsHeaders });
     }
 
-    return new Response(JSON.stringify({ success: true, value }), { status: 200, headers: corsHeaders });
+    if (type === 'details') {
+      const keys = ["new", "new_releases", "hot", "rare", "temp1", "temp2", "genres"];
+      const responseObj = { success: true };
+
+      for (const k of keys) {
+        const setting = await db.prepare("SELECT value FROM Settings WHERE key = ?").bind("featured_" + k).first();
+        const value = setting ? setting.value || "" : "";
+        let items = [];
+        
+        if (value) {
+          const refs = value.split(',').map(r => r.trim()).filter(r => r.length > 0);
+          if (refs.length > 0) {
+            const placeholders = refs.map(() => '?').join(',');
+            const query = `SELECT * FROM Online_Inventory WHERE Seller_Reference_Number IN (${placeholders}) OR Bar_Code IN (${placeholders})`;
+            const detailsResult = await db.prepare(query).bind(...refs, ...refs).all();
+            
+            const onlineItems = (detailsResult.results || []).map(item => ({ ...item, _source: 'online' }));
+            
+            // Identify missing
+            const foundRefs = new Set();
+            onlineItems.forEach(item => {
+              if (item.Seller_Reference_Number) foundRefs.add(item.Seller_Reference_Number.toLowerCase());
+              if (item.Bar_Code) foundRefs.add(item.Bar_Code.toLowerCase());
+            });
+            
+            const missingRefs = refs.filter(r => !foundRefs.has(r.toLowerCase()));
+            let instoreItems = [];
+            
+            if (missingRefs.length > 0) {
+              const instorePlaceholders = missingRefs.map(() => '?').join(',');
+              const instoreQuery = `SELECT * FROM Inventory WHERE UPC IN (${instorePlaceholders}) OR Vendor_Number IN (${instorePlaceholders})`;
+              const instoreResult = await db.prepare(instoreQuery).bind(...missingRefs, ...missingRefs).all();
+              
+              instoreItems = (instoreResult.results || []).map(item => ({
+                id: item.id,
+                Artist: item.Artist,
+                Title: item.Title,
+                Format: item.Format,
+                Price: parseFloat(item.SRP) || 0.00,
+                Bar_Code: item.UPC,
+                Quantity: item.Quantity,
+                _source: 'instore'
+              }));
+            }
+            
+            items = [...onlineItems, ...instoreItems];
+          }
+        }
+        responseObj[k] = { value, items };
+      }
+      return new Response(JSON.stringify(responseObj), { status: 200, headers: corsHeaders });
+    }
+
+    return new Response(JSON.stringify({ success: true }), { status: 200, headers: corsHeaders });
   } catch(err) {
     return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: corsHeaders });
   }
@@ -59,10 +103,22 @@ export async function onRequestPost(context) {
     await db.prepare(`CREATE TABLE IF NOT EXISTS Settings (key TEXT PRIMARY KEY, value TEXT)`).run();
     
     const body = await request.json();
-    const value = body.value || "";
-    
-    // Save to Settings
-    await db.prepare(`INSERT INTO Settings (key, value) VALUES ('featured_items', ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value`).bind(value).run();
+
+    // Save crate config (names + enabled)
+    if (body.config !== undefined) {
+      const configStr = JSON.stringify(body.config);
+      await db.prepare(`INSERT INTO Settings (key, value) VALUES ('crate_config', ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value`).bind(configStr).run();
+      return new Response(JSON.stringify({ success: true }), { status: 200, headers: corsHeaders });
+    }
+
+    // Save featured items for all crates
+    const keys = ["new", "new_releases", "hot", "rare", "temp1", "temp2", "genres"];
+    for (const k of keys) {
+      if (body[k] !== undefined) {
+        const val = body[k] || "";
+        await db.prepare(`INSERT INTO Settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value`).bind("featured_" + k, val).run();
+      }
+    }
     
     return new Response(JSON.stringify({ success: true }), { status: 200, headers: corsHeaders });
   } catch (err) {

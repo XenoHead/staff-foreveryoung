@@ -64,6 +64,10 @@ export default {
       if (path === '/api/online-update' && method === 'POST')
         return await handleOnlineUpdate(request, env);
 
+      // /api/instore-update
+      if (path === '/api/instore-update' && method === 'POST')
+        return await handleInstoreUpdate(request, env);
+
       // /api/punch
       if (path === '/api/punch') {
         if (method === 'GET')  return await handlePunchGet(request, env);
@@ -358,6 +362,12 @@ async function handleFeaturedGet(request, env) {
   const compatRes = await db.prepare(`SELECT value FROM Settings WHERE key='featured_items'`).first();
   const compatValue = compatRes?.value || '';
 
+  if (type === 'config') {
+    const row = await db.prepare(`SELECT value FROM Settings WHERE key='crate_config'`).first();
+    const config = row ? JSON.parse(row.value || '{}') : {};
+    return json({ success: true, config });
+  }
+
   if (type === 'details') {
     const details = {
       new: { value: settings.featured_new, items: [] },
@@ -422,6 +432,14 @@ async function handleFeaturedPost(request, env) {
   const db = env.DB;
   await db.prepare(`CREATE TABLE IF NOT EXISTS Settings (key TEXT PRIMARY KEY, value TEXT)`).run();
   const body = await request.json();
+  
+  if (body.config !== undefined) {
+    const configStr = JSON.stringify(body.config);
+    await db.prepare(`INSERT INTO Settings (key, value) VALUES ('crate_config', ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value`)
+      .bind(configStr)
+      .run();
+    return json({ success: true });
+  }
   
   for (const k of ['new', 'new_releases', 'hot', 'rare', 'temp1', 'temp2', 'genres']) {
     const valKey = 'featured_' + k;
@@ -637,6 +655,43 @@ async function handleOnlineUpdate(request, env) {
     ).bind(...fields).run();
     const newRow = await db.prepare('SELECT last_insert_rowid() as id').first();
     return json({ success: true, message: 'Product created successfully.', id: newRow?.id });
+  }
+}
+
+async function handleInstoreUpdate(request, env) {
+  const db = env.DB;
+  const url = new URL(request.url);
+  const body = await request.json();
+  const action = url.searchParams.get('action') || '';
+
+  if (action === 'delete') {
+    const id = parseInt(body.id);
+    if (!id) return json({ error: 'Missing product ID for deletion.' }, 400);
+    await db.prepare('UPDATE Inventory SET Quantity = 0 WHERE id = ?').bind(id).run();
+    return json({ success: true, message: 'Product quantity set to 0.' });
+  }
+
+  const id = body.id ? parseInt(body.id) : null;
+  const { Artist='', Title='', Format='', Vendor='', Vendor_Number='', UPC='', Year='', OOP='' } = body;
+  const SRP = body.SRP || '';
+  const Quantity = body.Quantity !== undefined && body.Quantity !== '' ? parseInt(body.Quantity) : 0;
+
+  if (!Title && !Artist) return json({ error: 'Artist or Title must be provided.' }, 400);
+
+  const fields = [Artist, Title, Format, Vendor, Vendor_Number, UPC, Quantity, Year, OOP, SRP];
+
+  if (id) {
+    await db.prepare(`UPDATE Inventory SET
+      Artist=?,Title=?,Format=?,Vendor=?,Vendor_Number=?,UPC=?,Quantity=?,Year=?,OOP=?,SRP=? WHERE id=?`
+    ).bind(...fields, id).run();
+    return json({ success: true, message: 'In-Store product updated successfully.', id });
+  } else {
+    await db.prepare(`INSERT INTO Inventory
+      (Artist,Title,Format,Vendor,Vendor_Number,UPC,Quantity,Year,OOP,SRP)
+      VALUES (?,?,?,?,?,?,?,?,?,?)`
+    ).bind(...fields).run();
+    const newRow = await db.prepare('SELECT last_insert_rowid() as id').first();
+    return json({ success: true, message: 'In-Store product created successfully.', id: newRow?.id });
   }
 }
 

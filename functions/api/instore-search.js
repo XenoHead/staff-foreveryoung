@@ -36,7 +36,7 @@ export async function onRequestGet(context) {
 
     // Data query
     const dataQuery =
-      'SELECT id, UPC, Quantity, Format, Artist, Title, Vendor_Number, Year, SRP FROM Inventory WHERE 1=1' +
+      'SELECT id, UPC, Quantity, Format, Artist, Title, Vendor, Vendor_Number, Year, OOP, SRP, Image_URL FROM Inventory WHERE 1=1' +
       quantityCondition +
       filterSql +
       ' ORDER BY Artist ASC, Title ASC LIMIT ? OFFSET ?';
