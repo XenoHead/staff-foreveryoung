@@ -145,10 +145,13 @@ async function fetchReleaseDetails(releaseId, token) {
   }
 
   let numInSet = '';
+  let formatStr = '';
   if (data.formats && data.formats.length > 0) {
     const fmt = data.formats[0];
+    formatStr = fmt.name || '';
     if (fmt.qty && parseInt(fmt.qty) > 1) {
       numInSet = `${fmt.qty} ${fmt.name}`;
+      formatStr = `${fmt.qty}${fmt.name}`;
     }
   }
 
@@ -164,6 +167,7 @@ async function fetchReleaseDetails(releaseId, token) {
   return {
     Discogs_ID: releaseId.toString(),
     Discogs_url: `https://www.discogs.com/release/${releaseId}`,
+    Format: formatStr,
     Front_Image_URL: frontImg,
     Back_Image_URL: backImg,
     Label: label,

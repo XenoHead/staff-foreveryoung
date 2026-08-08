@@ -434,8 +434,9 @@
 
     .modal-body-scroll {
       flex: 1;
-      overflow-y: auto;
+      overflow-y: scroll;
       padding: 1.5rem;
+      min-height: 0;
     }
 
     .modal-footer {
@@ -582,6 +583,15 @@
       <div class="modal-body-scroll">
         <form id="product-form" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
           <input type="hidden" id="f-id">
+          <div style="grid-column: span 2; display: flex; align-items: center; gap: 1rem; background: rgba(0,0,0,0.3); padding: 0.75rem; border-radius: 6px; border: 1px solid rgba(255,255,255,0.08);">
+            <div style="width: 80px; height: 80px; background: #000; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <img id="f-img-preview" src="images/fyr-logo.png" style="width: 100%; height: 100%; object-fit: contain;">
+            </div>
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+              <label style="font-size: 0.8rem; color: #B6C0D7;">Cover Image URL</label>
+              <input type="text" id="f-image-url" style="font-size: 0.8rem; padding: 4px 8px; width: 100%;" placeholder="https://...">
+            </div>
+          </div>
           <div>
             <label style="display: block; font-size: 0.85rem; color: #B6C0D7; margin-bottom: 5px;">Artist</label>
             <input type="text" id="f-artist" required>
@@ -592,7 +602,7 @@
           </div>
           <div>
             <label style="display: block; font-size: 0.85rem; color: #B6C0D7; margin-bottom: 5px;">Format</label>
-            <input type="text" id="f-format" required>
+            <input type="text" id="f-format">
           </div>
           <div>
             <label style="display: block; font-size: 0.85rem; color: #B6C0D7; margin-bottom: 5px;">Vendor /
@@ -619,6 +629,14 @@
           <div>
             <label style="display: block; font-size: 0.85rem; color: #B6C0D7; margin-bottom: 5px;">Year</label>
             <input type="text" id="f-year">
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; color: #B6C0D7; margin-bottom: 5px;">Genre</label>
+            <input type="text" id="f-genre">
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; color: #B6C0D7; margin-bottom: 5px;">Country</label>
+            <input type="text" id="f-country">
           </div>
           <div>
             <label style="display: block; font-size: 0.85rem; color: #B6C0D7; margin-bottom: 5px;">OOP (Out of
@@ -889,7 +907,18 @@
     const fYear = document.getElementById('f-year');
     const fOop = document.getElementById('f-oop');
     const fSrp = document.getElementById('f-srp');
+    const fGenre = document.getElementById('f-genre');
+    const fCountry = document.getElementById('f-country');
+    const fImageUrl = document.getElementById('f-image-url');
+    const fImgPreview = document.getElementById('f-img-preview');
     let currentImageUrl = '';
+
+    if (fImageUrl) {
+      fImageUrl.addEventListener('input', () => {
+        currentImageUrl = fImageUrl.value.trim();
+        if (fImgPreview) fImgPreview.src = currentImageUrl || 'images/fyr-logo.png';
+      });
+    }
 
     function showStatus(msg, isSuccess = true) {
       statusBanner.textContent = msg;
@@ -915,7 +944,11 @@
         fYear.value = item.Year || '';
         fOop.value = item.OOP || 'No';
         fSrp.value = item.SRP || '';
-        currentImageUrl = item.Image_URL || '';
+        if (fGenre) fGenre.value = item.Genre || '';
+        if (fCountry) fCountry.value = item.Country || '';
+        currentImageUrl = item.Image_URL || item.Front_Image_URL || '';
+        if (fImageUrl) fImageUrl.value = currentImageUrl;
+        if (fImgPreview) fImgPreview.src = currentImageUrl || 'images/fyr-logo.png';
         btnDelete.style.display = 'block';
       } else {
         modalTitleText.textContent = "Add In-Store Product";
@@ -923,6 +956,8 @@
         fQuantity.value = 0;
         fOop.value = 'No';
         currentImageUrl = '';
+        if (fImageUrl) fImageUrl.value = '';
+        if (fImgPreview) fImgPreview.src = 'images/fyr-logo.png';
         btnDelete.style.display = 'none';
       }
       editorModal.style.display = 'flex';
@@ -958,7 +993,9 @@
         Year: fYear.value.trim(),
         OOP: fOop.value,
         SRP: fSrp.value.trim(),
-        Image_URL: currentImageUrl
+        Genre: fGenre ? fGenre.value.trim() : '',
+        Country: fCountry ? fCountry.value.trim() : '',
+        Image_URL: fImageUrl ? fImageUrl.value.trim() : currentImageUrl
       };
 
       try {
@@ -1110,7 +1147,12 @@
         // Store image URL so it gets saved with the record
         if (pendingMatchData.Front_Image_URL) {
           currentImageUrl = pendingMatchData.Front_Image_URL;
+          if (fImageUrl) fImageUrl.value = currentImageUrl;
+          if (fImgPreview) fImgPreview.src = currentImageUrl;
         }
+
+        if (pendingMatchData.Genre && fGenre) fGenre.value = pendingMatchData.Genre;
+        if (pendingMatchData.Release_Country && fCountry) fCountry.value = pendingMatchData.Release_Country;
 
         showStatus("Discogs details applied!", true);
       }

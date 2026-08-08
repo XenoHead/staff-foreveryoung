@@ -15,7 +15,10 @@ CREATE TABLE IF NOT EXISTS Inventory (
   Year TEXT,
   Vendor TEXT,
   Modified TEXT,
-  SRP TEXT
+  SRP TEXT,
+  Image_URL TEXT,
+  Genre TEXT,
+  Country TEXT
 );
 
 -- 2. Sales Table

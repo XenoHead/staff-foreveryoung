@@ -584,40 +584,45 @@
               style="padding: 0.3rem 0.5rem; background: rgba(0,0,0,0.4); border: 1px solid var(--blue); color: #fff; border-radius: 4px; font-size: 0.85rem; width: 100%;">
           </div>
           <div style="display: flex; flex-direction: column; gap: 3px; min-width: 140px;">
-            <label style="font-size: 0.75rem; color: var(--muted);">Employee Picks</label>
+            <label style="font-size: 0.75rem; color: var(--muted);">In Store (New Rel)</label>
+            <input type="text" id="cname-instore"
+              style="padding: 0.3rem 0.5rem; background: rgba(0,0,0,0.4); border: 1px solid var(--blue); color: #fff; border-radius: 4px; font-size: 0.85rem; width: 100%;">
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 3px; min-width: 140px;">
+            <label style="font-size: 0.75rem; color: var(--muted);">Online (New Rel)</label>
+            <input type="text" id="cname-online"
+              style="padding: 0.3rem 0.5rem; background: rgba(0,0,0,0.4); border: 1px solid var(--blue); color: #fff; border-radius: 4px; font-size: 0.85rem; width: 100%;">
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 3px; min-width: 140px;">
             <div style="display: flex; gap: 6px; align-items: center;">
               <input type="checkbox" id="cname-new-enabled" style="width: 14px; height: 14px;" checked>
-              <input type="text" id="cname-new"
+              <input type="text" id="cname-new" placeholder="Name..."
                 style="padding: 0.3rem 0.5rem; background: rgba(0,0,0,0.4); border: 1px solid var(--blue); color: #fff; border-radius: 4px; font-size: 0.85rem; width: 100%;">
             </div>
           </div>
           <div style="display: flex; flex-direction: column; gap: 3px; min-width: 140px;">
-            <label style="font-size: 0.75rem; color: var(--muted);">Hot Albums</label>
             <div style="display: flex; gap: 6px; align-items: center;">
               <input type="checkbox" id="cname-hot-enabled" style="width: 14px; height: 14px;" checked>
-              <input type="text" id="cname-hot"
+              <input type="text" id="cname-hot" placeholder="Name..."
                 style="padding: 0.3rem 0.5rem; background: rgba(0,0,0,0.4); border: 1px solid var(--blue); color: #fff; border-radius: 4px; font-size: 0.85rem; width: 100%;">
             </div>
           </div>
           <div style="display: flex; flex-direction: column; gap: 3px; min-width: 140px;">
-            <label style="font-size: 0.75rem; color: var(--muted);">Rare Finds</label>
             <div style="display: flex; gap: 6px; align-items: center;">
               <input type="checkbox" id="cname-rare-enabled" style="width: 14px; height: 14px;" checked>
-              <input type="text" id="cname-rare"
+              <input type="text" id="cname-rare" placeholder="Name..."
                 style="padding: 0.3rem 0.5rem; background: rgba(0,0,0,0.4); border: 1px solid var(--blue); color: #fff; border-radius: 4px; font-size: 0.85rem; width: 100%;">
             </div>
           </div>
           <div style="display: flex; flex-direction: column; gap: 3px; min-width: 140px;">
-            <label style="font-size: 0.75rem; color: var(--muted);">Genres</label>
             <div style="display: flex; gap: 6px; align-items: center;">
               <input type="checkbox" id="cname-genres-enabled" style="width: 14px; height: 14px;" checked>
-              <input type="text" id="cname-genres"
+              <input type="text" id="cname-genres" placeholder="Name..."
                 style="padding: 0.3rem 0.5rem; background: rgba(0,0,0,0.4); border: 1px solid var(--blue); color: #fff; border-radius: 4px; font-size: 0.85rem; width: 100%;">
             </div>
           </div>
           <div
             style="display: flex; flex-direction: column; gap: 3px; min-width: 160px; border-left: 1px solid rgba(255,255,255,0.1); padding-left: 0.75rem;">
-            <label style="font-size: 0.75rem; color: var(--yellow);">Extra Crate 1</label>
             <div style="display: flex; gap: 6px; align-items: center;">
               <input type="checkbox" id="cname-temp1-enabled" style="width: 14px; height: 14px;">
               <input type="text" id="cname-temp1"
@@ -626,7 +631,6 @@
             </div>
           </div>
           <div style="display: flex; flex-direction: column; gap: 3px; min-width: 160px;">
-            <label style="font-size: 0.75rem; color: var(--yellow);">Extra Crate 2</label>
             <div style="display: flex; gap: 6px; align-items: center;">
               <input type="checkbox" id="cname-temp2-enabled" style="width: 14px; height: 14px;">
               <input type="text" id="cname-temp2"
@@ -649,6 +653,11 @@
         <div style="display: flex; gap: 0.5rem;">
           <input type="text" id="featured-modal-search-input" class="search-input" style="flex: 1;"
             placeholder="Search artist, title, UPC, or Ref #...">
+          <select id="featured-modal-search-filter" class="search-input" style="width: auto; min-width: 110px; background: rgba(0,0,0,0.5); color: #fff; border: 1px solid var(--blue); padding: 0 0.5rem; border-radius: 4px; font-size: 0.85rem;">
+            <option value="all">All (Online & In Store)</option>
+            <option value="online">Online Only</option>
+            <option value="instore">In Store Only</option>
+          </select>
           <button id="btn-featured-modal-search" class="action-btn"
             style="padding: 0.5rem 1.5rem; margin-top: 0; width: auto;">Search</button>
         </div>
@@ -664,7 +673,7 @@
         <!-- Crate Accordions -->
         <div id="crate-accordion" style="display: flex; flex-direction: column; gap: 0.4rem;">
 
-          <!-- New Releases -->
+          <!-- New Releases Section with In Store & Online Subsections -->
           <div class="crate-tab"
             style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden;">
             <button class="crate-tab-header" data-crate-tab="new-releases"
@@ -673,13 +682,41 @@
             </button>
             <div class="crate-tab-body" data-crate-body="new-releases"
               style="display: none; padding: 0.75rem 1rem 1rem;">
-              <label style="display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 4px;">Reference IDs
-                (comma-separated):</label>
-              <textarea id="featured-refs-new-releases"
-                style="width: 100%; height: 60px; padding: 0.5rem; background: rgba(0,0,0,0.5); border: 1px solid var(--blue); border-radius: 6px; color: #FFF; font-family: monospace; font-size: 0.85rem; resize: vertical;"
-                placeholder="e.g. 1728-TW2026-0401-VINYL-NEW-1025"></textarea>
-              <div id="featured-list-new-releases"
-                style="margin-top: 0.6rem; display: flex; flex-direction: column; gap: 0.4rem;"></div>
+              <div style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem; flex-wrap: wrap;">
+                <button type="button" class="nr-sub-tab active" data-nr-tab="new_releases" style="padding: 0.35rem 0.9rem; background: rgba(44,108,255,0.3); border: 1px solid var(--blue); color: #fff; border-radius: 4px; font-size: 0.85rem; cursor: pointer;">🆕 Main New Releases</button>
+                <button type="button" class="nr-sub-tab" data-nr-tab="instore" style="padding: 0.35rem 0.9rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); color: #B6C0D7; border-radius: 4px; font-size: 0.85rem; cursor: pointer;">🏪 In Store</button>
+                <button type="button" class="nr-sub-tab" data-nr-tab="online" style="padding: 0.35rem 0.9rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); color: #B6C0D7; border-radius: 4px; font-size: 0.85rem; cursor: pointer;">🌐 Online</button>
+              </div>
+
+              <!-- Main New Releases Sub-window -->
+              <div id="nr-sub-panel-new_releases" class="nr-sub-panel">
+                <label style="display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 4px;">Main New Releases Reference IDs (comma-separated):</label>
+                <textarea id="featured-refs-new-releases"
+                  style="width: 100%; height: 60px; padding: 0.5rem; background: rgba(0,0,0,0.5); border: 1px solid var(--blue); border-radius: 6px; color: #FFF; font-family: monospace; font-size: 0.85rem; resize: vertical;"
+                  placeholder="e.g. 1728-TW2026-0401-VINYL-NEW-1025"></textarea>
+                <div id="featured-list-new-releases"
+                  style="margin-top: 0.6rem; display: flex; flex-direction: column; gap: 0.4rem;"></div>
+              </div>
+
+              <!-- In Store Sub-window -->
+              <div id="nr-sub-panel-instore" class="nr-sub-panel" style="display: none;">
+                <label style="display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 4px;">In Store New Releases Reference IDs / UPCs (comma-separated):</label>
+                <textarea id="featured-refs-instore"
+                  style="width: 100%; height: 60px; padding: 0.5rem; background: rgba(0,0,0,0.5); border: 1px solid var(--blue); border-radius: 6px; color: #FFF; font-family: monospace; font-size: 0.85rem; resize: vertical;"
+                  placeholder="e.g. 123456789012"></textarea>
+                <div id="featured-list-instore"
+                  style="margin-top: 0.6rem; display: flex; flex-direction: column; gap: 0.4rem;"></div>
+              </div>
+
+              <!-- Online Sub-window -->
+              <div id="nr-sub-panel-online" class="nr-sub-panel" style="display: none;">
+                <label style="display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 4px;">Online New Releases Reference IDs / SKUs (comma-separated):</label>
+                <textarea id="featured-refs-online"
+                  style="width: 100%; height: 60px; padding: 0.5rem; background: rgba(0,0,0,0.5); border: 1px solid var(--blue); border-radius: 6px; color: #FFF; font-family: monospace; font-size: 0.85rem; resize: vertical;"
+                  placeholder="e.g. 8043-TW2024-0123-1020"></textarea>
+                <div id="featured-list-online"
+                  style="margin-top: 0.6rem; display: flex; flex-direction: column; gap: 0.4rem;"></div>
+              </div>
             </div>
           </div>
 
@@ -755,15 +792,38 @@
             </div>
           </div>
 
-          <!-- Temp1 (hidden) -->
-          <div style="display: none;">
-            <textarea id="featured-refs-temp1"></textarea>
-            <div id="featured-list-temp1"></div>
+          <!-- Temp1 (Extra Crate 1) -->
+          <div id="crate-accordion-temp1" class="crate-tab"
+            style="border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; overflow: hidden; display: none;">
+            <button class="crate-tab-header" data-crate-tab="temp1">
+              <span>✨ Extra Crate 1</span>
+              <span class="crate-tab-arrow" style="transition: transform 0.2s;">▼</span>
+            </button>
+            <div class="crate-tab-body" data-crate-body="temp1" style="display: none; padding: 0.75rem 1rem 1rem;">
+              <label style="display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 4px;">Items (comma-separated):</label>
+              <textarea id="featured-refs-temp1"
+                style="width: 100%; height: 60px; padding: 0.5rem; background: rgba(0,0,0,0.5); border: 1px solid var(--yellow); border-radius: 6px; color: #FFF; font-family: monospace; font-size: 0.85rem; resize: vertical;"
+                placeholder="e.g. 1518-LR2019-0610-0123, 848064000105"></textarea>
+              <div id="featured-list-temp1"
+                style="margin-top: 0.6rem; display: flex; flex-direction: column; gap: 0.4rem;"></div>
+            </div>
           </div>
-          <!-- Temp2 (hidden) -->
-          <div style="display: none;">
-            <textarea id="featured-refs-temp2"></textarea>
-            <div id="featured-list-temp2"></div>
+
+          <!-- Temp2 (Extra Crate 2) -->
+          <div id="crate-accordion-temp2" class="crate-tab"
+            style="border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; overflow: hidden; display: none;">
+            <button class="crate-tab-header" data-crate-tab="temp2">
+              <span>✨ Extra Crate 2</span>
+              <span class="crate-tab-arrow" style="transition: transform 0.2s;">▼</span>
+            </button>
+            <div class="crate-tab-body" data-crate-body="temp2" style="display: none; padding: 0.75rem 1rem 1rem;">
+              <label style="display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 4px;">Items (comma-separated):</label>
+              <textarea id="featured-refs-temp2"
+                style="width: 100%; height: 60px; padding: 0.5rem; background: rgba(0,0,0,0.5); border: 1px solid var(--yellow); border-radius: 6px; color: #FFF; font-family: monospace; font-size: 0.85rem; resize: vertical;"
+                placeholder="e.g. 1518-LR2019-0610-0123, 848064000105"></textarea>
+              <div id="featured-list-temp2"
+                style="margin-top: 0.6rem; display: flex; flex-direction: column; gap: 0.4rem;"></div>
+            </div>
           </div>
 
         </div>
@@ -911,17 +971,22 @@
             const currentPhone = document.querySelector('#customer-phone span').textContent;
 
             // If it's a new person, or if the screen is empty, show them
-            if (emptyState.style.display !== 'none' || currentPhone !== user.phone) {
-              emptyState.style.display = 'none';
-              customerProfile.style.display = 'block';
-              statusMsg.style.display = 'none';
+            if (emptyState && (emptyState.style.display !== 'none' || currentPhone !== user.phone)) {
+              if (emptyState) emptyState.style.display = 'none';
+              if (customerProfile) customerProfile.style.display = 'block';
+              if (statusMsg) statusMsg.style.display = 'none';
 
-              document.querySelector('#customer-name span').textContent = user.name;
-              document.querySelector('#customer-phone span').textContent = user.phone;
-              document.getElementById('punches-cd').textContent = user.punches_cd || 0;
-              document.getElementById('punches-vinyl').textContent = user.punches_vinyl || 0;
-              document.getElementById('punches-cassette').textContent = user.punches_cassette || 0;
-              document.getElementById('punches-45').textContent = user.punches_45 || 0;
+              const nameEl = document.querySelector('#customer-name span') || document.getElementById('customer-name');
+              if (nameEl) nameEl.textContent = user.name || user.firstName || 'Customer';
+
+              const phoneEl = document.querySelector('#customer-phone span');
+              if (phoneEl) phoneEl.textContent = user.phone;
+
+              const cdEl = document.getElementById('punches-cd') || document.getElementById('cd-count');
+              if (cdEl) cdEl.textContent = user.punches_cd || 0;
+
+              const p45El = document.getElementById('punches-45') || document.getElementById('45-count');
+              if (p45El) p45El.textContent = user.punches_45 || 0;
             }
           }
         })
@@ -1107,6 +1172,8 @@
 
     const featuredRefsNew = document.getElementById('featured-refs-new');
     const featuredRefsNewReleases = document.getElementById('featured-refs-new-releases');
+    const featuredRefsInstore = document.getElementById('featured-refs-instore');
+    const featuredRefsOnline = document.getElementById('featured-refs-online');
     const featuredRefsHot = document.getElementById('featured-refs-hot');
     const featuredRefsRare = document.getElementById('featured-refs-rare');
     const featuredRefsTemp1 = document.getElementById('featured-refs-temp1');
@@ -1115,6 +1182,8 @@
 
     const featuredListNew = document.getElementById('featured-list-new');
     const featuredListNewReleases = document.getElementById('featured-list-new-releases');
+    const featuredListInstore = document.getElementById('featured-list-instore');
+    const featuredListOnline = document.getElementById('featured-list-online');
     const featuredListHot = document.getElementById('featured-list-hot');
     const featuredListRare = document.getElementById('featured-list-rare');
     const featuredListTemp1 = document.getElementById('featured-list-temp1');
@@ -1148,11 +1217,34 @@
       });
     });
 
+    // New Releases Sub-tab switching
+    document.querySelectorAll('.nr-sub-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.nr-sub-tab').forEach(t => {
+          t.classList.remove('active');
+          t.style.background = 'rgba(0,0,0,0.3)';
+          t.style.borderColor = 'rgba(255,255,255,0.2)';
+          t.style.color = '#B6C0D7';
+        });
+        tab.classList.add('active');
+        tab.style.background = 'rgba(44,108,255,0.3)';
+        tab.style.borderColor = 'var(--blue)';
+        tab.style.color = '#fff';
+
+        const target = tab.getAttribute('data-nr-tab');
+        document.querySelectorAll('.nr-sub-panel').forEach(p => p.style.display = 'none');
+        const targetPanel = document.getElementById(`nr-sub-panel-${target}`);
+        if (targetPanel) targetPanel.style.display = 'block';
+      });
+    });
+
     // Edit Names panel toggle
     const btnEditCrateNames = document.getElementById('btn-edit-crate-names');
     const crateNameEditor = document.getElementById('crate-name-editor');
     const btnSaveCrateNames = document.getElementById('btn-save-crate-names');
     const cnameNewReleases = document.getElementById('cname-new-releases');
+    const cnameInstore = document.getElementById('cname-instore');
+    const cnameOnline = document.getElementById('cname-online');
     const cnameNew = document.getElementById('cname-new');
     const cnameNewEnabled = document.getElementById('cname-new-enabled');
     const cnameHot = document.getElementById('cname-hot');
@@ -1174,39 +1266,91 @@
         const data = await res.json();
         if (data.success && data.config) {
           crateConfig = data.config;
-          cnameNewReleases.value = crateConfig.names['new_releases'] || 'New Releases';
-          cnameNew.value = crateConfig.names['new'] || 'Employee Picks';
-          cnameHot.value = crateConfig.names['hot'] || 'Hot Albums';
-          cnameRare.value = crateConfig.names['rare'] || 'Rare Finds';
-          cnameGenres.value = crateConfig.names['genres'] || 'Genres';
-          cnameTemp1.value = crateConfig.names['temp1'] || '';
-          cnameTemp2.value = crateConfig.names['temp2'] || '';
-          cnameNewEnabled.checked = crateConfig.new_enabled !== false;
-          cnameHotEnabled.checked = crateConfig.hot_enabled !== false;
-          cnameRareEnabled.checked = crateConfig.rare_enabled !== false;
-          cnameGenresEnabled.checked = crateConfig.genres_enabled !== false;
-          cnameTemp1Enabled.checked = !!crateConfig.temp1_enabled;
-          cnameTemp2Enabled.checked = !!crateConfig.temp2_enabled;
-          // Update accordion headers with current names
+          if (cnameNewReleases) cnameNewReleases.value = crateConfig.names['new_releases'] || 'New Releases';
+          if (cnameInstore) cnameInstore.value = crateConfig.names['instore'] || 'In Store';
+          if (cnameOnline) cnameOnline.value = crateConfig.names['online'] || 'Online';
+          if (cnameNew) cnameNew.value = crateConfig.names['new'] || 'Employee Picks';
+          if (cnameHot) cnameHot.value = crateConfig.names['hot'] || 'Hot Albums';
+          if (cnameRare) cnameRare.value = crateConfig.names['rare'] || 'Rare Finds';
+          if (cnameGenres) cnameGenres.value = crateConfig.names['genres'] || 'Genres';
+          if (cnameTemp1) cnameTemp1.value = crateConfig.names['temp1'] || '';
+          if (cnameTemp2) cnameTemp2.value = crateConfig.names['temp2'] || '';
+          if (cnameNewEnabled) cnameNewEnabled.checked = crateConfig.new_enabled !== false;
+          if (cnameHotEnabled) cnameHotEnabled.checked = crateConfig.hot_enabled !== false;
+          if (cnameRareEnabled) cnameRareEnabled.checked = crateConfig.rare_enabled !== false;
+          if (cnameGenresEnabled) cnameGenresEnabled.checked = crateConfig.genres_enabled !== false;
+          if (cnameTemp1Enabled) cnameTemp1Enabled.checked = !!crateConfig.temp1_enabled;
+          if (cnameTemp2Enabled) cnameTemp2Enabled.checked = !!crateConfig.temp2_enabled;
+          
+          updateCheckboxStates();
           updateAccordionLabels(crateConfig.names);
         }
       } catch (e) { }
     }
 
+    function updateCheckboxStates() {
+      const pairs = [
+        [cnameNew, cnameNewEnabled],
+        [cnameHot, cnameHotEnabled],
+        [cnameRare, cnameRareEnabled],
+        [cnameGenres, cnameGenresEnabled],
+        [cnameTemp1, cnameTemp1Enabled],
+        [cnameTemp2, cnameTemp2Enabled]
+      ];
+      pairs.forEach(([inputEl, chkEl]) => {
+        if (inputEl && chkEl) {
+          const hasVal = !!inputEl.value.trim();
+          chkEl.disabled = !hasVal;
+          if (!hasVal) chkEl.checked = false;
+        }
+      });
+    }
+
+    [cnameNew, cnameHot, cnameRare, cnameGenres, cnameTemp1, cnameTemp2].forEach(el => {
+      if (el) {
+        el.addEventListener('input', updateCheckboxStates);
+      }
+    });
+
     function updateAccordionLabels(names) {
       const map = {
         'new-releases': names['new_releases'] || 'New Releases',
+        'instore': names['instore'] || 'In Store',
+        'online': names['online'] || 'Online',
         'new': names['new'] || 'Employee Picks',
         'hot': names['hot'] || 'Hot Albums',
         'rare': names['rare'] || 'Rare Finds',
         'genres': names['genres'] || 'Genres',
-        'temp1': names['temp1'] || 'Extra Crate 1',
-        'temp2': names['temp2'] || 'Extra Crate 2',
+        'temp1': names['temp1'] || '',
+        'temp2': names['temp2'] || '',
       };
-      const emojis = { 'new-releases': '🆕', 'new': '⭐', 'hot': '🔥', 'rare': '💎', 'genres': '🎵', 'temp1': '✨', 'temp2': '✨' };
+
+      const isEnabled = {
+        'new-releases': true,
+        'instore': true,
+        'online': true,
+        'new': crateConfig.new_enabled !== false && !!names['new'],
+        'hot': crateConfig.hot_enabled !== false && !!names['hot'],
+        'rare': crateConfig.rare_enabled !== false && !!names['rare'],
+        'genres': crateConfig.genres_enabled !== false && !!names['genres'],
+        'temp1': !!crateConfig.temp1_enabled && !!names['temp1'],
+        'temp2': !!crateConfig.temp2_enabled && !!names['temp2'],
+      };
+
+      const emojis = { 'new-releases': '🆕', 'instore': '🏪', 'online': '🌐', 'new': '⭐', 'hot': '🔥', 'rare': '💎', 'genres': '🎵', 'temp1': '✨', 'temp2': '✨' };
+      
       document.querySelectorAll('.crate-tab-header').forEach(btn => {
         const key = btn.getAttribute('data-crate-tab');
-        if (map[key]) btn.querySelector('span:first-child').textContent = (emojis[key] || '') + ' ' + map[key];
+        const parentAccordion = btn.closest('.crate-tab');
+        
+        if (parentAccordion) {
+          parentAccordion.style.display = isEnabled[key] ? 'block' : 'none';
+        }
+        
+        if (map[key]) {
+          const span = btn.querySelector('span:first-child');
+          if (span) span.textContent = (emojis[key] || '') + ' ' + map[key];
+        }
       });
     }
 
@@ -1223,6 +1367,8 @@
         const config = {
           names: {
             new_releases: cnameNewReleases.value.trim() || 'New Releases',
+            instore: cnameInstore ? cnameInstore.value.trim() || 'In Store' : 'In Store',
+            online: cnameOnline ? cnameOnline.value.trim() || 'Online' : 'Online',
             new: cnameNew.value.trim() || 'Employee Picks',
             hot: cnameHot.value.trim() || 'Hot Albums',
             rare: cnameRare.value.trim() || 'Rare Finds',
@@ -1230,12 +1376,12 @@
             temp1: cnameTemp1.value.trim(),
             temp2: cnameTemp2.value.trim(),
           },
-          new_enabled: cnameNewEnabled.checked,
-          hot_enabled: cnameHotEnabled.checked,
-          rare_enabled: cnameRareEnabled.checked,
-          genres_enabled: cnameGenresEnabled.checked,
-          temp1_enabled: cnameTemp1Enabled.checked,
-          temp2_enabled: cnameTemp2Enabled.checked,
+          new_enabled: cnameNewEnabled ? cnameNewEnabled.checked : true,
+          hot_enabled: cnameHotEnabled ? cnameHotEnabled.checked : true,
+          rare_enabled: cnameRareEnabled ? cnameRareEnabled.checked : true,
+          genres_enabled: cnameGenresEnabled ? cnameGenresEnabled.checked : true,
+          temp1_enabled: cnameTemp1Enabled ? cnameTemp1Enabled.checked : false,
+          temp2_enabled: cnameTemp2Enabled ? cnameTemp2Enabled.checked : false,
         };
         try {
           const res = await fetch('/api/featured', {
@@ -1292,6 +1438,8 @@
           // Update Textareas
           featuredRefsNew.value = data.new?.value || "";
           featuredRefsNewReleases.value = data.new_releases?.value || "";
+          if (featuredRefsInstore) featuredRefsInstore.value = data.instore?.value || "";
+          if (featuredRefsOnline) featuredRefsOnline.value = data.online?.value || "";
           featuredRefsHot.value = data.hot?.value || "";
           featuredRefsRare.value = data.rare?.value || "";
           featuredRefsTemp1.value = data.temp1?.value || "";
@@ -1301,6 +1449,8 @@
           // Render Crate Items Preview
           renderCrateItems('new', data.new?.items || [], featuredListNew);
           renderCrateItems('new_releases', data.new_releases?.items || [], featuredListNewReleases);
+          renderCrateItems('instore', data.instore?.items || [], featuredListInstore);
+          renderCrateItems('online', data.online?.items || [], featuredListOnline);
           renderCrateItems('hot', data.hot?.items || [], featuredListHot);
           renderCrateItems('rare', data.rare?.items || [], featuredListRare);
           renderCrateItems('temp1', data.temp1?.items || [], featuredListTemp1);
@@ -1359,6 +1509,8 @@
           const textareas = {
             'new': featuredRefsNew,
             'new_releases': featuredRefsNewReleases,
+            'instore': featuredRefsInstore,
+            'online': featuredRefsOnline,
             'hot': featuredRefsHot,
             'rare': featuredRefsRare,
             'temp1': featuredRefsTemp1,
@@ -1366,6 +1518,7 @@
             'genres': featuredRefsGenres
           };
           let textarea = textareas[crate];
+          if (!textarea) return;
           let refsList = textarea.value.split(',').map(r => r.trim()).filter(Boolean);
           refsList = refsList.filter(r => r !== refToRemove && r !== upcToRemove);
           textarea.value = refsList.join(', ');
@@ -1386,6 +1539,8 @@
       const body = {
         new: featuredRefsNew.value.trim(),
         new_releases: featuredRefsNewReleases.value.trim(),
+        instore: featuredRefsInstore ? featuredRefsInstore.value.trim() : '',
+        online: featuredRefsOnline ? featuredRefsOnline.value.trim() : '',
         hot: featuredRefsHot.value.trim(),
         rare: featuredRefsRare.value.trim(),
         temp1: featuredRefsTemp1.value.trim(),
@@ -1419,12 +1574,15 @@
       }
     }
 
+    const featuredModalSearchFilter = document.getElementById('featured-modal-search-filter');
+
     if (btnSaveAllFeatured) {
       btnSaveAllFeatured.addEventListener('click', () => saveFeaturedData(true));
     }
 
     async function searchFeaturedModal() {
       const query = featuredModalSearchInput.value.trim();
+      const filterVal = featuredModalSearchFilter ? featuredModalSearchFilter.value : 'all';
       if (!query) return;
       featuredModalSearchResults.innerHTML = '<div style="text-align: center; color: #B6C0D7; padding: 0.5rem;">Searching...</div>';
 
@@ -1433,17 +1591,21 @@
         let instoreResults = [];
         const fetches = [];
 
-        fetches.push(
-          fetch(`/api/online-search?query=${encodeURIComponent(query)}&limit=10`)
-            .then(r => r.json())
-            .then(d => { if (d.success && d.results) onlineResults = d.results.map(r => ({ ...r, _src: 'online' })); })
-        );
+        if (filterVal === 'all' || filterVal === 'online') {
+          fetches.push(
+            fetch(`/api/online-search?query=${encodeURIComponent(query)}&limit=10`)
+              .then(r => r.json())
+              .then(d => { if (d.success && d.results) onlineResults = d.results.map(r => ({ ...r, _src: 'online' })); })
+          );
+        }
 
-        fetches.push(
-          fetch(`/api/instore-search?query=${encodeURIComponent(query)}&limit=10`)
-            .then(r => r.json())
-            .then(d => { if (d.success && d.results) instoreResults = d.results.map(r => ({ ...r, _src: 'instore' })); })
-        );
+        if (filterVal === 'all' || filterVal === 'instore') {
+          fetches.push(
+            fetch(`/api/instore-search?query=${encodeURIComponent(query)}&limit=10`)
+              .then(r => r.json())
+              .then(d => { if (d.success && d.results) instoreResults = d.results.map(r => ({ ...r, _src: 'instore' })); })
+          );
+        }
 
         await Promise.all(fetches);
         const allResults = [...onlineResults, ...instoreResults];
@@ -1466,16 +1628,18 @@
                   <span style="color:#B6C0D7;"> (${item.Format || 'N/A'})</span>
                   <br><span style="color:#B6C0D7;font-size:0.7rem;">Ref: ${refVal || 'N/A'} | UPC: ${upcVal || 'N/A'}</span>
                 </div>
-                 <div style="display:flex;gap:0.3rem;flex-shrink:0;flex-wrap:wrap;max-width:320px;justify-content:flex-end;">
-                  <button class="add-to-crate-modal-btn action-btn" data-crate="new_releases" data-val="${valToAdd}" style="padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;">+ ${crateConfig.names?.new_releases?.substring(0,8).toUpperCase() || 'NEW REL'}</button>
-                  <button class="add-to-crate-modal-btn action-btn" data-crate="new" data-val="${valToAdd}" style="padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(35,84,146,0.5);border-color:var(--blue);">+ ${crateConfig.names?.new?.substring(0,8).toUpperCase() || 'PICKS'}</button>
-                  <button class="add-to-crate-modal-btn action-btn" data-crate="hot" data-val="${valToAdd}" style="padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(35,84,146,0.8);border-color:var(--blue);">+ ${crateConfig.names?.hot?.substring(0,8).toUpperCase() || 'HOT'}</button>
-                  <button class="add-to-crate-modal-btn action-btn" data-crate="rare" data-val="${valToAdd}" style="padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(193,42,48,0.3);border-color:var(--red);">+ ${crateConfig.names?.rare?.substring(0,8).toUpperCase() || 'RARE'}</button>
-                  <button class="add-to-crate-modal-btn action-btn" data-crate="temp1" data-val="${valToAdd}" style="padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(255, 212, 71, 0.2);border-color:var(--yellow);color:var(--yellow);">+ ${crateConfig.names?.temp1?.substring(0,8).toUpperCase() || 'TEMP1'}</button>
-                  <button class="add-to-crate-modal-btn action-btn" data-crate="temp2" data-val="${valToAdd}" style="padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(255, 212, 71, 0.2);border-color:var(--yellow);color:var(--yellow);">+ ${crateConfig.names?.temp2?.substring(0,8).toUpperCase() || 'TEMP2'}</button>
-                  <button class="add-to-crate-modal-btn action-btn" data-crate="genres" data-val="${valToAdd}" style="padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(46, 204, 113, 0.2);border-color:#2ecc71;color:#2ecc71;">+ ${crateConfig.names?.genres?.substring(0,8).toUpperCase() || 'GENRES'}</button>
-                </div>
-              </div>`;
+                  <div style="display:flex;gap:0.3rem;flex-shrink:0;flex-wrap:wrap;max-width:380px;justify-content:flex-end;">
+                    <button class="add-to-crate-modal-btn action-btn" data-crate="new_releases" data-val="${valToAdd}" style="padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;">+ ${(crateConfig.names?.new_releases || 'New Releases').toUpperCase()}</button>
+                    <button class="add-to-crate-modal-btn action-btn" data-crate="instore" data-val="${valToAdd}" style="padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(46, 204, 113, 0.2);border-color:#2ecc71;color:#2ecc71;">+ ${(crateConfig.names?.instore || 'In Store').toUpperCase()}</button>
+                    <button class="add-to-crate-modal-btn action-btn" data-crate="online" data-val="${valToAdd}" style="padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(44,108,255,0.3);border-color:var(--blue);color:#7aadff;">+ ${(crateConfig.names?.online || 'Online').toUpperCase()}</button>
+                    ${(crateConfig.new_enabled !== false && crateConfig.names?.new) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="new" data-val="${valToAdd}" style="padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(35,84,146,0.5);border-color:var(--blue);">+ ${crateConfig.names.new.toUpperCase()}</button>` : ''}
+                    ${(crateConfig.hot_enabled !== false && crateConfig.names?.hot) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="hot" data-val="${valToAdd}" style="padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(35,84,146,0.8);border-color:var(--blue);">+ ${crateConfig.names.hot.toUpperCase()}</button>` : ''}
+                    ${(crateConfig.rare_enabled !== false && crateConfig.names?.rare) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="rare" data-val="${valToAdd}" style="padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(193,42,48,0.3);border-color:var(--red);">+ ${crateConfig.names.rare.toUpperCase()}</button>` : ''}
+                    ${(crateConfig.temp1_enabled && crateConfig.names?.temp1) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="temp1" data-val="${valToAdd}" style="padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(255, 212, 71, 0.2);border-color:var(--yellow);color:var(--yellow);">+ ${crateConfig.names.temp1.toUpperCase()}</button>` : ''}
+                    ${(crateConfig.temp2_enabled && crateConfig.names?.temp2) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="temp2" data-val="${valToAdd}" style="padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(255, 212, 71, 0.2);border-color:var(--yellow);color:var(--yellow);">+ ${crateConfig.names.temp2.toUpperCase()}</button>` : ''}
+                    ${(crateConfig.genres_enabled !== false && crateConfig.names?.genres) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="genres" data-val="${valToAdd}" style="padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(46, 204, 113, 0.2);border-color:#2ecc71;color:#2ecc71;">+ ${crateConfig.names.genres.toUpperCase()}</button>` : ''}
+                  </div>
+                </div>`;
           }).join('');
 
           // Bind add-to-crate buttons
@@ -1487,6 +1651,8 @@
               const textareas = {
                 'new': featuredRefsNew,
                 'new_releases': featuredRefsNewReleases,
+                'instore': featuredRefsInstore,
+                'online': featuredRefsOnline,
                 'hot': featuredRefsHot,
                 'rare': featuredRefsRare,
                 'temp1': featuredRefsTemp1,
@@ -1494,6 +1660,7 @@
                 'genres': featuredRefsGenres
               };
               let textarea = textareas[crate];
+              if (!textarea) return;
               let refsList = textarea.value.split(',').map(r => r.trim()).filter(Boolean);
 
               if (!refsList.includes(val)) {
@@ -1521,6 +1688,13 @@
       featuredModalSearchInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
           e.preventDefault();
+          searchFeaturedModal();
+        }
+      });
+    }
+    if (featuredModalSearchFilter) {
+      featuredModalSearchFilter.addEventListener('change', () => {
+        if (featuredModalSearchInput.value.trim()) {
           searchFeaturedModal();
         }
       });

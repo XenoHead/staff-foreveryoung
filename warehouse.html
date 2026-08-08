@@ -175,7 +175,7 @@
       background: rgba(35, 84, 146, 0.3);
       border: 1px dashed var(--blue);
     }
-    
+
     .upload-btn:hover {
       background: var(--blue);
     }
@@ -318,19 +318,23 @@
     .sales-table tbody tr:hover {
       background: rgba(35, 84, 146, 0.2);
     }
+
     .sortable-header {
       cursor: pointer;
       user-select: none;
       transition: color 0.2s;
     }
+
     .sortable-header:hover {
       color: #fff !important;
     }
+
     .sortable-header .sort-icon {
       font-size: 0.8rem;
       margin-left: 4px;
       color: rgba(255, 255, 255, 0.3);
     }
+
     .sortable-header.active .sort-icon {
       color: var(--yellow);
     }
@@ -345,10 +349,12 @@
         <h1>Warehouse Ops</h1>
       </div>
       <div style="display: flex; gap: 1rem;">
-        <a href="online-products.html" class="action-btn" style="text-decoration: none; font-size: 1rem; padding: 0.6rem 1.5rem; background: var(--blue); color: var(--yellow);">
+        <a href="online-products.html" class="action-btn"
+          style="text-decoration: none; font-size: 1rem; padding: 0.6rem 1.5rem; background: var(--blue); color: var(--yellow);">
           Online Products
         </a>
-        <a href="index.html" class="action-btn" style="text-decoration: none; font-size: 1rem; padding: 0.6rem 1.5rem; background: rgba(0,0,0,0.5);">
+        <a href="index.html" class="action-btn"
+          style="text-decoration: none; font-size: 1rem; padding: 0.6rem 1.5rem; background: rgba(0,0,0,0.5);">
           &larr; Back to Staff
         </a>
       </div>
@@ -359,7 +365,8 @@
       <h2>Data Synchronization</h2>
       <p style="color: #B6C0D7; line-height: 1.5;">
         Upload your network Excel files below to sync inventory and sales data with the cloud database.
-        Click <strong>Browse</strong> to select a file from <code style="color: var(--yellow); background: rgba(0,0,0,0.5); padding: 2px 6px; border-radius: 4px;">\\192.168.0.108\FYRShare\Tools\Sheets</code>.
+        Click <strong>Browse</strong> to select a file from <code
+          style="color: var(--yellow); background: rgba(0,0,0,0.5); padding: 2px 6px; border-radius: 4px;">\\192.168.0.108\FYRShare\INVOICES</code>.
       </p>
     </div>
 
@@ -374,20 +381,23 @@
             <option value="Online Inv">Online Inv</option>
             <option value="Stock">Stock</option>
           </select>
-          
+
           <div class="file-input-wrapper" style="flex: 1;">
-            <button class="action-btn upload-btn" style="width: 100%; height: 50px; padding: 0; font-size: 1.1rem; border-color: #2ecc71; color: #2ecc71;">
+            <button class="action-btn upload-btn"
+              style="width: 100%; height: 50px; padding: 0; font-size: 1.1rem; border-color: #2ecc71; color: #2ecc71;">
               <span style="font-size: 1.2rem; margin-right: 5px;">📁</span> Browse
             </button>
             <input type="file" id="file-upload-input" accept=".xls,.xlsx" />
           </div>
         </div>
 
-        <button id="btn-sync-now" class="action-btn" style="width: 100%; max-width: 400px; padding: 1rem; font-size: 1.2rem; background: rgba(35, 84, 146, 0.5); border-color: var(--yellow);">
+        <button id="btn-sync-now" class="action-btn"
+          style="width: 100%; max-width: 400px; padding: 1rem; font-size: 1.2rem; background: rgba(35, 84, 146, 0.5); border-color: var(--yellow);">
           <span style="font-size: 1.5rem; margin-right: 10px;">↻</span> Sync Now
         </button>
-        <p style="font-size: 0.9rem; color: #B6C0D7;">Triggers the local agent to immediately parse files from \\192.168.0.108</p>
-        
+        <p style="font-size: 0.9rem; color: #B6C0D7;">Triggers the local agent to immediately parse files from
+          \\192.168.0.108</p>
+
         <div id="sync-status" class="status-msg"></div>
       </div>
     </div>
@@ -397,14 +407,17 @@
     <div class="panel">
       <h2>Master Sales Tools</h2>
       <div style="margin-top: 1.5rem; text-align: center;">
-        <button id="btn-master-sales" class="action-btn" style="background: rgba(193, 42, 48, 0.3); border-color: var(--red);">
+        <button id="btn-master-sales" class="action-btn"
+          style="background: rgba(193, 42, 48, 0.3); border-color: var(--red);">
           Open MASTER SALES
         </button>
-        <p style="font-size: 0.9rem; color: #B6C0D7; margin-top: 1rem;">View and manipulate the complete Sales history ledger.</p>
+        <p style="font-size: 0.9rem; color: #B6C0D7; margin-top: 1rem;">View and manipulate the complete Sales history
+          ledger.</p>
       </div>
     </div>
 
-    <footer style="margin-top: auto; text-align: center; padding-bottom: 2rem; position: relative; z-index: 10; width: 100%;">
+    <footer
+      style="margin-top: auto; text-align: center; padding-bottom: 2rem; position: relative; z-index: 10; width: 100%;">
       <a href="https://xenohead.com" target="_blank"
         style="text-decoration: none; color: #B6C0D7; display: inline-flex; flex-direction: column; align-items: center; gap: 0.5rem; transition: all 0.3s; opacity: 0.8;"
         onmouseover="this.style.opacity=1; this.style.transform='translateY(-2px)';"
@@ -423,16 +436,20 @@
       <div class="modal-header">
         <h2>Master Sales Ledger</h2>
         <div class="modal-controls">
-          <button id="btn-export-sales" class="action-btn" style="padding: 0.4rem 1rem; font-size: 0.9rem;">Export CSV</button>
+          <button id="btn-export-sales" class="action-btn" style="padding: 0.4rem 1rem; font-size: 0.9rem;">Export
+            CSV</button>
           <button id="btn-maximize-modal" class="icon-btn" title="Maximize">🗖</button>
-          <button id="btn-close-modal" class="icon-btn" style="font-size: 2rem; line-height: 1;" title="Close">&times;</button>
+          <button id="btn-close-modal" class="icon-btn" style="font-size: 2rem; line-height: 1;"
+            title="Close">&times;</button>
         </div>
       </div>
-      
+
       <div class="modal-toolbar" style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;">
         <div style="display: flex; align-items: center; gap: 0.5rem;">
-          <label for="vendor-select" style="color: var(--yellow); font-weight: 500; font-size: 0.85rem; white-space: nowrap;">Vendor:</label>
-          <select id="vendor-select" class="vendor-dropdown" style="min-width: 160px; height: 36px; padding: 0.3rem 0.5rem;">
+          <label for="vendor-select"
+            style="color: var(--yellow); font-weight: 500; font-size: 0.85rem; white-space: nowrap;">Vendor:</label>
+          <select id="vendor-select" class="vendor-dropdown"
+            style="min-width: 160px; height: 36px; padding: 0.3rem 0.5rem;">
             <option value="">All Vendors</option>
             <option value="IIP-DDS BV">IIP-DDS BV</option>
             <option value="UNIVERSAL">UNIVERSAL</option>
@@ -441,8 +458,10 @@
         </div>
 
         <div style="display: flex; align-items: center; gap: 0.5rem;">
-          <label for="oop-select" style="color: var(--yellow); font-weight: 500; font-size: 0.85rem; white-space: nowrap;">Status:</label>
-          <select id="oop-select" class="vendor-dropdown" style="min-width: 130px; height: 36px; padding: 0.3rem 0.5rem;">
+          <label for="oop-select"
+            style="color: var(--yellow); font-weight: 500; font-size: 0.85rem; white-space: nowrap;">Status:</label>
+          <select id="oop-select" class="vendor-dropdown"
+            style="min-width: 130px; height: 36px; padding: 0.3rem 0.5rem;">
             <option value="">Both (IP & OOP)</option>
             <option value="IP">IP (In Print)</option>
             <option value="OOP">OOP (Out of Print)</option>
@@ -450,27 +469,35 @@
         </div>
 
         <div style="display: flex; align-items: center; gap: 0.5rem;">
-          <label for="format-select" style="color: var(--yellow); font-weight: 500; font-size: 0.85rem; white-space: nowrap;">Format:</label>
-          <select id="format-select" class="vendor-dropdown" style="min-width: 120px; height: 36px; padding: 0.3rem 0.5rem;">
+          <label for="format-select"
+            style="color: var(--yellow); font-weight: 500; font-size: 0.85rem; white-space: nowrap;">Format:</label>
+          <select id="format-select" class="vendor-dropdown"
+            style="min-width: 120px; height: 36px; padding: 0.3rem 0.5rem;">
             <option value="">All Formats</option>
           </select>
         </div>
 
         <div style="display: flex; align-items: center; gap: 0.5rem;">
           <label style="color: var(--yellow); font-weight: 500; font-size: 0.85rem; white-space: nowrap;">Dates:</label>
-          <input type="date" id="sales-start-date" class="vendor-dropdown" style="width: 130px; height: 36px; padding: 0.3rem 0.5rem; color-scheme: dark;" placeholder="Start Date">
+          <input type="date" id="sales-start-date" class="vendor-dropdown"
+            style="width: 130px; height: 36px; padding: 0.3rem 0.5rem; color-scheme: dark;" placeholder="Start Date">
           <span style="color: var(--muted); font-size: 0.85rem;">to</span>
-          <input type="date" id="sales-end-date" class="vendor-dropdown" style="width: 130px; height: 36px; padding: 0.3rem 0.5rem; color-scheme: dark;" placeholder="End Date">
+          <input type="date" id="sales-end-date" class="vendor-dropdown"
+            style="width: 130px; height: 36px; padding: 0.3rem 0.5rem; color-scheme: dark;" placeholder="End Date">
         </div>
 
         <div style="display: flex; align-items: center; gap: 0.5rem;">
-          <label for="sales-min-qty" style="color: var(--yellow); font-weight: 500; font-size: 0.85rem; white-space: nowrap;">Min Qty:</label>
-          <input type="number" id="sales-min-qty" class="vendor-dropdown" style="width: 80px; height: 36px; padding: 0.3rem 0.5rem;" min="0" placeholder="0">
+          <label for="sales-min-qty"
+            style="color: var(--yellow); font-weight: 500; font-size: 0.85rem; white-space: nowrap;">Min Qty:</label>
+          <input type="number" id="sales-min-qty" class="vendor-dropdown"
+            style="width: 80px; height: 36px; padding: 0.3rem 0.5rem;" min="0" placeholder="0">
         </div>
 
         <div style="display: flex; align-items: center; gap: 0.5rem;">
-          <label for="sales-min-amount" style="color: var(--yellow); font-weight: 500; font-size: 0.85rem; white-space: nowrap;">Min $:</label>
-          <input type="number" id="sales-min-amount" class="vendor-dropdown" style="width: 90px; height: 36px; padding: 0.3rem 0.5rem;" min="0" step="0.01" placeholder="0.00">
+          <label for="sales-min-amount"
+            style="color: var(--yellow); font-weight: 500; font-size: 0.85rem; white-space: nowrap;">Min $:</label>
+          <input type="number" id="sales-min-amount" class="vendor-dropdown"
+            style="width: 90px; height: 36px; padding: 0.3rem 0.5rem;" min="0" step="0.01" placeholder="0.00">
         </div>
       </div>
 
@@ -478,21 +505,28 @@
         <table class="sales-table">
           <thead>
             <tr>
-              <th id="th-date" class="sortable-header" style="cursor: pointer; user-select: none;">Date <span id="sort-icon-date" class="sort-icon">⇅</span></th>
+              <th id="th-date" class="sortable-header" style="cursor: pointer; user-select: none;">Date <span
+                  id="sort-icon-date" class="sort-icon">⇅</span></th>
               <th>UPC</th>
-              <th id="th-format" class="sortable-header" style="cursor: pointer; user-select: none;">Format <span id="sort-icon-format" class="sort-icon">⇅</span></th>
+              <th id="th-format" class="sortable-header" style="cursor: pointer; user-select: none;">Format <span
+                  id="sort-icon-format" class="sort-icon">⇅</span></th>
               <th>Artist</th>
               <th>Title</th>
               <th>Vendor #</th>
               <th>OOP</th>
               <th>Year</th>
               <th>Vendor</th>
-              <th id="th-qty" class="sortable-header" style="cursor: pointer; user-select: none;">Qty Sold <span id="sort-icon-qty" class="sort-icon">⇅</span></th>
-              <th id="th-srp" class="sortable-header" style="cursor: pointer; user-select: none;">SRP <span id="sort-icon-srp" class="sort-icon">⇅</span></th>
+              <th id="th-qty" class="sortable-header" style="cursor: pointer; user-select: none;">Qty Sold <span
+                  id="sort-icon-qty" class="sort-icon">⇅</span></th>
+              <th id="th-srp" class="sortable-header" style="cursor: pointer; user-select: none;">SRP <span
+                  id="sort-icon-srp" class="sort-icon">⇅</span></th>
             </tr>
           </thead>
           <tbody id="sales-table-body">
-            <tr><td colspan="11" style="text-align:center; padding: 3rem; font-style: italic;">Select a vendor above to load sales history.</td></tr>
+            <tr>
+              <td colspan="11" style="text-align:center; padding: 3rem; font-style: italic;">Select a vendor above to
+                load sales history.</td>
+            </tr>
             <!-- Data will be populated here -->
           </tbody>
         </table>
@@ -533,16 +567,16 @@
       let num = parseFloat(clean);
       return isNaN(num) ? 0 : num;
     }
-    
+
     // Load vendors when opening the modal
     document.getElementById('btn-master-sales').addEventListener('click', async () => {
       modal.style.display = 'flex';
-      
+
       try {
         // Fetch distinct vendors
         const res = await fetch('/api/sales?type=vendors');
         const data = await res.json();
-        
+
         if (data.success && data.vendors) {
           // Keep the "All Vendors" option and replace the rest
           vendorSelect.innerHTML = '<option value="">All Vendors</option>';
@@ -553,7 +587,7 @@
             vendorSelect.appendChild(opt);
           });
         }
-        
+
         // Auto-load all sales initially
         loadSalesData('');
       } catch (err) {
@@ -572,7 +606,7 @@
 
     async function loadSalesData(vendor, oopStatus = '') {
       salesTableBody.innerHTML = '<tr><td colspan="11" style="text-align:center; padding: 3rem;">Loading sales data...</td></tr>';
-      
+
       try {
         const urlParams = new URLSearchParams();
         if (vendor) urlParams.append('vendor', vendor);
@@ -580,7 +614,7 @@
         const url = `/api/sales?${urlParams.toString()}`;
         const res = await fetch(url);
         const data = await res.json();
-        
+
         if (data.success && data.sales) {
           allSalesData = data.sales; // Cache data
           updateFormatDropdown(allSalesData);
@@ -601,15 +635,15 @@
     function updateFormatDropdown(sales) {
       const formatSelect = document.getElementById('format-select');
       if (!formatSelect) return;
-      
+
       const prevValue = formatSelect.value;
       const formats = new Set();
       sales.forEach(s => {
         if (s.Format) formats.add(s.Format);
       });
-      
+
       const sortedFormats = Array.from(formats).sort();
-      
+
       formatSelect.innerHTML = '<option value="">All Formats</option>';
       sortedFormats.forEach(f => {
         const opt = document.createElement('option');
@@ -617,7 +651,7 @@
         opt.textContent = f;
         formatSelect.appendChild(opt);
       });
-      
+
       if (formats.has(prevValue)) {
         formatSelect.value = prevValue;
       }
@@ -685,12 +719,12 @@
 
     function renderSalesTable(items) {
       currentSalesList = items;
-      
+
       if (items.length === 0) {
         salesTableBody.innerHTML = '<tr><td colspan="11" style="text-align:center; padding: 3rem; font-style: italic;">No sales records match the filters.</td></tr>';
         return;
       }
-      
+
       salesTableBody.innerHTML = items.map(s => `
         <tr>
           <td>${new Date(s.Date_Sold).toLocaleDateString()}</td>
@@ -721,30 +755,30 @@
 
     function updateSalesSortHeadersUI() {
       document.querySelectorAll('.sortable-header').forEach(el => el.classList.remove('active'));
-      
+
       const dateIcon = document.getElementById('sort-icon-date');
       const formatIcon = document.getElementById('sort-icon-format');
       const qtyIcon = document.getElementById('sort-icon-qty');
       const srpIcon = document.getElementById('sort-icon-srp');
-      
+
       if (dateIcon) dateIcon.textContent = '⇅';
       if (formatIcon) formatIcon.textContent = '⇅';
       if (qtyIcon) qtyIcon.textContent = '⇅';
       if (srpIcon) srpIcon.textContent = '⇅';
-      
-      const activeHeaderId = salesSortKey === 'Date_Sold' ? 'th-date' 
-                           : salesSortKey === 'Format' ? 'th-format'
-                           : salesSortKey === 'Quantity_Sold' ? 'th-qty'
-                           : salesSortKey === 'Sold_SRP' ? 'th-srp' : '';
-                           
-      const activeIconId = salesSortKey === 'Date_Sold' ? 'sort-icon-date' 
-                         : salesSortKey === 'Format' ? 'sort-icon-format'
-                         : salesSortKey === 'Quantity_Sold' ? 'sort-icon-qty'
-                         : salesSortKey === 'Sold_SRP' ? 'sort-icon-srp' : '';
-                         
+
+      const activeHeaderId = salesSortKey === 'Date_Sold' ? 'th-date'
+        : salesSortKey === 'Format' ? 'th-format'
+          : salesSortKey === 'Quantity_Sold' ? 'th-qty'
+            : salesSortKey === 'Sold_SRP' ? 'th-srp' : '';
+
+      const activeIconId = salesSortKey === 'Date_Sold' ? 'sort-icon-date'
+        : salesSortKey === 'Format' ? 'sort-icon-format'
+          : salesSortKey === 'Quantity_Sold' ? 'sort-icon-qty'
+            : salesSortKey === 'Sold_SRP' ? 'sort-icon-srp' : '';
+
       const activeHeader = document.getElementById(activeHeaderId);
       const activeIcon = document.getElementById(activeIconId);
-      
+
       if (activeHeader) activeHeader.classList.add('active');
       if (activeIcon) {
         activeIcon.textContent = salesSortDir === 'asc' ? '▲' : '▼';
@@ -770,7 +804,7 @@
         alert("No data to export.");
         return;
       }
-      
+
       const headers = ["Date", "UPC", "Format", "Artist", "Title", "Vendor #", "OOP", "Year", "Vendor", "Qty Sold", "SRP"];
       const rows = currentSalesList.map(s => [
         new Date(s.Date_Sold).toLocaleDateString(),
@@ -785,7 +819,7 @@
         s.Quantity_Sold || 0,
         s.Sold_SRP || ''
       ]);
-      
+
       // Escape strings in CSV properly
       const csvRows = [headers.join(',')];
       rows.forEach(r => {
@@ -794,7 +828,7 @@
           return `"${stringVal.replace(/"/g, '""')}"`;
         }).join(','));
       });
-      
+
       const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
       const encodedUrl = URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -839,7 +873,7 @@
 
       const btn = document.querySelector('.upload-btn');
       const status = document.getElementById('sync-status');
-      
+
       btn.style.opacity = '0.5';
       status.style.display = 'block';
       status.className = 'status-msg';
@@ -855,7 +889,7 @@
           method: 'POST',
           body: formData
         });
-        
+
         if (response.ok) {
           status.textContent = 'Upload and Sync completed successfully!';
           status.className = 'status-msg success';
@@ -876,7 +910,7 @@
     document.getElementById('btn-sync-now').addEventListener('click', async () => {
       const btn = document.getElementById('btn-sync-now');
       const status = document.getElementById('sync-status');
-      
+
       btn.style.opacity = '0.5';
       btn.textContent = 'Syncing...';
       status.style.display = 'block';
@@ -905,4 +939,5 @@
 
   </script>
 </body>
+
 </html>

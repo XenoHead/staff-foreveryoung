@@ -40,7 +40,7 @@ export default {
 
       // /api/featured
       if (path === '/api/featured') {
-        if (method === 'GET')  return await handleFeaturedGet(request, env);
+        if (method === 'GET') return await handleFeaturedGet(request, env);
         if (method === 'POST') return await handleFeaturedPost(request, env);
       }
 
@@ -70,7 +70,7 @@ export default {
 
       // /api/punch
       if (path === '/api/punch') {
-        if (method === 'GET')  return await handlePunchGet(request, env);
+        if (method === 'GET') return await handlePunchGet(request, env);
         if (method === 'POST') return await handlePunchPost(request, env);
       }
 
@@ -92,7 +92,7 @@ export default {
 
       // /api/ticker
       if (path === '/api/ticker') {
-        if (method === 'GET')  return await handleTickerGet(env);
+        if (method === 'GET') return await handleTickerGet(env);
         if (method === 'POST') return await handleTickerPost(request, env);
       }
 
@@ -196,10 +196,18 @@ async function enrichFetchReleaseDetails(releaseId, token) {
   const audioUrls = data.videos ? data.videos.map(v => v.uri) : [];
 
   let numInSet = '';
+  let formatStr = '';
   if (data.formats?.length) {
     const fmt = data.formats[0];
-    if (fmt.qty && parseInt(fmt.qty) > 1) numInSet = `${fmt.qty} ${fmt.name}`;
+    formatStr = fmt.name || '';
+    if (fmt.qty && parseInt(fmt.qty) > 1) {
+      numInSet = `${fmt.qty} ${fmt.name}`;
+      formatStr = `${fmt.qty}${fmt.name}`;
+    }
   }
+
+  const artistStr = data.artists ? data.artists.map(a => a.name.replace(/\s*\(\d+\)$/, '')).join(', ') : '';
+  const titleStr = data.title || '';
 
   let tracklist = '';
   if (data.tracklist?.length) {
@@ -211,8 +219,10 @@ async function enrichFetchReleaseDetails(releaseId, token) {
   const barcode = data.identifiers?.find(i => i.type === 'Barcode')?.value || '';
 
   return {
+    Artist: artistStr, Title: titleStr,
     Discogs_ID: releaseId.toString(),
     Discogs_url: `https://www.discogs.com/release/${releaseId}`,
+    Format: formatStr,
     Front_Image_URL: frontImg, Back_Image_URL: backImg,
     Label: label, Release_Catalog_Number: catno,
     Release_Country: country, Release_Date: dateStr.toString(),
@@ -335,30 +345,32 @@ async function handleDiscogsLookup(request) {
   }
   if (data.notes) { if (descLines.length) descLines.push(''); descLines.push('RELEASE NOTES:', data.notes); }
 
-  return json({ success: true, result: {
-    Artist: artistStr, Title: titleStr, Format: formatStr, Genre: genreStr,
-    Label: labelStr, Release_Catalog_Number: catalogStr, Release_Country: countryStr,
-    Release_Date: dateStr, Bar_Code: barcodeStr, Front_Image_URL: frontImg,
-    Back_Image_URL: backImg, YouTube_Audio_Image_URLs: youtubeStr,
-    Number_In_Set: numInSet, Description: descLines.join('\n'), Discogs_ID: String(data.id),
-    Discogs_url: `https://www.discogs.com/release/${data.id}`,
-  }});
+  return json({
+    success: true, result: {
+      Artist: artistStr, Title: titleStr, Format: formatStr, Genre: genreStr,
+      Label: labelStr, Release_Catalog_Number: catalogStr, Release_Country: countryStr,
+      Release_Date: dateStr, Bar_Code: barcodeStr, Front_Image_URL: frontImg,
+      Back_Image_URL: backImg, YouTube_Audio_Image_URLs: youtubeStr,
+      Number_In_Set: numInSet, Description: descLines.join('\n'), Discogs_ID: String(data.id),
+      Discogs_url: `https://www.discogs.com/release/${data.id}`,
+    }
+  });
 }
 
 async function handleFeaturedGet(request, env) {
   const db = env.DB;
   const url = new URL(request.url);
   const type = url.searchParams.get('type');
-  
+
   await db.prepare(`CREATE TABLE IF NOT EXISTS Settings (key TEXT PRIMARY KEY, value TEXT)`).run();
-  
-  const keys = ['featured_new', 'featured_new_releases', 'featured_hot', 'featured_rare', 'featured_temp1', 'featured_temp2', 'featured_genres'];
+
+  const keys = ['featured_new', 'featured_new_releases', 'featured_instore', 'featured_online', 'featured_hot', 'featured_rare', 'featured_temp1', 'featured_temp2', 'featured_genres'];
   const settings = {};
   for (const k of keys) {
     const res = await db.prepare(`SELECT value FROM Settings WHERE key=?`).bind(k).first();
     settings[k] = res?.value || '';
   }
-  
+
   const compatRes = await db.prepare(`SELECT value FROM Settings WHERE key='featured_items'`).first();
   const compatValue = compatRes?.value || '';
 
@@ -372,14 +384,16 @@ async function handleFeaturedGet(request, env) {
     const details = {
       new: { value: settings.featured_new, items: [] },
       new_releases: { value: settings.featured_new_releases, items: [] },
+      instore: { value: settings.featured_instore, items: [] },
+      online: { value: settings.featured_online, items: [] },
       hot: { value: settings.featured_hot, items: [] },
       rare: { value: settings.featured_rare, items: [] },
       temp1: { value: settings.featured_temp1, items: [] },
       temp2: { value: settings.featured_temp2, items: [] },
       genres: { value: settings.featured_genres, items: [] }
     };
-    
-    for (const k of ['new', 'new_releases', 'hot', 'rare', 'temp1', 'temp2', 'genres']) {
+
+    for (const k of ['new', 'new_releases', 'instore', 'online', 'hot', 'rare', 'temp1', 'temp2', 'genres']) {
       const val = settings['featured_' + k];
       if (val) {
         const refs = val.split(',').map(r => r.trim()).filter(Boolean);
@@ -389,42 +403,52 @@ async function handleFeaturedGet(request, env) {
           const q = `SELECT * FROM Online_Inventory WHERE Seller_Reference_Number IN (${ph}) OR Bar_Code IN (${ph})`;
           const d = await db.prepare(q).bind(...refs, ...refs).all();
           const onlineItems = (d.results || []).map(item => ({ ...item, _source: 'online' }));
-          
+
           // Identify missing references/UPCs
           const foundRefs = new Set();
           onlineItems.forEach(item => {
             if (item.Seller_Reference_Number) foundRefs.add(item.Seller_Reference_Number.toLowerCase());
             if (item.Bar_Code) foundRefs.add(item.Bar_Code.toLowerCase());
           });
-          
+
           const missingRefs = refs.filter(r => !foundRefs.has(r.toLowerCase()));
           let instoreItems = [];
-          
+
           if (missingRefs.length > 0) {
             // 2. Fetch from Inventory (In-Store)
             const instorePh = missingRefs.map(() => '?').join(',');
             const instoreQuery = `SELECT * FROM Inventory WHERE UPC IN (${instorePh}) OR Vendor_Number IN (${instorePh})`;
             const instoreResult = await db.prepare(instoreQuery).bind(...missingRefs, ...missingRefs).all();
-            
+
             instoreItems = (instoreResult.results || []).map(item => ({
               id: item.id,
               Artist: item.Artist,
               Title: item.Title,
               Format: item.Format,
               Price: parseFloat(item.SRP) || 0.00,
+              SRP: item.SRP || '',
               Bar_Code: item.UPC,
+              UPC: item.UPC || '',
               Quantity: item.Quantity,
+              Vendor: item.Vendor || '',
+              Vendor_Number: item.Vendor_Number || '',
+              Year: item.Year || '',
+              OOP: item.OOP || '',
+              Genre: item.Genre || '',
+              Country: item.Country || '',
+              Front_Image_URL: item.Image_URL || item.Front_Image_URL || '',
+              Image_URL: item.Image_URL || item.Front_Image_URL || '',
               _source: 'instore'
             }));
           }
-          
+
           details[k].items = [...onlineItems, ...instoreItems];
         }
       }
     }
     return json({ success: true, ...details, compatValue });
   }
-  
+
   return json({ success: true, ...settings, compatValue });
 }
 
@@ -432,7 +456,7 @@ async function handleFeaturedPost(request, env) {
   const db = env.DB;
   await db.prepare(`CREATE TABLE IF NOT EXISTS Settings (key TEXT PRIMARY KEY, value TEXT)`).run();
   const body = await request.json();
-  
+
   if (body.config !== undefined) {
     const configStr = JSON.stringify(body.config);
     await db.prepare(`INSERT INTO Settings (key, value) VALUES ('crate_config', ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value`)
@@ -440,8 +464,8 @@ async function handleFeaturedPost(request, env) {
       .run();
     return json({ success: true });
   }
-  
-  for (const k of ['new', 'new_releases', 'hot', 'rare', 'temp1', 'temp2', 'genres']) {
+
+  for (const k of ['new', 'new_releases', 'instore', 'online', 'hot', 'rare', 'temp1', 'temp2', 'genres']) {
     const valKey = 'featured_' + k;
     if (body[k] !== undefined) {
       await db.prepare(`INSERT INTO Settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value`)
@@ -449,13 +473,13 @@ async function handleFeaturedPost(request, env) {
         .run();
     }
   }
-  
+
   if (body.new !== undefined) {
     await db.prepare(`INSERT INTO Settings (key, value) VALUES ('featured_items', ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value`)
       .bind(body.new)
       .run();
   }
-  
+
   return json({ success: true });
 }
 
@@ -521,10 +545,10 @@ async function handleInventorySearch(request, env) {
     filterSql += ' AND (Artist LIKE ? OR Title LIKE ? OR UPC LIKE ? OR Vendor_Number LIKE ?)';
     bindParams.push(`%${queryVal}%`, `%${queryVal}%`, `%${queryVal}%`, `%${queryVal}%`);
   } else {
-    if (upc)    { filterSql += ' AND UPC LIKE ?';           bindParams.push(`%${upc}%`); }
-    if (artist) { filterSql += ' AND Artist LIKE ?';        bindParams.push(`%${artist}%`); }
-    if (title)  { filterSql += ' AND Title LIKE ?';         bindParams.push(`%${title}%`); }
-    if (catalog){ filterSql += ' AND Vendor_Number = ?';    bindParams.push(catalog); }
+    if (upc) { filterSql += ' AND UPC LIKE ?'; bindParams.push(`%${upc}%`); }
+    if (artist) { filterSql += ' AND Artist LIKE ?'; bindParams.push(`%${artist}%`); }
+    if (title) { filterSql += ' AND Title LIKE ?'; bindParams.push(`%${title}%`); }
+    if (catalog) { filterSql += ' AND Vendor_Number = ?'; bindParams.push(catalog); }
   }
 
   const countQ = `SELECT COUNT(*) as total FROM Inventory WHERE 1=1${filterSql}`;
@@ -541,7 +565,7 @@ async function handleInventorySearch(request, env) {
 async function handleOnlineSearch(request, env) {
   const db = env.DB;
   const url = new URL(request.url);
-  const queryVal  = url.searchParams.get('query')  || '';
+  const queryVal = url.searchParams.get('query') || '';
   const formatVal = url.searchParams.get('format') || '%';
   const letterVal = url.searchParams.get('letter') || '';
 
@@ -573,20 +597,20 @@ async function handleOnlineSearch(request, env) {
 
   if (formatVal && formatVal !== '%') {
     const fmtMap = {
-      vinyl:      "(Format LIKE '%vinyl%' OR Format LIKE '%LP%' OR Format LIKE '%7\"%' OR Format LIKE '%10\"%' OR Format LIKE '%12\"%' OR Format LIKE '%78%' OR Format LIKE '%EP%')",
-      cd:         "(Format LIKE '%CD%')",
-      vinyllp:    "(Format LIKE '%LP%' AND Format NOT LIKE '%Box%')",
-      vinyl7:     "(Format LIKE '%7\"%')",
-      vinyl10:    "(Format LIKE '%10\"%')",
-      vinyl12:    "(Format LIKE '%12\"%')",
-      vinyl78:    "(Format LIKE '%78%')",
-      cdsing:     "(Format LIKE '%CD Single%' OR Format LIKE '%CD Sing%')",
-      ep:         "(Format LIKE '%EP%')",
-      cassette:   "(Format LIKE '%Cassette%')",
-      video:      "(Format LIKE '%Video%' OR Format LIKE '%VHS%' OR Format LIKE '%DVD%')",
-      book:       "(Format LIKE '%Book%')",
-      clothing:   "(Format LIKE '%Clothing%' OR Format LIKE '%Shirt%')",
-      memorabilia:"(Format LIKE '%Memorabilia%')",
+      vinyl: "(Format LIKE '%vinyl%' OR Format LIKE '%LP%' OR Format LIKE '%7\"%' OR Format LIKE '%10\"%' OR Format LIKE '%12\"%' OR Format LIKE '%78%' OR Format LIKE '%EP%')",
+      cd: "(Format LIKE '%CD%')",
+      vinyllp: "(Format LIKE '%LP%' AND Format NOT LIKE '%Box%')",
+      vinyl7: "(Format LIKE '%7\"%')",
+      vinyl10: "(Format LIKE '%10\"%')",
+      vinyl12: "(Format LIKE '%12\"%')",
+      vinyl78: "(Format LIKE '%78%')",
+      cdsing: "(Format LIKE '%CD Single%' OR Format LIKE '%CD Sing%')",
+      ep: "(Format LIKE '%EP%')",
+      cassette: "(Format LIKE '%Cassette%')",
+      video: "(Format LIKE '%Video%' OR Format LIKE '%VHS%' OR Format LIKE '%DVD%')",
+      book: "(Format LIKE '%Book%')",
+      clothing: "(Format LIKE '%Clothing%' OR Format LIKE '%Shirt%')",
+      memorabilia: "(Format LIKE '%Memorabilia%')",
     };
     if (fmtMap[formatVal]) {
       filterSql += ` AND ${fmtMap[formatVal]}`;
@@ -623,10 +647,10 @@ async function handleOnlineUpdate(request, env) {
   }
 
   const id = body.id ? parseInt(body.id) : null;
-  const { Artist='', Title='', Format='', Discogs_ID='', Discogs_url='', Description='',
-    Condition_Media='', Condition_Sleeve='', Seller_Reference_Number='', Label='',
-    Release_Catalog_Number='', Release_Country='', Release_Date='', Genre='',
-    Front_Image_URL='', Back_Image_URL='', YouTube_Audio_Image_URLs='', Bar_Code='', Number_In_Set='',
+  const { Artist = '', Title = '', Format = '', Discogs_ID = '', Discogs_url = '', Description = '',
+    Condition_Media = '', Condition_Sleeve = '', Seller_Reference_Number = '', Label = '',
+    Release_Catalog_Number = '', Release_Country = '', Release_Date = '', Genre = '',
+    Front_Image_URL = '', Back_Image_URL = '', YouTube_Audio_Image_URLs = '', Bar_Code = '', Number_In_Set = '',
   } = body;
   const Price = body.Price !== undefined && body.Price !== '' ? parseFloat(body.Price) : null;
   const Quantity = body.Quantity !== undefined && body.Quantity !== '' ? parseInt(body.Quantity) : 0;
@@ -672,23 +696,23 @@ async function handleInstoreUpdate(request, env) {
   }
 
   const id = body.id ? parseInt(body.id) : null;
-  const { Artist='', Title='', Format='', Vendor='', Vendor_Number='', UPC='', Year='', OOP='' } = body;
+  const { Artist = '', Title = '', Format = '', Vendor = '', Vendor_Number = '', UPC = '', Year = '', OOP = '', Image_URL = '' } = body;
   const SRP = body.SRP || '';
   const Quantity = body.Quantity !== undefined && body.Quantity !== '' ? parseInt(body.Quantity) : 0;
 
   if (!Title && !Artist) return json({ error: 'Artist or Title must be provided.' }, 400);
 
-  const fields = [Artist, Title, Format, Vendor, Vendor_Number, UPC, Quantity, Year, OOP, SRP];
+  const fields = [Artist, Title, Format, Vendor, Vendor_Number, UPC, Quantity, Year, OOP, SRP, Image_URL];
 
   if (id) {
     await db.prepare(`UPDATE Inventory SET
-      Artist=?,Title=?,Format=?,Vendor=?,Vendor_Number=?,UPC=?,Quantity=?,Year=?,OOP=?,SRP=? WHERE id=?`
+      Artist=?,Title=?,Format=?,Vendor=?,Vendor_Number=?,UPC=?,Quantity=?,Year=?,OOP=?,SRP=?,Image_URL=? WHERE id=?`
     ).bind(...fields, id).run();
     return json({ success: true, message: 'In-Store product updated successfully.', id });
   } else {
     await db.prepare(`INSERT INTO Inventory
-      (Artist,Title,Format,Vendor,Vendor_Number,UPC,Quantity,Year,OOP,SRP)
-      VALUES (?,?,?,?,?,?,?,?,?,?)`
+      (Artist,Title,Format,Vendor,Vendor_Number,UPC,Quantity,Year,OOP,SRP,Image_URL)
+      VALUES (?,?,?,?,?,?,?,?,?,?,?)`
     ).bind(...fields).run();
     const newRow = await db.prepare('SELECT last_insert_rowid() as id').first();
     return json({ success: true, message: 'In-Store product created successfully.', id: newRow?.id });
@@ -767,7 +791,7 @@ async function handleSales(request, env) {
   `;
   const params = [];
   if (vendor) { query += ' AND i.Vendor = ?'; params.push(vendor); }
-  if (oop === 'IP')  query += " AND (i.OOP IS NULL OR i.OOP = '' OR i.OOP != 'Y')";
+  if (oop === 'IP') query += " AND (i.OOP IS NULL OR i.OOP = '' OR i.OOP != 'Y')";
   if (oop === 'OOP') query += " AND i.OOP = 'Y'";
   query += ' ORDER BY s.Date_Sold DESC';
 
@@ -787,7 +811,7 @@ async function handleSync(request, env) {
       INSERT INTO Inventory (UPC,Quantity,Format,Artist,Title,Vendor_Number,OOP,Year,Vendor,Modified,SRP)
       VALUES (?,?,?,?,?,?,?,?,?,?,?)
       ON CONFLICT(UPC) DO UPDATE SET Quantity=Quantity+excluded.Quantity, Modified=excluded.Modified, SRP=excluded.SRP
-    `).bind(item.UPC,item.Quantity,item.Format,item.Artist,item.Title,item.Vendor_Number,item.OOP,item.Year,item.Vendor,item.Modified,item.SRP).run();
+    `).bind(item.UPC, item.Quantity, item.Format, item.Artist, item.Title, item.Vendor_Number, item.OOP, item.Year, item.Vendor, item.Modified, item.SRP).run();
   }
 
   for (const item of sales) {
@@ -795,12 +819,12 @@ async function handleSync(request, env) {
       INSERT INTO Inventory (UPC,Quantity,Format,Artist,Title,Vendor_Number,OOP,Year,Vendor,Modified,SRP)
       VALUES (?,0,?,?,?,?,?,?,?,?,?)
       ON CONFLICT(UPC) DO UPDATE SET Quantity=Quantity-?, Modified=excluded.Modified
-    `).bind(item.UPC,item.Format,item.Artist,item.Title,item.Vendor_Number,item.OOP,item.Year,item.Vendor,item.Modified,item.SRP,item.Quantity).run();
+    `).bind(item.UPC, item.Format, item.Artist, item.Title, item.Vendor_Number, item.OOP, item.Year, item.Vendor, item.Modified, item.SRP, item.Quantity).run();
 
     const invRow = await db.prepare('SELECT id FROM Inventory WHERE UPC = ?').bind(item.UPC).first();
     if (invRow) {
       await db.prepare(`INSERT INTO Sales (inventory_id,UPC,Quantity_Sold,Date_Sold,SRP) VALUES (?,?,?,?,?)`)
-        .bind(invRow.id,item.UPC,item.Quantity,item.Modified,item.SRP).run();
+        .bind(invRow.id, item.UPC, item.Quantity, item.Modified, item.SRP).run();
     }
   }
 
@@ -808,12 +832,12 @@ async function handleSync(request, env) {
     await db.prepare(`
       INSERT INTO Inventory (UPC,Quantity,Format,Artist,Title,Vendor_Number,OOP,Year,Vendor,Modified,SRP)
       VALUES (?,0,?,?,?,?,?,?,?,?,?) ON CONFLICT(UPC) DO NOTHING
-    `).bind(item.UPC,item.Format,item.Artist,item.Title,item.Vendor_Number,item.OOP,item.Year,item.Vendor,item.Modified,item.SRP).run();
+    `).bind(item.UPC, item.Format, item.Artist, item.Title, item.Vendor_Number, item.OOP, item.Year, item.Vendor, item.Modified, item.SRP).run();
 
     const invRow = await db.prepare('SELECT id FROM Inventory WHERE UPC = ?').bind(item.UPC).first();
     if (invRow) {
       await db.prepare(`INSERT INTO Orders (inventory_id,UPC,Quantity_Ordered,Vendor,Order_Date) VALUES (?,?,?,?,?)`)
-        .bind(invRow.id,item.UPC,item.Quantity,item.Vendor,item.Modified).run();
+        .bind(invRow.id, item.UPC, item.Quantity, item.Vendor, item.Modified).run();
     }
   }
 

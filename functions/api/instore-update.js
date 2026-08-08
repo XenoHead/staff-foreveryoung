@@ -34,21 +34,22 @@ export async function onRequestPost(context) {
     const oop = body.OOP || '';
     const srp = body.SRP || '';
     const imageUrl = body.Image_URL || '';
+    const genre = body.Genre || '';
+    const country = body.Country || '';
 
     if (!title && !artist) {
       return new Response(JSON.stringify({ error: "Artist or Title must be provided." }), { status: 400 });
     }
 
     if (id) {
-      // Update
       await db.prepare(`
         UPDATE Inventory SET 
           Artist = ?, Title = ?, Format = ?, Vendor = ?, Vendor_Number = ?, 
-          UPC = ?, Quantity = ?, Year = ?, OOP = ?, SRP = ?, Image_URL = ?
+          UPC = ?, Quantity = ?, Year = ?, OOP = ?, SRP = ?, Image_URL = ?, Genre = ?, Country = ?
         WHERE id = ?
       `).bind(
         artist, title, format, vendor, vendorNumber,
-        upc, quantity, year, oop, srp, imageUrl,
+        upc, quantity, year, oop, srp, imageUrl, genre, country,
         id
       ).run();
 
@@ -57,18 +58,17 @@ export async function onRequestPost(context) {
         headers: { "Content-Type": "application/json" }
       });
     } else {
-      // Insert
       await db.prepare(`
         INSERT INTO Inventory (
           Artist, Title, Format, Vendor, Vendor_Number, 
-          UPC, Quantity, Year, OOP, SRP, Image_URL
+          UPC, Quantity, Year, OOP, SRP, Image_URL, Genre, Country
         ) VALUES (
           ?, ?, ?, ?, ?, 
-          ?, ?, ?, ?, ?, ?
+          ?, ?, ?, ?, ?, ?, ?, ?
         )
       `).bind(
         artist, title, format, vendor, vendorNumber,
-        upc, quantity, year, oop, srp, imageUrl
+        upc, quantity, year, oop, srp, imageUrl, genre, country
       ).run();
 
       const newRow = await db.prepare("SELECT last_insert_rowid() as id").first();

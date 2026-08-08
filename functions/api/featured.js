@@ -33,7 +33,7 @@ export async function onRequestGet(context) {
     }
 
     if (type === 'details') {
-      const keys = ["new", "new_releases", "hot", "rare", "temp1", "temp2", "genres"];
+      const keys = ["new", "new_releases", "instore", "online", "hot", "rare", "temp1", "temp2", "genres"];
       const responseObj = { success: true };
 
       for (const k of keys) {
@@ -71,8 +71,18 @@ export async function onRequestGet(context) {
                 Title: item.Title,
                 Format: item.Format,
                 Price: parseFloat(item.SRP) || 0.00,
+                SRP: item.SRP || '',
                 Bar_Code: item.UPC,
+                UPC: item.UPC || '',
                 Quantity: item.Quantity,
+                Vendor: item.Vendor || '',
+                Vendor_Number: item.Vendor_Number || '',
+                Year: item.Year || '',
+                OOP: item.OOP || '',
+                Genre: item.Genre || '',
+                Country: item.Country || '',
+                Front_Image_URL: item.Image_URL || item.Front_Image_URL || '',
+                Image_URL: item.Image_URL || item.Front_Image_URL || '',
                 _source: 'instore'
               }));
             }
@@ -112,7 +122,7 @@ export async function onRequestPost(context) {
     }
 
     // Save featured items for all crates
-    const keys = ["new", "new_releases", "hot", "rare", "temp1", "temp2", "genres"];
+    const keys = ["new", "new_releases", "instore", "online", "hot", "rare", "temp1", "temp2", "genres"];
     for (const k of keys) {
       if (body[k] !== undefined) {
         const val = body[k] || "";
