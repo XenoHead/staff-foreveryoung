@@ -166,7 +166,7 @@
 
     .main-btn {
       width: 280px !important;
-      height: 50px !important;
+      height: 55x !important;
       background: var(--blue) !important;
       color: var(--yellow) !important;
       border: 1px solid var(--yellow) !important;
@@ -576,72 +576,136 @@
 
       <!-- Crate Name Editor (hidden by default) -->
       <div id="crate-name-editor"
-        style="display: none; padding: 0.75rem 1.5rem; background: rgba(44,108,255,0.08); border-bottom: 1px solid rgba(44,108,255,0.2); gap: 0.75rem; flex-wrap: wrap; align-items: flex-end;">
-        <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: flex-end; flex: 1;">
-          <div style="display: flex; flex-direction: column; gap: 3px; min-width: 140px;">
-            <label style="font-size: 0.75rem; color: var(--muted);">New Releases</label>
-            <input type="text" id="cname-new-releases"
-              style="padding: 0.3rem 0.5rem; background: rgba(0,0,0,0.4); border: 1px solid var(--blue); color: #fff; border-radius: 4px; font-size: 0.85rem; width: 100%;">
-          </div>
-          <div style="display: flex; flex-direction: column; gap: 3px; min-width: 140px;">
-            <label style="font-size: 0.75rem; color: var(--muted);">In Store (New Rel)</label>
-            <input type="text" id="cname-instore"
-              style="padding: 0.3rem 0.5rem; background: rgba(0,0,0,0.4); border: 1px solid var(--blue); color: #fff; border-radius: 4px; font-size: 0.85rem; width: 100%;">
-          </div>
-          <div style="display: flex; flex-direction: column; gap: 3px; min-width: 140px;">
-            <label style="font-size: 0.75rem; color: var(--muted);">Online (New Rel)</label>
-            <input type="text" id="cname-online"
-              style="padding: 0.3rem 0.5rem; background: rgba(0,0,0,0.4); border: 1px solid var(--blue); color: #fff; border-radius: 4px; font-size: 0.85rem; width: 100%;">
-          </div>
-          <div style="display: flex; flex-direction: column; gap: 3px; min-width: 140px;">
-            <div style="display: flex; gap: 6px; align-items: center;">
-              <input type="checkbox" id="cname-new-enabled" style="width: 14px; height: 14px;" checked>
-              <input type="text" id="cname-new" placeholder="Name..."
+        style="display: none; padding: 1rem 1.5rem; background: rgba(44,108,255,0.08); border-bottom: 1px solid rgba(44,108,255,0.2); flex-direction: column; gap: 1rem;">
+
+        <!-- Group 1: New Releases -->
+        <fieldset
+          style="border: 2px solid var(--blue); border-radius: 8px; padding: 0.75rem 1rem; background: rgba(0, 0, 0, 0.4); margin: 0;">
+          <legend
+            style="font-family: 'Oswald', sans-serif; color: var(--yellow); padding: 0 8px; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;">
+            New Releases</legend>
+          <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: flex-end; width: 100%;">
+            <div style="display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 140px;">
+              <label style="font-size: 0.75rem; color: var(--muted);">New Releases</label>
+              <input type="text" id="cname-new-releases"
+                style="padding: 0.3rem 0.5rem; background: rgba(0,0,0,0.4); border: 1px solid var(--blue); color: #fff; border-radius: 4px; font-size: 0.85rem; width: 100%;">
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 140px;">
+              <label style="font-size: 0.75rem; color: var(--muted);">In Store (New Rel)</label>
+              <input type="text" id="cname-instore"
+                style="padding: 0.3rem 0.5rem; background: rgba(0,0,0,0.4); border: 1px solid var(--blue); color: #fff; border-radius: 4px; font-size: 0.85rem; width: 100%;">
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 140px;">
+              <label style="font-size: 0.75rem; color: var(--muted);">Online (New Rel)</label>
+              <input type="text" id="cname-online"
                 style="padding: 0.3rem 0.5rem; background: rgba(0,0,0,0.4); border: 1px solid var(--blue); color: #fff; border-radius: 4px; font-size: 0.85rem; width: 100%;">
             </div>
           </div>
-          <div style="display: flex; flex-direction: column; gap: 3px; min-width: 140px;">
-            <div style="display: flex; gap: 6px; align-items: center;">
-              <input type="checkbox" id="cname-hot-enabled" style="width: 14px; height: 14px;" checked>
-              <input type="text" id="cname-hot" placeholder="Name..."
-                style="padding: 0.3rem 0.5rem; background: rgba(0,0,0,0.4); border: 1px solid var(--blue); color: #fff; border-radius: 4px; font-size: 0.85rem; width: 100%;">
+        </fieldset>
+
+        <!-- Group 2: Cool Stuff -->
+        <fieldset
+          style="border: 2px solid var(--blue); border-radius: 8px; padding: 0.75rem 1rem; background: rgba(0, 0, 0, 0.4); margin: 0;">
+          <legend
+            style="font-family: 'Oswald', sans-serif; color: var(--yellow); padding: 0 8px; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;">
+            Cool Stuff</legend>
+          <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: flex-end; width: 100%;">
+            <div style="display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 140px;">
+              <div style="display: flex; gap: 6px; align-items: center;">
+                <input type="checkbox" id="cname-new-enabled" style="width: 14px; height: 14px;">
+                <input type="text" id="cname-new" placeholder="Name..."
+                  style="padding: 0.3rem 0.5rem; background: rgba(0,0,0,0.4); border: 1px solid var(--blue); color: #fff; border-radius: 4px; font-size: 0.85rem; width: 100%;">
+              </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 140px;">
+              <div style="display: flex; gap: 6px; align-items: center;">
+                <input type="checkbox" id="cname-hot-enabled" style="width: 14px; height: 14px;">
+                <input type="text" id="cname-hot" placeholder="Name..."
+                  style="padding: 0.3rem 0.5rem; background: rgba(0,0,0,0.4); border: 1px solid var(--blue); color: #fff; border-radius: 4px; font-size: 0.85rem; width: 100%;">
+              </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 140px;">
+              <div style="display: flex; gap: 6px; align-items: center;">
+                <input type="checkbox" id="cname-rare-enabled" style="width: 14px; height: 14px;">
+                <input type="text" id="cname-rare" placeholder="Name..."
+                  style="padding: 0.3rem 0.5rem; background: rgba(0,0,0,0.4); border: 1px solid var(--blue); color: #fff; border-radius: 4px; font-size: 0.85rem; width: 100%;">
+              </div>
             </div>
           </div>
-          <div style="display: flex; flex-direction: column; gap: 3px; min-width: 140px;">
-            <div style="display: flex; gap: 6px; align-items: center;">
-              <input type="checkbox" id="cname-rare-enabled" style="width: 14px; height: 14px;" checked>
-              <input type="text" id="cname-rare" placeholder="Name..."
-                style="padding: 0.3rem 0.5rem; background: rgba(0,0,0,0.4); border: 1px solid var(--blue); color: #fff; border-radius: 4px; font-size: 0.85rem; width: 100%;">
+        </fieldset>
+
+        <!-- Group 3: Lower Left -->
+        <fieldset
+          style="border: 2px solid var(--blue); border-radius: 8px; padding: 0.75rem 1rem; background: rgba(0, 0, 0, 0.4); margin: 0;">
+          <legend
+            style="font-family: 'Oswald', sans-serif; color: var(--yellow); padding: 0 8px; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;">
+            Lower Left</legend>
+          <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: flex-end; width: 100%;">
+            <div style="display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 140px;">
+              <div style="display: flex; gap: 6px; align-items: center;">
+                <input type="checkbox" id="cname-genres-enabled" style="width: 14px; height: 14px;">
+                <input type="text" id="cname-genres" placeholder="Name..."
+                  style="padding: 0.3rem 0.5rem; background: rgba(0,0,0,0.4); border: 1px solid var(--blue); color: #fff; border-radius: 4px; font-size: 0.85rem; width: 100%;">
+              </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 160px;">
+              <div style="display: flex; gap: 6px; align-items: center;">
+                <input type="checkbox" id="cname-temp1-enabled" style="width: 14px; height: 14px;">
+                <input type="text" id="cname-temp1"
+                  style="padding: 0.3rem 0.5rem; background: rgba(0,0,0,0.4); border: 1px solid var(--yellow); color: #fff; border-radius: 4px; font-size: 0.85rem; flex: 1;"
+                  placeholder="Name...">
+              </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 160px;">
+              <div style="display: flex; gap: 6px; align-items: center;">
+                <input type="checkbox" id="cname-temp2-enabled" style="width: 14px; height: 14px;">
+                <input type="text" id="cname-temp2"
+                  style="padding: 0.3rem 0.5rem; background: rgba(0,0,0,0.4); border: 1px solid var(--yellow); color: #fff; border-radius: 4px; font-size: 0.85rem; flex: 1;"
+                  placeholder="Name...">
+              </div>
             </div>
           </div>
-          <div style="display: flex; flex-direction: column; gap: 3px; min-width: 140px;">
-            <div style="display: flex; gap: 6px; align-items: center;">
-              <input type="checkbox" id="cname-genres-enabled" style="width: 14px; height: 14px;" checked>
-              <input type="text" id="cname-genres" placeholder="Name..."
-                style="padding: 0.3rem 0.5rem; background: rgba(0,0,0,0.4); border: 1px solid var(--blue); color: #fff; border-radius: 4px; font-size: 0.85rem; width: 100%;">
+        </fieldset>
+
+        <!-- Group 4: Lower Right -->
+        <fieldset
+          style="border: 2px solid var(--blue); border-radius: 8px; padding: 0.75rem 1rem; background: rgba(0, 0, 0, 0.4); margin: 0;">
+          <legend
+            style="font-family: 'Oswald', sans-serif; color: var(--yellow); padding: 0 8px; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;">
+            Lower Right</legend>
+          <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: flex-end; width: 100%;">
+            <div style="display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 160px;">
+              <div style="display: flex; gap: 6px; align-items: center;">
+                <input type="checkbox" id="cname-temp3-enabled" style="width: 14px; height: 14px;">
+                <input type="text" id="cname-temp3"
+                  style="padding: 0.3rem 0.5rem; background: rgba(0,0,0,0.4); border: 1px solid var(--yellow); color: #fff; border-radius: 4px; font-size: 0.85rem; flex: 1;"
+                  placeholder="Name...">
+              </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 160px;">
+              <div style="display: flex; gap: 6px; align-items: center;">
+                <input type="checkbox" id="cname-temp4-enabled" style="width: 14px; height: 14px;">
+                <input type="text" id="cname-temp4"
+                  style="padding: 0.3rem 0.5rem; background: rgba(0,0,0,0.4); border: 1px solid var(--yellow); color: #fff; border-radius: 4px; font-size: 0.85rem; flex: 1;"
+                  placeholder="Name...">
+              </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 160px;">
+              <div style="display: flex; gap: 6px; align-items: center;">
+                <input type="checkbox" id="cname-temp5-enabled" style="width: 14px; height: 14px;">
+                <input type="text" id="cname-temp5"
+                  style="padding: 0.3rem 0.5rem; background: rgba(0,0,0,0.4); border: 1px solid var(--yellow); color: #fff; border-radius: 4px; font-size: 0.85rem; flex: 1;"
+                  placeholder="Name...">
+              </div>
             </div>
           </div>
-          <div
-            style="display: flex; flex-direction: column; gap: 3px; min-width: 160px; border-left: 1px solid rgba(255,255,255,0.1); padding-left: 0.75rem;">
-            <div style="display: flex; gap: 6px; align-items: center;">
-              <input type="checkbox" id="cname-temp1-enabled" style="width: 14px; height: 14px;">
-              <input type="text" id="cname-temp1"
-                style="padding: 0.3rem 0.5rem; background: rgba(0,0,0,0.4); border: 1px solid var(--yellow); color: #fff; border-radius: 4px; font-size: 0.85rem; flex: 1;"
-                placeholder="Name...">
-            </div>
-          </div>
-          <div style="display: flex; flex-direction: column; gap: 3px; min-width: 160px;">
-            <div style="display: flex; gap: 6px; align-items: center;">
-              <input type="checkbox" id="cname-temp2-enabled" style="width: 14px; height: 14px;">
-              <input type="text" id="cname-temp2"
-                style="padding: 0.3rem 0.5rem; background: rgba(0,0,0,0.4); border: 1px solid var(--yellow); color: #fff; border-radius: 4px; font-size: 0.85rem; flex: 1;"
-                placeholder="Name...">
-            </div>
-          </div>
+        </fieldset>
+
+        <div style="display: flex; justify-content: flex-end; width: 100%;">
+          <button id="btn-save-crate-names" class="action-btn"
+            style="padding: 0.4rem 1.2rem; font-size: 0.85rem; background: rgba(46,204,113,0.2); border-color: #2ecc71; color: #2ecc71; width: auto; margin-top: 0; flex-shrink: 0;">Save
+            Names</button>
         </div>
-        <button id="btn-save-crate-names" class="action-btn"
-          style="padding: 0.4rem 1.2rem; font-size: 0.85rem; background: rgba(46,204,113,0.2); border-color: #2ecc71; color: #2ecc71; width: auto; margin-top: 0; flex-shrink: 0;">Save
-          Names</button>
       </div>
 
       <div id="featured-modal-status" class="status-msg" style="margin: 0.5rem 1.5rem 0 1.5rem; display: none;"></div>
@@ -653,7 +717,8 @@
         <div style="display: flex; gap: 0.5rem;">
           <input type="text" id="featured-modal-search-input" class="search-input" style="flex: 1;"
             placeholder="Search artist, title, UPC, or Ref #...">
-          <select id="featured-modal-search-filter" class="search-input" style="width: auto; min-width: 110px; background: rgba(0,0,0,0.5); color: #fff; border: 1px solid var(--blue); padding: 0 0.5rem; border-radius: 4px; font-size: 0.85rem;">
+          <select id="featured-modal-search-filter" class="search-input"
+            style="width: auto; min-width: 110px; background: rgba(0,0,0,0.5); color: #fff; border: 1px solid var(--blue); padding: 0 0.5rem; border-radius: 4px; font-size: 0.85rem;">
             <option value="all">All (Online & In Store)</option>
             <option value="online">Online Only</option>
             <option value="instore">In Store Only</option>
@@ -677,20 +742,28 @@
           <div class="crate-tab"
             style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden;">
             <button class="crate-tab-header" data-crate-tab="new-releases"
-              style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: none; border: none; color: var(--yellow); font-family: 'Oswald', sans-serif; font-size: 1rem; cursor: pointer; text-align: left;">
-              <span>🆕 New Releases</span><span class="crate-tab-arrow" style="transition: transform 0.2s;">▼</span>
+              style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: none; border: none; color: var(--yellow); font-family: 'Oswald', sans-serif; font-size: 1rem; cursor: pointer; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.08);">
+              <span>🆕 New Releases</span><span class="crate-tab-arrow" style="transition: transform 0.2s; transform: rotate(180deg);">▼</span>
             </button>
             <div class="crate-tab-body" data-crate-body="new-releases"
-              style="display: none; padding: 0.75rem 1rem 1rem;">
-              <div style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem; flex-wrap: wrap;">
-                <button type="button" class="nr-sub-tab active" data-nr-tab="new_releases" style="padding: 0.35rem 0.9rem; background: rgba(44,108,255,0.3); border: 1px solid var(--blue); color: #fff; border-radius: 4px; font-size: 0.85rem; cursor: pointer;">🆕 Main New Releases</button>
-                <button type="button" class="nr-sub-tab" data-nr-tab="instore" style="padding: 0.35rem 0.9rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); color: #B6C0D7; border-radius: 4px; font-size: 0.85rem; cursor: pointer;">🏪 In Store</button>
-                <button type="button" class="nr-sub-tab" data-nr-tab="online" style="padding: 0.35rem 0.9rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); color: #B6C0D7; border-radius: 4px; font-size: 0.85rem; cursor: pointer;">🌐 Online</button>
+              style="display: block; padding: 0.75rem 1rem 1rem;">
+              <div
+                style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem; flex-wrap: wrap;">
+                <button type="button" class="nr-sub-tab active" data-nr-tab="new_releases"
+                  style="padding: 0.35rem 0.9rem; background: rgba(44,108,255,0.3); border: 1px solid var(--blue); color: #fff; border-radius: 4px; font-size: 0.85rem; cursor: pointer;">🆕
+                  Main New Releases</button>
+                <button type="button" class="nr-sub-tab" data-nr-tab="instore"
+                  style="padding: 0.35rem 0.9rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); color: #B6C0D7; border-radius: 4px; font-size: 0.85rem; cursor: pointer;">🏪
+                  In Store</button>
+                <button type="button" class="nr-sub-tab" data-nr-tab="online"
+                  style="padding: 0.35rem 0.9rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); color: #B6C0D7; border-radius: 4px; font-size: 0.85rem; cursor: pointer;">🌐
+                  Online</button>
               </div>
 
               <!-- Main New Releases Sub-window -->
               <div id="nr-sub-panel-new_releases" class="nr-sub-panel">
-                <label style="display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 4px;">Main New Releases Reference IDs (comma-separated):</label>
+                <label style="display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 4px;">Main New
+                  Releases Reference IDs (comma-separated):</label>
                 <textarea id="featured-refs-new-releases"
                   style="width: 100%; height: 60px; padding: 0.5rem; background: rgba(0,0,0,0.5); border: 1px solid var(--blue); border-radius: 6px; color: #FFF; font-family: monospace; font-size: 0.85rem; resize: vertical;"
                   placeholder="e.g. 1728-TW2026-0401-VINYL-NEW-1025"></textarea>
@@ -700,7 +773,8 @@
 
               <!-- In Store Sub-window -->
               <div id="nr-sub-panel-instore" class="nr-sub-panel" style="display: none;">
-                <label style="display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 4px;">In Store New Releases Reference IDs / UPCs (comma-separated):</label>
+                <label style="display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 4px;">In Store New
+                  Releases Reference IDs / UPCs (comma-separated):</label>
                 <textarea id="featured-refs-instore"
                   style="width: 100%; height: 60px; padding: 0.5rem; background: rgba(0,0,0,0.5); border: 1px solid var(--blue); border-radius: 6px; color: #FFF; font-family: monospace; font-size: 0.85rem; resize: vertical;"
                   placeholder="e.g. 123456789012"></textarea>
@@ -710,7 +784,8 @@
 
               <!-- Online Sub-window -->
               <div id="nr-sub-panel-online" class="nr-sub-panel" style="display: none;">
-                <label style="display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 4px;">Online New Releases Reference IDs / SKUs (comma-separated):</label>
+                <label style="display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 4px;">Online New
+                  Releases Reference IDs / SKUs (comma-separated):</label>
                 <textarea id="featured-refs-online"
                   style="width: 100%; height: 60px; padding: 0.5rem; background: rgba(0,0,0,0.5); border: 1px solid var(--blue); border-radius: 6px; color: #FFF; font-family: monospace; font-size: 0.85rem; resize: vertical;"
                   placeholder="e.g. 8043-TW2024-0123-1020"></textarea>
@@ -724,10 +799,10 @@
           <div class="crate-tab"
             style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden;">
             <button class="crate-tab-header" data-crate-tab="new"
-              style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: none; border: none; color: var(--yellow); font-family: 'Oswald', sans-serif; font-size: 1rem; cursor: pointer; text-align: left;">
-              <span>⭐ Employee Picks</span><span class="crate-tab-arrow" style="transition: transform 0.2s;">▼</span>
+              style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: none; border: none; color: var(--yellow); font-family: 'Oswald', sans-serif; font-size: 1rem; cursor: pointer; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.08);">
+              <span>⭐ Employee Picks</span><span class="crate-tab-arrow" style="transition: transform 0.2s; transform: rotate(180deg);">▼</span>
             </button>
-            <div class="crate-tab-body" data-crate-body="new" style="display: none; padding: 0.75rem 1rem 1rem;">
+            <div class="crate-tab-body" data-crate-body="new" style="display: block; padding: 0.75rem 1rem 1rem;">
               <label style="display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 4px;">Reference IDs
                 (comma-separated):</label>
               <textarea id="featured-refs-new"
@@ -742,10 +817,10 @@
           <div class="crate-tab"
             style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden;">
             <button class="crate-tab-header" data-crate-tab="hot"
-              style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: none; border: none; color: var(--yellow); font-family: 'Oswald', sans-serif; font-size: 1rem; cursor: pointer; text-align: left;">
-              <span>🔥 Hot Albums</span><span class="crate-tab-arrow" style="transition: transform 0.2s;">▼</span>
+              style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: none; border: none; color: var(--yellow); font-family: 'Oswald', sans-serif; font-size: 1rem; cursor: pointer; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.08);">
+              <span>🔥 Hot Albums</span><span class="crate-tab-arrow" style="transition: transform 0.2s; transform: rotate(180deg);">▼</span>
             </button>
-            <div class="crate-tab-body" data-crate-body="hot" style="display: none; padding: 0.75rem 1rem 1rem;">
+            <div class="crate-tab-body" data-crate-body="hot" style="display: block; padding: 0.75rem 1rem 1rem;">
               <label style="display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 4px;">Reference IDs
                 (comma-separated):</label>
               <textarea id="featured-refs-hot"
@@ -760,10 +835,10 @@
           <div class="crate-tab"
             style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden;">
             <button class="crate-tab-header" data-crate-tab="rare"
-              style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: none; border: none; color: var(--yellow); font-family: 'Oswald', sans-serif; font-size: 1rem; cursor: pointer; text-align: left;">
-              <span>💎 Rare Finds</span><span class="crate-tab-arrow" style="transition: transform 0.2s;">▼</span>
+              style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: none; border: none; color: var(--yellow); font-family: 'Oswald', sans-serif; font-size: 1rem; cursor: pointer; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.08);">
+              <span>💎 Rare Finds</span><span class="crate-tab-arrow" style="transition: transform 0.2s; transform: rotate(180deg);">▼</span>
             </button>
-            <div class="crate-tab-body" data-crate-body="rare" style="display: none; padding: 0.75rem 1rem 1rem;">
+            <div class="crate-tab-body" data-crate-body="rare" style="display: block; padding: 0.75rem 1rem 1rem;">
               <label style="display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 4px;">Reference IDs
                 (comma-separated):</label>
               <textarea id="featured-refs-rare"
@@ -778,10 +853,10 @@
           <div class="crate-tab"
             style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden;">
             <button class="crate-tab-header" data-crate-tab="genres"
-              style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: none; border: none; color: var(--yellow); font-family: 'Oswald', sans-serif; font-size: 1rem; cursor: pointer; text-align: left;">
-              <span>🎵 Genres</span><span class="crate-tab-arrow" style="transition: transform 0.2s;">▼</span>
+              style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: none; border: none; color: var(--yellow); font-family: 'Oswald', sans-serif; font-size: 1rem; cursor: pointer; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.08);">
+              <span>🎵 Genres</span><span class="crate-tab-arrow" style="transition: transform 0.2s; transform: rotate(180deg);">▼</span>
             </button>
-            <div class="crate-tab-body" data-crate-body="genres" style="display: none; padding: 0.75rem 1rem 1rem;">
+            <div class="crate-tab-body" data-crate-body="genres" style="display: block; padding: 0.75rem 1rem 1rem;">
               <label style="display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 4px;">Genre list
                 (comma-separated):</label>
               <textarea id="featured-refs-genres"
@@ -797,10 +872,11 @@
             style="border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; overflow: hidden; display: none;">
             <button class="crate-tab-header" data-crate-tab="temp1">
               <span>✨ Extra Crate 1</span>
-              <span class="crate-tab-arrow" style="transition: transform 0.2s;">▼</span>
+              <span class="crate-tab-arrow" style="transition: transform 0.2s; transform: rotate(180deg);">▼</span>
             </button>
-            <div class="crate-tab-body" data-crate-body="temp1" style="display: none; padding: 0.75rem 1rem 1rem;">
-              <label style="display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 4px;">Items (comma-separated):</label>
+            <div class="crate-tab-body" data-crate-body="temp1" style="display: block; padding: 0.75rem 1rem 1rem;">
+              <label style="display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 4px;">Items
+                (comma-separated):</label>
               <textarea id="featured-refs-temp1"
                 style="width: 100%; height: 60px; padding: 0.5rem; background: rgba(0,0,0,0.5); border: 1px solid var(--yellow); border-radius: 6px; color: #FFF; font-family: monospace; font-size: 0.85rem; resize: vertical;"
                 placeholder="e.g. 1518-LR2019-0610-0123, 848064000105"></textarea>
@@ -814,10 +890,11 @@
             style="border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; overflow: hidden; display: none;">
             <button class="crate-tab-header" data-crate-tab="temp2">
               <span>✨ Extra Crate 2</span>
-              <span class="crate-tab-arrow" style="transition: transform 0.2s;">▼</span>
+              <span class="crate-tab-arrow" style="transition: transform 0.2s; transform: rotate(180deg);">▼</span>
             </button>
-            <div class="crate-tab-body" data-crate-body="temp2" style="display: none; padding: 0.75rem 1rem 1rem;">
-              <label style="display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 4px;">Items (comma-separated):</label>
+            <div class="crate-tab-body" data-crate-body="temp2" style="display: block; padding: 0.75rem 1rem 1rem;">
+              <label style="display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 4px;">Items
+                (comma-separated):</label>
               <textarea id="featured-refs-temp2"
                 style="width: 100%; height: 60px; padding: 0.5rem; background: rgba(0,0,0,0.5); border: 1px solid var(--yellow); border-radius: 6px; color: #FFF; font-family: monospace; font-size: 0.85rem; resize: vertical;"
                 placeholder="e.g. 1518-LR2019-0610-0123, 848064000105"></textarea>
@@ -1257,8 +1334,14 @@
     const cnameTemp1Enabled = document.getElementById('cname-temp1-enabled');
     const cnameTemp2 = document.getElementById('cname-temp2');
     const cnameTemp2Enabled = document.getElementById('cname-temp2-enabled');
+    const cnameTemp3 = document.getElementById('cname-temp3');
+    const cnameTemp3Enabled = document.getElementById('cname-temp3-enabled');
+    const cnameTemp4 = document.getElementById('cname-temp4');
+    const cnameTemp4Enabled = document.getElementById('cname-temp4-enabled');
+    const cnameTemp5 = document.getElementById('cname-temp5');
+    const cnameTemp5Enabled = document.getElementById('cname-temp5-enabled');
 
-    let crateConfig = { names: {}, temp1_enabled: false, temp2_enabled: false };
+    let crateConfig = { names: {}, temp1_enabled: false, temp2_enabled: false, temp3_enabled: false, temp4_enabled: false, temp5_enabled: false };
 
     async function loadCrateConfig() {
       try {
@@ -1269,19 +1352,25 @@
           if (cnameNewReleases) cnameNewReleases.value = crateConfig.names['new_releases'] || 'New Releases';
           if (cnameInstore) cnameInstore.value = crateConfig.names['instore'] || 'In Store';
           if (cnameOnline) cnameOnline.value = crateConfig.names['online'] || 'Online';
-          if (cnameNew) cnameNew.value = crateConfig.names['new'] || 'Employee Picks';
-          if (cnameHot) cnameHot.value = crateConfig.names['hot'] || 'Hot Albums';
-          if (cnameRare) cnameRare.value = crateConfig.names['rare'] || 'Rare Finds';
-          if (cnameGenres) cnameGenres.value = crateConfig.names['genres'] || 'Genres';
+          if (cnameNew) cnameNew.value = crateConfig.names['new'] || '';
+          if (cnameHot) cnameHot.value = crateConfig.names['hot'] || '';
+          if (cnameRare) cnameRare.value = crateConfig.names['rare'] || '';
+          if (cnameGenres) cnameGenres.value = crateConfig.names['genres'] || '';
           if (cnameTemp1) cnameTemp1.value = crateConfig.names['temp1'] || '';
           if (cnameTemp2) cnameTemp2.value = crateConfig.names['temp2'] || '';
-          if (cnameNewEnabled) cnameNewEnabled.checked = crateConfig.new_enabled !== false;
-          if (cnameHotEnabled) cnameHotEnabled.checked = crateConfig.hot_enabled !== false;
-          if (cnameRareEnabled) cnameRareEnabled.checked = crateConfig.rare_enabled !== false;
-          if (cnameGenresEnabled) cnameGenresEnabled.checked = crateConfig.genres_enabled !== false;
+          if (cnameTemp3) cnameTemp3.value = crateConfig.names['temp3'] || '';
+          if (cnameTemp4) cnameTemp4.value = crateConfig.names['temp4'] || '';
+          if (cnameTemp5) cnameTemp5.value = crateConfig.names['temp5'] || '';
+          if (cnameNewEnabled) cnameNewEnabled.checked = !!crateConfig.new_enabled;
+          if (cnameHotEnabled) cnameHotEnabled.checked = !!crateConfig.hot_enabled;
+          if (cnameRareEnabled) cnameRareEnabled.checked = !!crateConfig.rare_enabled;
+          if (cnameGenresEnabled) cnameGenresEnabled.checked = !!crateConfig.genres_enabled;
           if (cnameTemp1Enabled) cnameTemp1Enabled.checked = !!crateConfig.temp1_enabled;
           if (cnameTemp2Enabled) cnameTemp2Enabled.checked = !!crateConfig.temp2_enabled;
-          
+          if (cnameTemp3Enabled) cnameTemp3Enabled.checked = !!crateConfig.temp3_enabled;
+          if (cnameTemp4Enabled) cnameTemp4Enabled.checked = !!crateConfig.temp4_enabled;
+          if (cnameTemp5Enabled) cnameTemp5Enabled.checked = !!crateConfig.temp5_enabled;
+
           updateCheckboxStates();
           updateAccordionLabels(crateConfig.names);
         }
@@ -1295,7 +1384,10 @@
         [cnameRare, cnameRareEnabled],
         [cnameGenres, cnameGenresEnabled],
         [cnameTemp1, cnameTemp1Enabled],
-        [cnameTemp2, cnameTemp2Enabled]
+        [cnameTemp2, cnameTemp2Enabled],
+        [cnameTemp3, cnameTemp3Enabled],
+        [cnameTemp4, cnameTemp4Enabled],
+        [cnameTemp5, cnameTemp5Enabled]
       ];
       pairs.forEach(([inputEl, chkEl]) => {
         if (inputEl && chkEl) {
@@ -1306,7 +1398,7 @@
       });
     }
 
-    [cnameNew, cnameHot, cnameRare, cnameGenres, cnameTemp1, cnameTemp2].forEach(el => {
+    [cnameNew, cnameHot, cnameRare, cnameGenres, cnameTemp1, cnameTemp2, cnameTemp3, cnameTemp4, cnameTemp5].forEach(el => {
       if (el) {
         el.addEventListener('input', updateCheckboxStates);
       }
@@ -1323,30 +1415,36 @@
         'genres': names['genres'] || 'Genres',
         'temp1': names['temp1'] || '',
         'temp2': names['temp2'] || '',
+        'temp3': names['temp3'] || '',
+        'temp4': names['temp4'] || '',
+        'temp5': names['temp5'] || '',
       };
 
       const isEnabled = {
         'new-releases': true,
         'instore': true,
         'online': true,
-        'new': crateConfig.new_enabled !== false && !!names['new'],
-        'hot': crateConfig.hot_enabled !== false && !!names['hot'],
-        'rare': crateConfig.rare_enabled !== false && !!names['rare'],
-        'genres': crateConfig.genres_enabled !== false && !!names['genres'],
+        'new': !!crateConfig.new_enabled && !!names['new'],
+        'hot': !!crateConfig.hot_enabled && !!names['hot'],
+        'rare': !!crateConfig.rare_enabled && !!names['rare'],
+        'genres': !!crateConfig.genres_enabled && !!names['genres'],
         'temp1': !!crateConfig.temp1_enabled && !!names['temp1'],
         'temp2': !!crateConfig.temp2_enabled && !!names['temp2'],
+        'temp3': !!crateConfig.temp3_enabled && !!names['temp3'],
+        'temp4': !!crateConfig.temp4_enabled && !!names['temp4'],
+        'temp5': !!crateConfig.temp5_enabled && !!names['temp5'],
       };
 
-      const emojis = { 'new-releases': '🆕', 'instore': '🏪', 'online': '🌐', 'new': '⭐', 'hot': '🔥', 'rare': '💎', 'genres': '🎵', 'temp1': '✨', 'temp2': '✨' };
-      
+      const emojis = { 'new-releases': '🆕', 'instore': '🏪', 'online': '🌐', 'new': '⭐', 'hot': '🔥', 'rare': '💎', 'genres': '🎵', 'temp1': '✨', 'temp2': '✨', 'temp3': '✨', 'temp4': '✨', 'temp5': '✨' };
+
       document.querySelectorAll('.crate-tab-header').forEach(btn => {
         const key = btn.getAttribute('data-crate-tab');
         const parentAccordion = btn.closest('.crate-tab');
-        
+
         if (parentAccordion) {
           parentAccordion.style.display = isEnabled[key] ? 'block' : 'none';
         }
-        
+
         if (map[key]) {
           const span = btn.querySelector('span:first-child');
           if (span) span.textContent = (emojis[key] || '') + ' ' + map[key];
@@ -1369,12 +1467,15 @@
             new_releases: cnameNewReleases.value.trim() || 'New Releases',
             instore: cnameInstore ? cnameInstore.value.trim() || 'In Store' : 'In Store',
             online: cnameOnline ? cnameOnline.value.trim() || 'Online' : 'Online',
-            new: cnameNew.value.trim() || 'Employee Picks',
-            hot: cnameHot.value.trim() || 'Hot Albums',
-            rare: cnameRare.value.trim() || 'Rare Finds',
-            genres: cnameGenres.value.trim() || 'Genres',
+            new: cnameNew.value.trim(),
+            hot: cnameHot.value.trim(),
+            rare: cnameRare.value.trim(),
+            genres: cnameGenres.value.trim(),
             temp1: cnameTemp1.value.trim(),
             temp2: cnameTemp2.value.trim(),
+            temp3: cnameTemp3 ? cnameTemp3.value.trim() : '',
+            temp4: cnameTemp4 ? cnameTemp4.value.trim() : '',
+            temp5: cnameTemp5 ? cnameTemp5.value.trim() : '',
           },
           new_enabled: cnameNewEnabled ? cnameNewEnabled.checked : true,
           hot_enabled: cnameHotEnabled ? cnameHotEnabled.checked : true,
@@ -1382,6 +1483,9 @@
           genres_enabled: cnameGenresEnabled ? cnameGenresEnabled.checked : true,
           temp1_enabled: cnameTemp1Enabled ? cnameTemp1Enabled.checked : false,
           temp2_enabled: cnameTemp2Enabled ? cnameTemp2Enabled.checked : false,
+          temp3_enabled: cnameTemp3Enabled ? cnameTemp3Enabled.checked : false,
+          temp4_enabled: cnameTemp4Enabled ? cnameTemp4Enabled.checked : false,
+          temp5_enabled: cnameTemp5Enabled ? cnameTemp5Enabled.checked : false,
         };
         try {
           const res = await fetch('/api/featured', {
@@ -1471,8 +1575,9 @@
 
       listElement.innerHTML = items.map(item => {
         let artHtml = '';
-        if (item.Front_Image_URL && item.Front_Image_URL !== 'NULL' && item.Front_Image_URL.startsWith('http')) {
-          artHtml = `<img src="${item.Front_Image_URL}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">`;
+        const imgUrl = item.Front_Image_URL || item.Image_URL || item.image || item.Image;
+        if (imgUrl && imgUrl !== 'NULL' && imgUrl !== 'undefined' && imgUrl.trim() !== '') {
+          artHtml = `<img src="${imgUrl}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">`;
         } else {
           artHtml = `<div style="width: 40px; height: 40px; background: var(--blue); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: bold; color: #fff;">${item.Format || 'LP'}</div>`;
         }
