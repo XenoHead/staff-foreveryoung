@@ -25,6 +25,40 @@ export async function onRequestGet(context) {
 
     await db.prepare(`CREATE TABLE IF NOT EXISTS Settings (key TEXT PRIMARY KEY, value TEXT)`).run();
 
+    // Ensure a default crate_config exists so UI doesn't rely on hard-coded defaults
+    const existingConfig = await db.prepare(`SELECT value FROM Settings WHERE key='crate_config'`).first();
+    if (!existingConfig) {
+      const defaultConfig = {
+        names: {
+          new: 'New',
+          new_releases: 'New Releases',
+          instore: 'In Store',
+          online: 'Online',
+          hot: 'Hot',
+          rare: 'Rare',
+          temp1: 'Temp 1',
+          temp2: 'Temp 2',
+          temp3: 'Temp 3',
+          temp4: 'Temp 4',
+          temp5: 'Temp 5',
+          genres: 'Genres'
+        },
+        new_enabled: true,
+        new_releases_enabled: true,
+        instore_enabled: true,
+        online_enabled: true,
+        hot_enabled: true,
+        rare_enabled: true,
+        genres_enabled: true,
+        temp1_enabled: false,
+        temp2_enabled: false,
+        temp3_enabled: false,
+        temp4_enabled: false,
+        temp5_enabled: false
+      };
+      await db.prepare(`INSERT INTO Settings (key, value) VALUES ('crate_config', ?)`).bind(JSON.stringify(defaultConfig)).run();
+    }
+
     // Return crate config (names + enabled)
     if (type === 'config') {
       const row = await db.prepare(`SELECT value FROM Settings WHERE key='crate_config'`).first();
@@ -33,7 +67,7 @@ export async function onRequestGet(context) {
     }
 
     if (type === 'details') {
-      const keys = ["new", "new_releases", "instore", "online", "hot", "rare", "temp1", "temp2", "genres"];
+      const keys = ["new", "new_releases", "instore", "online", "hot", "rare", "temp1", "temp2", "temp3", "temp4", "temp5", "genres"];
       const responseObj = { success: true };
 
       for (const k of keys) {
@@ -115,14 +149,14 @@ export async function onRequestPost(context) {
     const body = await request.json();
 
     // Save crate config (names + enabled)
-    if (body.config !== undefined) {
-      const configStr = JSON.stringify(body.config);
+    const config = body.config;
+    if (config !== undefined) {
+      const configStr = JSON.stringify(config);
       await db.prepare(`INSERT INTO Settings (key, value) VALUES ('crate_config', ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value`).bind(configStr).run();
-      return new Response(JSON.stringify({ success: true }), { status: 200, headers: corsHeaders });
     }
 
     // Save featured items for all crates
-    const keys = ["new", "new_releases", "instore", "online", "hot", "rare", "temp1", "temp2", "genres"];
+    const keys = ["new", "new_releases", "instore", "online", "hot", "rare", "temp1", "temp2", "temp3", "temp4", "temp5", "genres"];
     for (const k of keys) {
       if (body[k] !== undefined) {
         const val = body[k] || "";

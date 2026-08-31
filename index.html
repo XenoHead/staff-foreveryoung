@@ -194,6 +194,17 @@
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     }
 
+    .qr-thumb {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+      margin-right: 0.5rem;
+      border-radius: 6px;
+      background: #fff;
+      padding: 4px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+
     button.action-btn.success {
       background: var(--green);
       color: white;
@@ -513,19 +524,38 @@
 
           <div class="status-msg" id="status-msg" style="text-align: center;">Punch added successfully!</div>
         </div>
+        <!-- Bottom crate list that mirrors the accordion labels -->
+        <div id="crate-bottom-list" style="margin-top: 0.75rem; display: flex; flex-direction: column; gap: 0.25rem;">
+          <!-- populated by JS -->
+        </div>
       </div>
     </div>
 
     <div
       style="display: flex; justify-content: center; gap: 1rem; margin-top: 1.5rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
-      <a href="activate_qr.png" target="_blank" class="main-btn">
-        Activate Customer Card
+      <a href="activate_qr.png" target="_blank" class="main-btn" aria-label="Activate Customer Card">
+        <img src="activate_qr.png" class="qr-thumb" alt="Activate QR">
+        <span>Activate Customer Card</span>
       </a>
-      <a href="checkin_qr.png" target="_blank" class="main-btn">
-        Customer Check In
+      <a href="checkin_qr.png" target="_blank" class="main-btn" aria-label="Customer Check In">
+        <img src="checkin_qr.png" class="qr-thumb" alt="Check-in QR">
+        <span>Customer Check In</span>
       </a>
     </div>
   </fieldset>
+
+  <!-- Image Modal for QR previews -->
+  <div id="image-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-content" style="width: 420px; max-width: 95%; height: auto; padding: 1rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+        <h3 style="margin:0;color:var(--yellow);font-family: 'Oswald',sans-serif;">QR Preview</h3>
+        <button id="btn-close-image-modal" class="icon-btn" style="background:transparent;border:none;color:var(--yellow);font-size:1.4rem;cursor:pointer;">&times;</button>
+      </div>
+      <div style="display:flex;justify-content:center;align-items:center;padding:0.5rem;">
+        <img id="image-modal-img" src="" alt="QR" style="max-width:100%;height:auto;border-radius:8px;background:#fff;padding:8px;" />
+      </div>
+    </div>
+  </div>
 
   <fieldset class="bevel-group">
     <legend>Store Operations</legend>
@@ -743,7 +773,7 @@
             style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden;">
             <button class="crate-tab-header" data-crate-tab="new-releases"
               style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: none; border: none; color: var(--yellow); font-family: 'Oswald', sans-serif; font-size: 1rem; cursor: pointer; text-align: left;">
-              <span>🆕 New Releases</span><span class="crate-tab-arrow" style="transition: transform 0.2s;">▼</span>
+              <span>🆕</span><span class="crate-tab-arrow" style="transition: transform 0.2s;">▼</span>
             </button>
             <div class="crate-tab-body" data-crate-body="new-releases"
               style="display: none; padding: 0.75rem 1rem 1rem;">
@@ -800,7 +830,7 @@
             style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden;">
             <button class="crate-tab-header" data-crate-tab="new"
               style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: none; border: none; color: var(--yellow); font-family: 'Oswald', sans-serif; font-size: 1rem; cursor: pointer; text-align: left;">
-              <span>⭐ Employee Picks</span><span class="crate-tab-arrow" style="transition: transform 0.2s;">▼</span>
+              <span>⭐</span><span class="crate-tab-arrow" style="transition: transform 0.2s;">▼</span>
             </button>
             <div class="crate-tab-body" data-crate-body="new" style="display: none; padding: 0.75rem 1rem 1rem;">
               <label style="display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 4px;">Reference IDs
@@ -818,7 +848,7 @@
             style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden;">
             <button class="crate-tab-header" data-crate-tab="hot"
               style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: none; border: none; color: var(--yellow); font-family: 'Oswald', sans-serif; font-size: 1rem; cursor: pointer; text-align: left;">
-              <span>🔥 Hot Albums</span><span class="crate-tab-arrow" style="transition: transform 0.2s;">▼</span>
+              <span>🔥</span><span class="crate-tab-arrow" style="transition: transform 0.2s;">▼</span>
             </button>
             <div class="crate-tab-body" data-crate-body="hot" style="display: none; padding: 0.75rem 1rem 1rem;">
               <label style="display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 4px;">Reference IDs
@@ -836,7 +866,7 @@
             style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden;">
             <button class="crate-tab-header" data-crate-tab="rare"
               style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: none; border: none; color: var(--yellow); font-family: 'Oswald', sans-serif; font-size: 1rem; cursor: pointer; text-align: left;">
-              <span>💎 Rare Finds</span><span class="crate-tab-arrow" style="transition: transform 0.2s;">▼</span>
+              <span>💎</span><span class="crate-tab-arrow" style="transition: transform 0.2s;">▼</span>
             </button>
             <div class="crate-tab-body" data-crate-body="rare" style="display: none; padding: 0.75rem 1rem 1rem;">
               <label style="display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 4px;">Reference IDs
@@ -854,7 +884,7 @@
             style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden;">
             <button class="crate-tab-header" data-crate-tab="genres"
               style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: none; border: none; color: var(--yellow); font-family: 'Oswald', sans-serif; font-size: 1rem; cursor: pointer; text-align: left;">
-              <span>🎵 Genres</span><span class="crate-tab-arrow" style="transition: transform 0.2s;">▼</span>
+              <span>🎵</span><span class="crate-tab-arrow" style="transition: transform 0.2s;">▼</span>
             </button>
             <div class="crate-tab-body" data-crate-body="genres" style="display: none; padding: 0.75rem 1rem 1rem;">
               <label style="display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 4px;">Genre list
@@ -899,6 +929,60 @@
                 style="width: 100%; height: 60px; padding: 0.5rem; background: rgba(0,0,0,0.5); border: 1px solid var(--yellow); border-radius: 6px; color: #FFF; font-family: monospace; font-size: 0.85rem; resize: vertical;"
                 placeholder="e.g. 1518-LR2019-0610-0123, 848064000105"></textarea>
               <div id="featured-list-temp2"
+                style="margin-top: 0.6rem; display: flex; flex-direction: column; gap: 0.4rem;"></div>
+            </div>
+          </div>
+
+          <!-- Temp3 (Extra Crate 3) -->
+          <div id="crate-accordion-temp3" class="crate-tab"
+            style="border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; overflow: hidden; display: none;">
+            <button class="crate-tab-header" data-crate-tab="temp3">
+              <span>✨ Extra Crate 3</span>
+              <span class="crate-tab-arrow" style="transition: transform 0.2s;">▼</span>
+            </button>
+            <div class="crate-tab-body" data-crate-body="temp3" style="display: none; padding: 0.75rem 1rem 1rem;">
+              <label style="display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 4px;">Items
+                (comma-separated):</label>
+              <textarea id="featured-refs-temp3"
+                style="width: 100%; height: 60px; padding: 0.5rem; background: rgba(0,0,0,0.5); border: 1px solid var(--yellow); border-radius: 6px; color: #FFF; font-family: monospace; font-size: 0.85rem; resize: vertical;"
+                placeholder="e.g. 1518-LR2019-0610-0123, 848064000105"></textarea>
+              <div id="featured-list-temp3"
+                style="margin-top: 0.6rem; display: flex; flex-direction: column; gap: 0.4rem;"></div>
+            </div>
+          </div>
+
+          <!-- Temp4 (Extra Crate 4) -->
+          <div id="crate-accordion-temp4" class="crate-tab"
+            style="border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; overflow: hidden; display: none;">
+            <button class="crate-tab-header" data-crate-tab="temp4">
+              <span>✨ Extra Crate 4</span>
+              <span class="crate-tab-arrow" style="transition: transform 0.2s;">▼</span>
+            </button>
+            <div class="crate-tab-body" data-crate-body="temp4" style="display: none; padding: 0.75rem 1rem 1rem;">
+              <label style="display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 4px;">Items
+                (comma-separated):</label>
+              <textarea id="featured-refs-temp4"
+                style="width: 100%; height: 60px; padding: 0.5rem; background: rgba(0,0,0,0.5); border: 1px solid var(--yellow); border-radius: 6px; color: #FFF; font-family: monospace; font-size: 0.85rem; resize: vertical;"
+                placeholder="e.g. 1518-LR2019-0610-0123, 848064000105"></textarea>
+              <div id="featured-list-temp4"
+                style="margin-top: 0.6rem; display: flex; flex-direction: column; gap: 0.4rem;"></div>
+            </div>
+          </div>
+
+          <!-- Temp5 (Extra Crate 5) -->
+          <div id="crate-accordion-temp5" class="crate-tab"
+            style="border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; overflow: hidden; display: none;">
+            <button class="crate-tab-header" data-crate-tab="temp5">
+              <span>✨ Extra Crate 5</span>
+              <span class="crate-tab-arrow" style="transition: transform 0.2s;">▼</span>
+            </button>
+            <div class="crate-tab-body" data-crate-body="temp5" style="display: none; padding: 0.75rem 1rem 1rem;">
+              <label style="display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 4px;">Items
+                (comma-separated):</label>
+              <textarea id="featured-refs-temp5"
+                style="width: 100%; height: 60px; padding: 0.5rem; background: rgba(0,0,0,0.5); border: 1px solid var(--yellow); border-radius: 6px; color: #FFF; font-family: monospace; font-size: 0.85rem; resize: vertical;"
+                placeholder="e.g. 1518-LR2019-0610-0123, 848064000105"></textarea>
+              <div id="featured-list-temp5"
                 style="margin-top: 0.6rem; display: flex; flex-direction: column; gap: 0.4rem;"></div>
             </div>
           </div>
@@ -1255,6 +1339,9 @@
     const featuredRefsRare = document.getElementById('featured-refs-rare');
     const featuredRefsTemp1 = document.getElementById('featured-refs-temp1');
     const featuredRefsTemp2 = document.getElementById('featured-refs-temp2');
+    const featuredRefsTemp3 = document.getElementById('featured-refs-temp3');
+    const featuredRefsTemp4 = document.getElementById('featured-refs-temp4');
+    const featuredRefsTemp5 = document.getElementById('featured-refs-temp5');
     const featuredRefsGenres = document.getElementById('featured-refs-genres');
 
     const featuredListNew = document.getElementById('featured-list-new');
@@ -1265,6 +1352,9 @@
     const featuredListRare = document.getElementById('featured-list-rare');
     const featuredListTemp1 = document.getElementById('featured-list-temp1');
     const featuredListTemp2 = document.getElementById('featured-list-temp2');
+    const featuredListTemp3 = document.getElementById('featured-list-temp3');
+    const featuredListTemp4 = document.getElementById('featured-list-temp4');
+    const featuredListTemp5 = document.getElementById('featured-list-temp5');
     const featuredListGenres = document.getElementById('featured-list-genres');
 
     const featuredModalSearchInput = document.getElementById('featured-modal-search-input');
@@ -1275,8 +1365,10 @@
 
     // Open Featured Modal
     if (btnFeaturedCrates) {
-      btnFeaturedCrates.addEventListener('click', () => {
+      btnFeaturedCrates.addEventListener('click', async () => {
         featuredModal.style.display = 'flex';
+        await loadCrateConfig();
+        console.log('After loadCrateConfig, crateConfig:', JSON.stringify(crateConfig));
         loadFeaturedData();
       });
     }
@@ -1373,6 +1465,8 @@
 
           updateCheckboxStates();
           updateAccordionLabels(crateConfig.names);
+          renderBottomCrateList(crateConfig.names);
+          collapseAllAccordions();
         }
       } catch (e) { }
     }
@@ -1445,10 +1539,77 @@
           parentAccordion.style.display = isEnabled[key] ? 'block' : 'none';
         }
 
-        if (map[key]) {
-          const span = btn.querySelector('span:first-child');
-          if (span) span.textContent = (emojis[key] || '') + ' ' + map[key];
+        const span = btn.querySelector('span:first-child');
+        if (span) {
+          const label = map[key] || '';
+          span.textContent = label ? `${emojis[key] || ''} ${label}` : '';
         }
+      });
+    }
+
+    function collapseAllAccordions() {
+      document.querySelectorAll('.crate-tab-body').forEach(body => body.style.display = 'none');
+      document.querySelectorAll('.crate-tab-header').forEach(btn => {
+        const arrow = btn.querySelector('.crate-tab-arrow');
+        if (arrow) arrow.style.transform = '';
+        btn.style.borderBottom = '';
+      });
+    }
+
+    function renderBottomCrateList(names) {
+      const order = ['new_releases','instore','online','new','hot','rare','genres','temp1','temp2','temp3','temp4','temp5'];
+      const emojis = { 'new_releases':'🆕','instore':'🏪','online':'🌐','new':'⭐','hot':'🔥','rare':'💎','genres':'🎵','temp1':'✨','temp2':'✨','temp3':'✨','temp4':'✨','temp5':'✨' };
+      const container = document.getElementById('crate-bottom-list');
+      if (!container) return;
+      container.innerHTML = '';
+      order.forEach(key => {
+        const enabled = (key === 'new_releases' || key === 'instore' || key === 'online') || !!crateConfig[`${key}_enabled`];
+        const label = names && names[key] ? names[key] : (key === 'new_releases' ? 'New Releases' : key.charAt(0).toUpperCase() + key.slice(1));
+        if (!enabled) return;
+        const row = document.createElement('div');
+        row.style.display = 'flex';
+        row.style.alignItems = 'center';
+        row.style.gap = '0.6rem';
+        row.style.padding = '0.25rem 0.5rem';
+        row.style.borderRadius = '6px';
+        row.style.background = 'rgba(255,255,255,0.02)';
+        row.style.border = '1px solid rgba(255,255,255,0.04)';
+        const emoji = document.createElement('div');
+        emoji.textContent = emojis[key] || '';
+        emoji.style.width = '28px';
+        emoji.style.textAlign = 'center';
+        const text = document.createElement('div');
+        text.textContent = label;
+        text.style.color = '#B6C0D7';
+        text.style.fontSize = '0.9rem';
+        row.appendChild(emoji);
+        row.appendChild(text);
+        const toggle = document.createElement('button');
+        toggle.textContent = '▼';
+        toggle.style.marginLeft = 'auto';
+        toggle.style.background = 'transparent';
+        toggle.style.border = 'none';
+        toggle.style.color = 'var(--yellow)';
+        toggle.style.cursor = 'pointer';
+        toggle.style.fontSize = '1rem';
+        toggle.title = 'Open section';
+        toggle.addEventListener('click', () => {
+          const body = document.querySelector(`[data-crate-body="${key}"]`);
+          const header = document.querySelector(`.crate-tab-header[data-crate-tab="${key}"]`);
+          if (body && header) {
+            const isOpen = body.style.display !== 'none';
+            collapseAllAccordions();
+            if (!isOpen) {
+              body.style.display = 'block';
+              const arrow = header.querySelector('.crate-tab-arrow');
+              if (arrow) arrow.style.transform = 'rotate(180deg)';
+              header.style.borderBottom = '1px solid rgba(255,255,255,0.08)';
+            }
+            header.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        });
+        row.appendChild(toggle);
+        container.appendChild(row);
       });
     }
 
@@ -1548,6 +1709,9 @@
           featuredRefsRare.value = data.rare?.value || "";
           featuredRefsTemp1.value = data.temp1?.value || "";
           featuredRefsTemp2.value = data.temp2?.value || "";
+          if (featuredRefsTemp3) featuredRefsTemp3.value = data.temp3?.value || "";
+          if (featuredRefsTemp4) featuredRefsTemp4.value = data.temp4?.value || "";
+          if (featuredRefsTemp5) featuredRefsTemp5.value = data.temp5?.value || "";
           featuredRefsGenres.value = data.genres?.value || "";
 
           // Render Crate Items Preview
@@ -1559,8 +1723,12 @@
           renderCrateItems('rare', data.rare?.items || [], featuredListRare);
           renderCrateItems('temp1', data.temp1?.items || [], featuredListTemp1);
           renderCrateItems('temp2', data.temp2?.items || [], featuredListTemp2);
+          renderCrateItems('temp3', data.temp3?.items || [], featuredListTemp3);
+          renderCrateItems('temp4', data.temp4?.items || [], featuredListTemp4);
+          renderCrateItems('temp5', data.temp5?.items || [], featuredListTemp5);
           renderCrateItems('genres', data.genres?.items || [], featuredListGenres);
         }
+        updateAccordionLabels(crateConfig.names || {});
       } catch (err) {
         console.error("Error loading featured items", err);
       }
@@ -1619,6 +1787,9 @@
             'rare': featuredRefsRare,
             'temp1': featuredRefsTemp1,
             'temp2': featuredRefsTemp2,
+            'temp3': featuredRefsTemp3,
+            'temp4': featuredRefsTemp4,
+            'temp5': featuredRefsTemp5,
             'genres': featuredRefsGenres
           };
           let textarea = textareas[crate];
@@ -1640,7 +1811,7 @@
         featuredModalStatus.textContent = 'Saving featured crates...';
       }
 
-      const body = {
+      const refsBody = {
         new: featuredRefsNew.value.trim(),
         new_releases: featuredRefsNewReleases.value.trim(),
         instore: featuredRefsInstore ? featuredRefsInstore.value.trim() : '',
@@ -1649,10 +1820,53 @@
         rare: featuredRefsRare.value.trim(),
         temp1: featuredRefsTemp1.value.trim(),
         temp2: featuredRefsTemp2.value.trim(),
+        temp3: featuredRefsTemp3 ? featuredRefsTemp3.value.trim() : '',
+        temp4: featuredRefsTemp4 ? featuredRefsTemp4.value.trim() : '',
+        temp5: featuredRefsTemp5 ? featuredRefsTemp5.value.trim() : '',
         genres: featuredRefsGenres.value.trim()
       };
 
       try {
+        let config = crateConfig && crateConfig.names ? crateConfig : { names: {} };
+        if (!config.names || Object.keys(config.names).length === 0) {
+          const cfgRes = await fetch('/api/featured?type=config');
+          const cfgData = await cfgRes.json();
+          if (cfgData.success && cfgData.config) config = cfgData.config;
+        }
+
+        const enabledOverrides = {
+          new: !!refsBody.new,
+          new_releases: !!refsBody.new_releases,
+          instore: !!refsBody.instore,
+          online: !!refsBody.online,
+          hot: !!refsBody.hot,
+          rare: !!refsBody.rare,
+          genres: !!refsBody.genres,
+          temp1: !!refsBody.temp1,
+          temp2: !!refsBody.temp2,
+          temp3: !!refsBody.temp3,
+          temp4: !!refsBody.temp4,
+          temp5: !!refsBody.temp5,
+        };
+
+        const mergedConfig = {
+          names: { ...(config.names || {}) },
+          new_enabled: enabledOverrides.new || !!config.new_enabled,
+          hot_enabled: enabledOverrides.hot || !!config.hot_enabled,
+          rare_enabled: enabledOverrides.rare || !!config.rare_enabled,
+          genres_enabled: enabledOverrides.genres || !!config.genres_enabled,
+          temp1_enabled: enabledOverrides.temp1 || !!config.temp1_enabled,
+          temp2_enabled: enabledOverrides.temp2 || !!config.temp2_enabled,
+          temp3_enabled: enabledOverrides.temp3 || !!config.temp3_enabled,
+          temp4_enabled: enabledOverrides.temp4 || !!config.temp4_enabled,
+          temp5_enabled: enabledOverrides.temp5 || !!config.temp5_enabled,
+        };
+
+        const body = {
+          ...refsBody,
+          config: mergedConfig
+        };
+
         const res = await fetch('/api/featured', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -1660,6 +1874,8 @@
         });
         const data = await res.json();
         if (data.success) {
+          crateConfig = mergedConfig;
+          updateAccordionLabels(crateConfig.names);
           if (showMessage) {
             featuredModalStatus.textContent = 'Featured crates updated successfully!';
             featuredModalStatus.className = 'status-msg success';
@@ -1741,6 +1957,9 @@
                     ${(crateConfig.rare_enabled !== false && crateConfig.names?.rare) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="rare" data-val="${valToAdd}" style="padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(193,42,48,0.3);border-color:var(--red);">+ ${crateConfig.names.rare.toUpperCase()}</button>` : ''}
                     ${(crateConfig.temp1_enabled && crateConfig.names?.temp1) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="temp1" data-val="${valToAdd}" style="padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(255, 212, 71, 0.2);border-color:var(--yellow);color:var(--yellow);">+ ${crateConfig.names.temp1.toUpperCase()}</button>` : ''}
                     ${(crateConfig.temp2_enabled && crateConfig.names?.temp2) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="temp2" data-val="${valToAdd}" style="padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(255, 212, 71, 0.2);border-color:var(--yellow);color:var(--yellow);">+ ${crateConfig.names.temp2.toUpperCase()}</button>` : ''}
+                    ${(crateConfig.temp3_enabled && crateConfig.names?.temp3) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="temp3" data-val="${valToAdd}" style="padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(255, 212, 71, 0.2);border-color:var(--yellow);color:var(--yellow);">+ ${crateConfig.names.temp3.toUpperCase()}</button>` : ''}
+                    ${(crateConfig.temp4_enabled && crateConfig.names?.temp4) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="temp4" data-val="${valToAdd}" style="padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(255, 212, 71, 0.2);border-color:var(--yellow);color:var(--yellow);">+ ${crateConfig.names.temp4.toUpperCase()}</button>` : ''}
+                    ${(crateConfig.temp5_enabled && crateConfig.names?.temp5) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="temp5" data-val="${valToAdd}" style="padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(255, 212, 71, 0.2);border-color:var(--yellow);color:var(--yellow);">+ ${crateConfig.names.temp5.toUpperCase()}</button>` : ''}
                     ${(crateConfig.genres_enabled !== false && crateConfig.names?.genres) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="genres" data-val="${valToAdd}" style="padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(46, 204, 113, 0.2);border-color:#2ecc71;color:#2ecc71;">+ ${crateConfig.names.genres.toUpperCase()}</button>` : ''}
                   </div>
                 </div>`;
@@ -1761,6 +1980,9 @@
                 'rare': featuredRefsRare,
                 'temp1': featuredRefsTemp1,
                 'temp2': featuredRefsTemp2,
+                'temp3': featuredRefsTemp3,
+                'temp4': featuredRefsTemp4,
+                'temp5': featuredRefsTemp5,
                 'genres': featuredRefsGenres
               };
               let textarea = textareas[crate];
@@ -1804,8 +2026,34 @@
       });
     }
 
-    // Call on load
-    loadFeaturedData();
+    // Call on load: ensure crate config is loaded first, then load featured details
+    loadCrateConfig().then(() => loadFeaturedData());
+
+    // Intercept QR links (activate/checkin) so they open in a modal instead of a new tab
+    function setupQrLinkInterception() {
+      document.querySelectorAll('a.main-btn').forEach(a => {
+        try {
+          const href = a.getAttribute('href') || '';
+          if (href.endsWith('_qr.png')) {
+            a.addEventListener('click', (e) => {
+              e.preventDefault();
+              const img = document.getElementById('image-modal-img');
+              if (img) {
+                img.src = href;
+                document.getElementById('image-modal').style.display = 'flex';
+              }
+            });
+          }
+        } catch (err) { }
+      });
+
+      const btnCloseImageModal = document.getElementById('btn-close-image-modal');
+      if (btnCloseImageModal) btnCloseImageModal.addEventListener('click', () => document.getElementById('image-modal').style.display = 'none');
+      const imgModal = document.getElementById('image-modal');
+      if (imgModal) imgModal.addEventListener('click', (e) => { if (e.target === imgModal) imgModal.style.display = 'none'; });
+    }
+
+    setupQrLinkInterception();
   </script>
 </body>
 

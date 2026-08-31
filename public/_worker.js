@@ -364,7 +364,7 @@ async function handleFeaturedGet(request, env) {
 
   await db.prepare(`CREATE TABLE IF NOT EXISTS Settings (key TEXT PRIMARY KEY, value TEXT)`).run();
 
-  const keys = ['featured_new', 'featured_new_releases', 'featured_instore', 'featured_online', 'featured_hot', 'featured_rare', 'featured_temp1', 'featured_temp2', 'featured_genres'];
+  const keys = ['featured_new', 'featured_new_releases', 'featured_instore', 'featured_online', 'featured_hot', 'featured_rare', 'featured_temp1', 'featured_temp2', 'featured_temp3', 'featured_temp4', 'featured_temp5', 'featured_genres'];
   const settings = {};
   for (const k of keys) {
     const res = await db.prepare(`SELECT value FROM Settings WHERE key=?`).bind(k).first();
@@ -390,10 +390,13 @@ async function handleFeaturedGet(request, env) {
       rare: { value: settings.featured_rare, items: [] },
       temp1: { value: settings.featured_temp1, items: [] },
       temp2: { value: settings.featured_temp2, items: [] },
+      temp3: { value: settings.featured_temp3, items: [] },
+      temp4: { value: settings.featured_temp4, items: [] },
+      temp5: { value: settings.featured_temp5, items: [] },
       genres: { value: settings.featured_genres, items: [] }
     };
 
-    for (const k of ['new', 'new_releases', 'instore', 'online', 'hot', 'rare', 'temp1', 'temp2', 'genres']) {
+    for (const k of ['new', 'new_releases', 'instore', 'online', 'hot', 'rare', 'temp1', 'temp2', 'temp3', 'temp4', 'temp5', 'genres']) {
       const val = settings['featured_' + k];
       if (val) {
         const refs = val.split(',').map(r => r.trim()).filter(Boolean);
@@ -465,7 +468,7 @@ async function handleFeaturedPost(request, env) {
     return json({ success: true });
   }
 
-  for (const k of ['new', 'new_releases', 'instore', 'online', 'hot', 'rare', 'temp1', 'temp2', 'genres']) {
+  for (const k of ['new', 'new_releases', 'instore', 'online', 'hot', 'rare', 'temp1', 'temp2', 'temp3', 'temp4', 'temp5', 'genres']) {
     const valKey = 'featured_' + k;
     if (body[k] !== undefined) {
       await db.prepare(`INSERT INTO Settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value`)
