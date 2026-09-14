@@ -311,6 +311,77 @@
       height: 90vh;
     }
 
+    .crate-tab-group {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .crate-group-header {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      background: none;
+      border: none;
+      color: var(--yellow);
+      font-family: 'Oswald', sans-serif;
+      font-size: 1rem;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .crate-group-arrow {
+      transition: transform 0.2s;
+    }
+
+    .crate-group-body {
+      padding: 0 1rem 1rem;
+    }
+
+    .crate-group-tabs {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 0.75rem 0;
+      margin-bottom: 0.75rem;
+    }
+
+    .crate-group-tab {
+      padding: 0.35rem 0.9rem;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #B6C0D7;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .crate-group-tab.active {
+      background: rgba(44, 108, 255, 0.3);
+      border-color: var(--blue);
+      color: #fff;
+    }
+
+    .crate-tab-group .crate-tab {
+      border: none !important;
+      border-radius: 0 !important;
+      background: transparent !important;
+      overflow: visible !important;
+    }
+
+    .crate-tab-group .crate-tab-header {
+      display: none !important;
+    }
+
+    .crate-tab-group .crate-tab-body {
+      padding: 0 !important;
+    }
+
     .modal-content.maximized {
       width: 100% !important;
       max-width: none !important;
@@ -822,6 +893,16 @@
           </div>
 
           <!-- Employee Picks -->
+          <div class="crate-tab-group" data-crate-group="upper-right">
+            <button type="button" class="crate-group-header">
+              <span>Upper Right</span><span class="crate-group-arrow">▼</span>
+            </button>
+            <div class="crate-group-body" style="display: none;">
+              <div class="crate-group-tabs">
+                <button type="button" class="crate-group-tab" data-group-crate="new">⭐ Employee Picks</button>
+                <button type="button" class="crate-group-tab" data-group-crate="hot">🔥 Hot Albums</button>
+                <button type="button" class="crate-group-tab" data-group-crate="rare">💎 Rare Finds</button>
+              </div>
           <div class="crate-tab"
             style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden;">
             <button class="crate-tab-header" data-crate-tab="new"
@@ -875,7 +956,20 @@
             </div>
           </div>
 
+            </div>
+          </div>
+
           <!-- Genres -->
+          <div class="crate-tab-group" data-crate-group="lower-left">
+            <button type="button" class="crate-group-header">
+              <span>Lower Left</span><span class="crate-group-arrow">▼</span>
+            </button>
+            <div class="crate-group-body" style="display: none;">
+              <div class="crate-group-tabs">
+                <button type="button" class="crate-group-tab" data-group-crate="genres">🎵 Genres</button>
+                <button type="button" class="crate-group-tab" data-group-crate="temp1">✨ Temp 1</button>
+                <button type="button" class="crate-group-tab" data-group-crate="temp2">✨ Temp 2</button>
+              </div>
           <div class="crate-tab"
             style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden;">
             <button class="crate-tab-header" data-crate-tab="genres"
@@ -929,7 +1023,20 @@
             </div>
           </div>
 
+            </div>
+          </div>
+
           <!-- Temp3 (Extra Crate 3) -->
+          <div class="crate-tab-group" data-crate-group="lower-right">
+            <button type="button" class="crate-group-header">
+              <span>Lower Right</span><span class="crate-group-arrow">▼</span>
+            </button>
+            <div class="crate-group-body" style="display: none;">
+              <div class="crate-group-tabs">
+                <button type="button" class="crate-group-tab" data-group-crate="temp3">✨ Temp 3</button>
+                <button type="button" class="crate-group-tab" data-group-crate="temp4">✨ Temp 4</button>
+                <button type="button" class="crate-group-tab" data-group-crate="temp5">✨ Temp 5</button>
+              </div>
           <div id="crate-accordion-temp3" class="crate-tab"
             style="border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; overflow: hidden; display: none;">
             <button class="crate-tab-header" data-crate-tab="temp3">
@@ -980,6 +1087,9 @@
                 placeholder="e.g. 1518-LR2019-0610-0123, 848064000105"></textarea>
               <div id="featured-list-temp5"
                 style="margin-top: 0.6rem; display: flex; flex-direction: column; gap: 0.4rem;"></div>
+            </div>
+          </div>
+
             </div>
           </div>
 
@@ -1387,6 +1497,30 @@
       });
     });
 
+    document.querySelectorAll('.crate-group-header').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const group = btn.closest('.crate-tab-group');
+        const body = group.querySelector('.crate-group-body');
+        const isOpen = body.style.display !== 'none';
+        body.style.display = isOpen ? 'none' : 'block';
+        btn.querySelector('.crate-group-arrow').style.transform = isOpen ? '' : 'rotate(180deg)';
+      });
+    });
+
+    function activateGroupedCrateTab(tab) {
+      const group = tab.closest('.crate-tab-group');
+      const key = tab.dataset.groupCrate;
+      group.querySelectorAll('.crate-group-tab').forEach(button => button.classList.remove('active'));
+      tab.classList.add('active');
+      group.querySelectorAll('.crate-tab-body').forEach(body => {
+        body.style.display = body.dataset.crateBody === key ? 'block' : 'none';
+      });
+    }
+
+    document.querySelectorAll('.crate-group-tab').forEach(tab => {
+      tab.addEventListener('click', () => activateGroupedCrateTab(tab));
+    });
+
     // New Releases Sub-tab switching
     document.querySelectorAll('.nr-sub-tab').forEach(tab => {
       tab.addEventListener('click', () => {
@@ -1598,6 +1732,13 @@
         'temp4': !!crateConfig.temp4_enabled && !!names['temp4'],
         'temp5': !!crateConfig.temp5_enabled && !!names['temp5'],
       };
+
+      const groupEmojis = { 'new': '⭐', 'hot': '🔥', 'rare': '💎', 'genres': '🎵', 'temp1': '✨', 'temp2': '✨', 'temp3': '✨', 'temp4': '✨', 'temp5': '✨' };
+      document.querySelectorAll('.crate-group-tab').forEach(tab => {
+        const key = tab.dataset.groupCrate;
+        tab.textContent = `${groupEmojis[key] || ''} ${map[key] || ''}`.trim();
+        tab.style.display = isEnabled[key] ? 'inline-block' : 'none';
+      });
 
       const emojis = { 'new-releases': '🆕', 'instore': '🏪', 'online': '🌐', 'new': '⭐', 'hot': '🔥', 'rare': '💎', 'genres': '🎵', 'temp1': '✨', 'temp2': '✨', 'temp3': '✨', 'temp4': '✨', 'temp5': '✨' };
 
@@ -1909,19 +2050,27 @@
                   <span style="color:#B6C0D7;"> (${item.Format || 'N/A'})</span>
                   <br><span style="color:#B6C0D7;font-size:0.7rem;">Ref: ${refVal || 'N/A'} | UPC: ${upcVal || 'N/A'}</span>
                 </div>
-                  <div style="display:flex;gap:0.3rem;flex-shrink:0;flex-wrap:wrap;max-width:380px;justify-content:flex-end;">
-                    <button class="add-to-crate-modal-btn action-btn" data-crate="new_releases" data-val="${valToAdd}" style="padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;">+ ${(crateConfig.names?.new_releases || 'New Releases').toUpperCase()}</button>
-                    <button class="add-to-crate-modal-btn action-btn" data-crate="instore" data-val="${valToAdd}" style="padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(46, 204, 113, 0.2);border-color:#2ecc71;color:#2ecc71;">+ ${(crateConfig.names?.instore || 'In Store').toUpperCase()}</button>
-                    <button class="add-to-crate-modal-btn action-btn" data-crate="online" data-val="${valToAdd}" style="padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(44,108,255,0.3);border-color:var(--blue);color:#7aadff;">+ ${(crateConfig.names?.online || 'Online').toUpperCase()}</button>
-                    ${(crateConfig.new_enabled !== false && crateConfig.names?.new) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="new" data-val="${valToAdd}" style="padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(35,84,146,0.5);border-color:var(--blue);">+ ${crateConfig.names.new.toUpperCase()}</button>` : ''}
-                    ${(crateConfig.hot_enabled !== false && crateConfig.names?.hot) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="hot" data-val="${valToAdd}" style="padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(35,84,146,0.8);border-color:var(--blue);">+ ${crateConfig.names.hot.toUpperCase()}</button>` : ''}
-                    ${(crateConfig.rare_enabled !== false && crateConfig.names?.rare) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="rare" data-val="${valToAdd}" style="padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(193,42,48,0.3);border-color:var(--red);">+ ${crateConfig.names.rare.toUpperCase()}</button>` : ''}
-                    ${(crateConfig.temp1_enabled && crateConfig.names?.temp1) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="temp1" data-val="${valToAdd}" style="padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(255, 212, 71, 0.2);border-color:var(--yellow);color:var(--yellow);">+ ${crateConfig.names.temp1.toUpperCase()}</button>` : ''}
-                    ${(crateConfig.temp2_enabled && crateConfig.names?.temp2) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="temp2" data-val="${valToAdd}" style="padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(255, 212, 71, 0.2);border-color:var(--yellow);color:var(--yellow);">+ ${crateConfig.names.temp2.toUpperCase()}</button>` : ''}
-                    ${(crateConfig.temp3_enabled && crateConfig.names?.temp3) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="temp3" data-val="${valToAdd}" style="padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(255, 212, 71, 0.2);border-color:var(--yellow);color:var(--yellow);">+ ${crateConfig.names.temp3.toUpperCase()}</button>` : ''}
-                    ${(crateConfig.temp4_enabled && crateConfig.names?.temp4) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="temp4" data-val="${valToAdd}" style="padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(255, 212, 71, 0.2);border-color:var(--yellow);color:var(--yellow);">+ ${crateConfig.names.temp4.toUpperCase()}</button>` : ''}
-                    ${(crateConfig.temp5_enabled && crateConfig.names?.temp5) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="temp5" data-val="${valToAdd}" style="padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(255, 212, 71, 0.2);border-color:var(--yellow);color:var(--yellow);">+ ${crateConfig.names.temp5.toUpperCase()}</button>` : ''}
-                    ${(crateConfig.genres_enabled !== false && crateConfig.names?.genres) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="genres" data-val="${valToAdd}" style="padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(46, 204, 113, 0.2);border-color:#2ecc71;color:#2ecc71;">+ ${crateConfig.names.genres.toUpperCase()}</button>` : ''}
+                  <div style="display:flex;flex-direction:column;gap:0.3rem;flex-shrink:0;max-width:380px;">
+                    <div style="display:flex;gap:0.3rem;">
+                      <button class="add-to-crate-modal-btn action-btn" data-crate="new_releases" data-val="${valToAdd}" style="flex:1;padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;">+ ${(crateConfig.names?.new_releases || 'New Releases').toUpperCase()}</button>
+                      <button class="add-to-crate-modal-btn action-btn" data-crate="instore" data-val="${valToAdd}" style="flex:1;padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(46, 204, 113, 0.2);border-color:#2ecc71;color:#2ecc71;">+ ${(crateConfig.names?.instore || 'In Store').toUpperCase()}</button>
+                      <button class="add-to-crate-modal-btn action-btn" data-crate="online" data-val="${valToAdd}" style="flex:1;padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(44,108,255,0.3);border-color:var(--blue);color:#7aadff;">+ ${(crateConfig.names?.online || 'Online').toUpperCase()}</button>
+                    </div>
+                    <div style="display:flex;gap:0.3rem;">
+                      ${(crateConfig.new_enabled !== false && crateConfig.names?.new) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="new" data-val="${valToAdd}" style="flex:1;padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(35,84,146,0.5);border-color:var(--blue);">+ ${crateConfig.names.new.toUpperCase()}</button>` : ''}
+                      ${(crateConfig.hot_enabled !== false && crateConfig.names?.hot) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="hot" data-val="${valToAdd}" style="flex:1;padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(35,84,146,0.8);border-color:var(--blue);">+ ${crateConfig.names.hot.toUpperCase()}</button>` : ''}
+                      ${(crateConfig.rare_enabled !== false && crateConfig.names?.rare) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="rare" data-val="${valToAdd}" style="flex:1;padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(193,42,48,0.3);border-color:var(--red);">+ ${crateConfig.names.rare.toUpperCase()}</button>` : ''}
+                    </div>
+                    <div style="display:flex;gap:0.3rem;">
+                      ${(crateConfig.genres_enabled !== false && crateConfig.names?.genres) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="genres" data-val="${valToAdd}" style="flex:1;padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(46, 204, 113, 0.2);border-color:#2ecc71;color:#2ecc71;">+ ${crateConfig.names.genres.toUpperCase()}</button>` : ''}
+                      ${(crateConfig.temp1_enabled && crateConfig.names?.temp1) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="temp1" data-val="${valToAdd}" style="flex:1;padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(255, 212, 71, 0.2);border-color:var(--yellow);color:var(--yellow);">+ ${crateConfig.names.temp1.toUpperCase()}</button>` : ''}
+                      ${(crateConfig.temp2_enabled && crateConfig.names?.temp2) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="temp2" data-val="${valToAdd}" style="flex:1;padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(255, 212, 71, 0.2);border-color:var(--yellow);color:var(--yellow);">+ ${crateConfig.names.temp2.toUpperCase()}</button>` : ''}
+                    </div>
+                    <div style="display:flex;gap:0.3rem;">
+                      ${(crateConfig.temp3_enabled && crateConfig.names?.temp3) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="temp3" data-val="${valToAdd}" style="flex:1;padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(255, 212, 71, 0.2);border-color:var(--yellow);color:var(--yellow);">+ ${crateConfig.names.temp3.toUpperCase()}</button>` : ''}
+                      ${(crateConfig.temp4_enabled && crateConfig.names?.temp4) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="temp4" data-val="${valToAdd}" style="flex:1;padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(255, 212, 71, 0.2);border-color:var(--yellow);color:var(--yellow);">+ ${crateConfig.names.temp4.toUpperCase()}</button>` : ''}
+                      ${(crateConfig.temp5_enabled && crateConfig.names?.temp5) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="temp5" data-val="${valToAdd}" style="flex:1;padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(255, 212, 71, 0.2);border-color:var(--yellow);color:var(--yellow);">+ ${crateConfig.names.temp5.toUpperCase()}</button>` : ''}
+                    </div>
                   </div>
                 </div>`;
           }).join('');

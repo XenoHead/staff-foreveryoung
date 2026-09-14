@@ -6,3 +6,4 @@ pages_build_output_dir = "./public"
 binding = "DB"
 database_name = "foreveryoung-db"
 database_id = "4977069b-0252-40ab-895f-103ff41a6d22"
+remote = true
