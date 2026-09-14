@@ -281,7 +281,6 @@ async function handleEnrich(request, env) {
   }
 }
 
-
 async function handleDiscogsLookup(request) {
   const url = new URL(request.url);
   const releaseId = url.searchParams.get('id') || '';
@@ -555,13 +554,13 @@ async function handleInventorySearch(request, env) {
   }
 
   const countQ = `SELECT COUNT(*) as total FROM Inventory WHERE 1=1${filterSql}`;
-  const countResult = await (bindParams.length
-    ? db.prepare(countQ).bind(...bindParams)
-    : db.prepare(countQ)).first();
+  const countStmt = db.prepare(countQ);
+  const countResult = await (bindParams.length > 0 ? countStmt.bind(...bindParams) : countStmt).first();
   const total = countResult?.total || 0;
 
   const dataQ = `SELECT * FROM Inventory WHERE 1=1${filterSql} ORDER BY Artist ASC, Title ASC LIMIT ? OFFSET ?`;
-  const results = await db.prepare(dataQ).bind(...bindParams, limit, offset).all();
+  const dataParams = [...bindParams, limit, offset];
+  const results = await db.prepare(dataQ).bind(...dataParams).all();
   return json({ success: true, results: results.results, total, page, limit });
 }
 
@@ -624,15 +623,13 @@ async function handleOnlineSearch(request, env) {
   }
 
   const countQ = `SELECT COUNT(*) as total FROM Online_Inventory WHERE 1=1${filterSql}`;
-  const countResult = await (bindParams.length
-    ? db.prepare(countQ).bind(...bindParams)
-    : db.prepare(countQ)).first();
+  const countStmt = db.prepare(countQ);
+  const countResult = await (bindParams.length > 0 ? countStmt.bind(...bindParams) : countStmt).first();
   const total = countResult?.total || 0;
 
   const dataQ = `SELECT * FROM Online_Inventory WHERE 1=1${filterSql} ORDER BY Artist ASC, Title ASC LIMIT ? OFFSET ?`;
-  const results = await (bindParams.length
-    ? db.prepare(dataQ).bind(...bindParams, limit, offset)
-    : db.prepare(dataQ).bind(limit, offset)).all();
+  const dataParams = [...bindParams, limit, offset];
+  const results = await db.prepare(dataQ).bind(...dataParams).all();
   return json({ success: true, results: results.results, total, page, limit });
 }
 
@@ -660,19 +657,36 @@ async function handleOnlineUpdate(request, env) {
 
   if (!Title && !Artist) return json({ error: 'Artist or Title must be provided.' }, 400);
 
+  const cleanSellerRef = (Seller_Reference_Number && Seller_Reference_Number.trim()) ? Seller_Reference_Number.trim() : null;
+  const cleanBarcode = (Bar_Code && Bar_Code.trim()) ? Bar_Code.trim() : null;
+  let targetId = id;
+
+  if (!targetId && cleanSellerRef) {
+    const existing = await db.prepare('SELECT id FROM Online_Inventory WHERE Seller_Reference_Number = ?').bind(cleanSellerRef).first();
+    if (existing) targetId = existing.id;
+  }
+  if (!targetId && cleanBarcode) {
+    const existing = await db.prepare('SELECT id FROM Online_Inventory WHERE Bar_Code = ?').bind(cleanBarcode).first();
+    if (existing) targetId = existing.id;
+  }
+  if (!targetId && Artist && Title) {
+    const existing = await db.prepare('SELECT id FROM Online_Inventory WHERE LOWER(Artist) = LOWER(?) AND LOWER(Title) = LOWER(?) AND LOWER(Format) = LOWER(?)').bind(Artist, Title, Format).first();
+    if (existing) targetId = existing.id;
+  }
+
   const fields = [Artist, Title, Format, Discogs_ID, Discogs_url, Price, Description, Condition_Media,
-    Condition_Sleeve, Seller_Reference_Number, Quantity, Label, Release_Catalog_Number,
+    Condition_Sleeve, cleanSellerRef, Quantity, Label, Release_Catalog_Number,
     Release_Country, Release_Date, Genre, Front_Image_URL, Back_Image_URL,
     YouTube_Audio_Image_URLs, Bar_Code, Number_In_Set];
 
-  if (id) {
+  if (targetId) {
     await db.prepare(`UPDATE Online_Inventory SET
       Artist=?,Title=?,Format=?,Discogs_ID=?,Discogs_url=?,Price=?,Description=?,Condition_Media=?,
       Condition_Sleeve=?,Seller_Reference_Number=?,Quantity=?,Label=?,Release_Catalog_Number=?,
       Release_Country=?,Release_Date=?,Genre=?,Front_Image_URL=?,Back_Image_URL=?,
       YouTube_Audio_Image_URLs=?,Bar_Code=?,Number_In_Set=? WHERE id=?`
-    ).bind(...fields, id).run();
-    return json({ success: true, message: 'Product updated successfully.', id });
+    ).bind(...fields, targetId).run();
+    return json({ success: true, message: 'Product updated successfully.', id: targetId });
   } else {
     await db.prepare(`INSERT INTO Online_Inventory
       (Artist,Title,Format,Discogs_ID,Discogs_url,Price,Description,Condition_Media,Condition_Sleeve,

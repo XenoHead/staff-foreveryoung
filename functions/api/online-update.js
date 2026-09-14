@@ -50,7 +50,24 @@ export async function onRequestPost(context) {
       return new Response(JSON.stringify({ error: "Artist or Title must be provided." }), { status: 400 });
     }
 
-    if (id) {
+    const cleanSellerRef = (sellerRef && sellerRef.trim()) ? sellerRef.trim() : null;
+    const cleanBarcode = (barcode && barcode.trim()) ? barcode.trim() : null;
+    let targetId = id;
+
+    if (!targetId && cleanSellerRef) {
+      const existing = await db.prepare('SELECT id FROM Online_Inventory WHERE Seller_Reference_Number = ?').bind(cleanSellerRef).first();
+      if (existing) targetId = existing.id;
+    }
+    if (!targetId && cleanBarcode) {
+      const existing = await db.prepare('SELECT id FROM Online_Inventory WHERE Bar_Code = ?').bind(cleanBarcode).first();
+      if (existing) targetId = existing.id;
+    }
+    if (!targetId && artist && title) {
+      const existing = await db.prepare('SELECT id FROM Online_Inventory WHERE LOWER(Artist) = LOWER(?) AND LOWER(Title) = LOWER(?) AND LOWER(Format) = LOWER(?)').bind(artist, title, format).first();
+      if (existing) targetId = existing.id;
+    }
+
+    if (targetId) {
       // Update
       await db.prepare(`
         UPDATE Online_Inventory SET 
@@ -64,14 +81,14 @@ export async function onRequestPost(context) {
       `).bind(
         artist, title, format, discogsId, discogsUrl, price,
         description, condMedia, condSleeve,
-        sellerRef, quantity, label,
+        cleanSellerRef, quantity, label,
         catalogNum, country, date,
         genre, frontImg, backImg,
         youtubeUrls, barcode, numInSet,
-        id
+        targetId
       ).run();
 
-      return new Response(JSON.stringify({ success: true, message: "Product updated successfully.", id: id }), {
+      return new Response(JSON.stringify({ success: true, message: "Product updated successfully.", id: targetId }), {
         status: 200,
         headers: { "Content-Type": "application/json" }
       });
@@ -96,7 +113,7 @@ export async function onRequestPost(context) {
       `).bind(
         artist, title, format, discogsId, discogsUrl, price,
         description, condMedia, condSleeve,
-        sellerRef, quantity, label,
+        cleanSellerRef, quantity, label,
         catalogNum, country, date,
         genre, frontImg, backImg,
         youtubeUrls, barcode, numInSet

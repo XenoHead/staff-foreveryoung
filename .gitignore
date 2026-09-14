@@ -9,8 +9,19 @@ enrichment_log.txt
 *.sqlite
 *.sqlite3
 
+# leftover dev DB state + node_modules (leftover from dual-DB testing)
+sync-agent/node_modules/
+.wrangler/
 
-/.wrangler
-/.wrangler/cache
-/.wrangler
-/.wrangler
+# generated/scratch images not referenced by the staff site
+Gemini_Generated_Image*.png
+Capture*
+*.jfif
+STAFF.TXT
+sHEETS_DATA.png
+update-vendors.sql
+
+# background-removed derivatives (site uses the clean originals only)
+images/*-removebg-*.png
+public/images/*-removebg-*.png
+A-6996453*

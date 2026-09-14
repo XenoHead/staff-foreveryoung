@@ -773,7 +773,7 @@
             <span class="inline-divider">-</span>
             <span style="position: relative; display: inline-flex; align-items: center;">
               <span style="position: absolute; left: 0.5rem; color: var(--green); font-weight: bold;">$</span>
-              <input type="number" step="0.01" min="0" id="f-price" required placeholder="Price" style="width: 85px; padding-left: 1.2rem; color: var(--green); font-weight: bold;">
+              <input type="number" step="0.01" min="0" id="f-price" placeholder="Price" style="width: 85px; padding-left: 1.2rem; color: var(--green); font-weight: bold;">
             </span>
           </div>
 
@@ -940,6 +940,17 @@
         }
       });
 
+    fPrice.addEventListener('blur', () => {
+      const valStr = fPrice.value.trim();
+      if (valStr !== '') {
+        const num = parseFloat(valStr);
+        if (!isNaN(num) && num > 0) {
+          const dollars = Math.floor(num);
+          fPrice.value = (dollars + 0.98).toFixed(2);
+        }
+      }
+    });
+
     // Flash status message
     function showStatus(message, isSuccess = true) {
       statusBanner.textContent = message;
@@ -1093,6 +1104,14 @@
 
     // Form submit / Save logic
     btnSave.addEventListener('click', async (e) => {
+      const qtyVal = fQuantity.value ? parseInt(fQuantity.value, 10) : 0;
+      if (qtyVal > 0 && (!fPrice.value || fPrice.value.trim() === '')) {
+        fPrice.setCustomValidity("Price is required when Quantity is greater than 0.");
+        fPrice.reportValidity();
+        return;
+      } else {
+        fPrice.setCustomValidity("");
+      }
       if (!productForm.checkValidity()) {
         productForm.reportValidity();
         return;
@@ -1104,7 +1123,12 @@
         Title: fTitle.value.trim(),
         Format: fFormat.value.trim(),
         Genre: fGenre.value.trim(),
-        Price: fPrice.value ? parseFloat(fPrice.value) : null,
+        Price: (() => {
+          if (!fPrice.value || fPrice.value.trim() === '') return null;
+          const num = parseFloat(fPrice.value.trim());
+          if (isNaN(num) || num <= 0) return null;
+          return parseFloat((Math.floor(num) + 0.98).toFixed(2));
+        })(),
         Quantity: fQuantity.value ? parseInt(fQuantity.value, 10) : 0,
         Bar_Code: fBarcode.value.trim(),
         Seller_Reference_Number: fRef.value.trim(),
@@ -1226,6 +1250,12 @@
               `;
             }
 
+            const formatPrice = (p) => {
+              if (p === null || p === undefined || p === '') return '0.00';
+              const num = typeof p === 'number' ? p : parseFloat(String(p).replace(/[^0-9.]/g, ''));
+              return isNaN(num) ? '0.00' : num.toFixed(2);
+            };
+
             card.innerHTML = `
               <div class="record-art">
                 ${artHtml}
@@ -1243,7 +1273,7 @@
                   <span><strong>Media/Sleeve:</strong> ${item.Condition_Media || 'N/A'} / ${item.Condition_Sleeve || 'N/A'}</span>
                 </div>
                 <div class="record-price">
-                  <span>$${(item.Price || 0.00).toFixed(2)}</span>
+                  <span>$${formatPrice(item.Price)}</span>
                   <button class="edit-btn">Edit</button>
                 </div>
               </div>
@@ -1277,6 +1307,13 @@
     }
 
     function executeSearch() {
+      if (!lastSearchParams || Object.keys(lastSearchParams).length === 0) {
+        lastSearchParams = {
+          query: searchQuery.value ? searchQuery.value.trim() : '',
+          format: searchFormat.value || '',
+          letter: activeLetter || ''
+        };
+      }
       performSearch(lastSearchParams);
     }
 
