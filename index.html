@@ -244,43 +244,6 @@
       letter-spacing: 1px;
     }
 
-    /* Ticker Tape */
-    .ticker-wrap {
-      width: 100%;
-      max-width: 800px;
-      margin: -1rem auto 2rem auto;
-      background: rgba(0, 0, 0, 0.4);
-      border: 1px solid var(--blue);
-      border-radius: 6px;
-      overflow: hidden;
-      padding: 0.5rem 0;
-      white-space: nowrap;
-      position: relative;
-    }
-
-    .ticker-content {
-      display: inline-block;
-      white-space: nowrap;
-      padding-left: 100%;
-      animation: ticker 25s linear infinite;
-      color: var(--yellow);
-      font-weight: 500;
-      font-size: 1.1rem;
-      font-family: 'Oswald', sans-serif;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    @keyframes ticker {
-      0% {
-        transform: translateX(0);
-      }
-
-      100% {
-        transform: translateX(-100%);
-      }
-    }
-
     /* Modal Styles */
     .modal-overlay {
       position: fixed;
@@ -498,10 +461,6 @@
       </a>
     </div>
   </header>
-
-  <div class="ticker-wrap">
-    <div class="ticker-content" id="ticker-text">Loading message...</div>
-  </div>
 
   <fieldset class="bevel-group">
     <legend>Customer Loyalty</legend>
