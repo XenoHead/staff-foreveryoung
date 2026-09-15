@@ -1204,26 +1204,29 @@
         .then(data => {
           if (data.success && data.queue && data.queue.length > 0) {
             const user = data.queue[0]; // Most recent check-in
-            const currentPhone = document.querySelector('#customer-phone span').textContent;
 
-            // If it's a new person, or if the screen is empty, show them
-            if (emptyState && (emptyState.style.display !== 'none' || currentPhone !== user.phone)) {
-              if (emptyState) emptyState.style.display = 'none';
-              if (customerProfile) customerProfile.style.display = 'block';
-              if (statusMsg) statusMsg.style.display = 'none';
+            // Always show profile for the most recent queue entry
+            if (emptyState) emptyState.style.display = 'none';
+            if (customerProfile) customerProfile.style.display = 'block';
+            if (statusMsg) statusMsg.style.display = 'none';
 
-              const nameEl = document.querySelector('#customer-name span') || document.getElementById('customer-name');
-              if (nameEl) nameEl.textContent = user.name || user.firstName || 'Customer';
+            const nameEl = document.querySelector('#customer-name span') || document.getElementById('customer-name');
+            if (nameEl) nameEl.textContent = user.name || user.firstName || 'Customer';
 
-              const phoneEl = document.querySelector('#customer-phone span');
-              if (phoneEl) phoneEl.textContent = user.phone;
+            const phoneEl = document.querySelector('#customer-phone span');
+            if (phoneEl) phoneEl.textContent = user.phone;
 
-              const cdEl = document.getElementById('punches-cd') || document.getElementById('cd-count');
-              if (cdEl) cdEl.textContent = user.punches_cd || 0;
+            const cdEl = document.getElementById('punches-cd');
+            if (cdEl) cdEl.textContent = user.punches_cd ?? 0;
 
-              const p45El = document.getElementById('punches-45') || document.getElementById('45-count');
-              if (p45El) p45El.textContent = user.punches_45 || 0;
-            }
+            const vinylEl = document.getElementById('punches-vinyl');
+            if (vinylEl) vinylEl.textContent = user.punches_vinyl ?? 0;
+
+            const cassetteEl = document.getElementById('punches-cassette');
+            if (cassetteEl) cassetteEl.textContent = user.punches_cassette ?? 0;
+
+            const fourFiveEl = document.getElementById('punches-45');
+            if (fourFiveEl) fourFiveEl.textContent = user.punches_45 ?? 0;
           }
         })
         .catch(err => console.error("Error polling queue:", err));
