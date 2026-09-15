@@ -165,12 +165,12 @@
     }
 
     .main-btn {
-      width: 280px !important;
-      height: 55x !important;
+      width: 240px !important;
+      height: 44px !important;
       background: var(--blue) !important;
       color: var(--yellow) !important;
       border: 1px solid var(--yellow) !important;
-      font-size: 1rem !important;
+      font-size: 0.85rem !important;
       padding: 0 !important;
       margin: 0 !important;
       text-decoration: none;
@@ -2057,26 +2057,26 @@
                   <span style="color:#B6C0D7;"> (${item.Format || 'N/A'})</span>
                   <br><span style="color:#B6C0D7;font-size:0.7rem;">Ref: ${refVal || 'N/A'} | UPC: ${upcVal || 'N/A'}</span>
                 </div>
-                  <div style="display:flex;flex-direction:column;gap:0.3rem;flex-shrink:0;max-width:380px;">
-                    <div style="display:flex;gap:0.3rem;">
-                      <button class="add-to-crate-modal-btn action-btn" data-crate="new_releases" data-val="${valToAdd}" style="flex:1;padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;">+ ${(crateConfig.names?.new_releases || 'New Releases').toUpperCase()}</button>
-                      <button class="add-to-crate-modal-btn action-btn" data-crate="instore" data-val="${valToAdd}" style="flex:1;padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(46, 204, 113, 0.2);border-color:#2ecc71;color:#2ecc71;">+ ${(crateConfig.names?.instore || 'In Store').toUpperCase()}</button>
-                      <button class="add-to-crate-modal-btn action-btn" data-crate="online" data-val="${valToAdd}" style="flex:1;padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(44,108,255,0.3);border-color:var(--blue);color:#7aadff;">+ ${(crateConfig.names?.online || 'Online').toUpperCase()}</button>
+                  <div style="display:flex;flex-direction:column;gap:0.25rem;flex-shrink:0;max-width:380px;">
+                    <div style="display:flex;gap:0.25rem;">
+                      <button class="add-to-crate-modal-btn action-btn" data-crate="new_releases" data-val="${valToAdd}" style="flex:1;padding:0.18rem 0.35rem;font-size:0.62rem;width:auto;margin-top:0;border-width:1px;border-style:solid;${styleForCrateBtn(crateConfig.names?.new_releases || 'New Releases')}">+ ${(crateConfig.names?.new_releases || 'New Releases').toUpperCase()}</button>
+                      <button class="add-to-crate-modal-btn action-btn" data-crate="instore" data-val="${valToAdd}" style="flex:1;padding:0.18rem 0.35rem;font-size:0.62rem;width:auto;margin-top:0;border-width:1px;border-style:solid;${styleForCrateBtn(crateConfig.names?.instore || 'In Store')}">+ ${(crateConfig.names?.instore || 'In Store').toUpperCase()}</button>
+                      <button class="add-to-crate-modal-btn action-btn" data-crate="online" data-val="${valToAdd}" style="flex:1;padding:0.18rem 0.35rem;font-size:0.62rem;width:auto;margin-top:0;border-width:1px;border-style:solid;${styleForCrateBtn(crateConfig.names?.online || 'Online')}">+ ${(crateConfig.names?.online || 'Online').toUpperCase()}</button>
                     </div>
-                    <div style="display:flex;gap:0.3rem;">
-                      ${(crateConfig.new_enabled !== false && crateConfig.names?.new) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="new" data-val="${valToAdd}" style="flex:1;padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(35,84,146,0.5);border-color:var(--blue);">+ ${crateConfig.names.new.toUpperCase()}</button>` : ''}
-                      ${(crateConfig.hot_enabled !== false && crateConfig.names?.hot) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="hot" data-val="${valToAdd}" style="flex:1;padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(35,84,146,0.8);border-color:var(--blue);">+ ${crateConfig.names.hot.toUpperCase()}</button>` : ''}
-                      ${(crateConfig.rare_enabled !== false && crateConfig.names?.rare) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="rare" data-val="${valToAdd}" style="flex:1;padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(193,42,48,0.3);border-color:var(--red);">+ ${crateConfig.names.rare.toUpperCase()}</button>` : ''}
+                    <div style="display:flex;gap:0.25rem;">
+                      ${(crateConfig.new_enabled !== false && crateConfig.names?.new) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="new" data-val="${valToAdd}" style="flex:1;padding:0.18rem 0.35rem;font-size:0.62rem;width:auto;margin-top:0;border-width:1px;border-style:solid;${styleForCrateBtn(crateConfig.names.new)}">+ ${crateConfig.names.new.toUpperCase()}</button>` : ''}
+                      ${(crateConfig.hot_enabled !== false && crateConfig.names?.hot) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="hot" data-val="${valToAdd}" style="flex:1;padding:0.18rem 0.35rem;font-size:0.62rem;width:auto;margin-top:0;border-width:1px;border-style:solid;${styleForCrateBtn(crateConfig.names.hot)}">+ ${crateConfig.names.hot.toUpperCase()}</button>` : ''}
+                      ${(crateConfig.rare_enabled !== false && crateConfig.names?.rare) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="rare" data-val="${valToAdd}" style="flex:1;padding:0.18rem 0.35rem;font-size:0.62rem;width:auto;margin-top:0;border-width:1px;border-style:solid;${styleForCrateBtn(crateConfig.names.rare)}">+ ${crateConfig.names.rare.toUpperCase()}</button>` : ''}
                     </div>
-                    <div style="display:flex;gap:0.3rem;">
-                      ${(crateConfig.genres_enabled !== false && crateConfig.names?.genres) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="genres" data-val="${valToAdd}" style="flex:1;padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(46, 204, 113, 0.2);border-color:#2ecc71;color:#2ecc71;">+ ${crateConfig.names.genres.toUpperCase()}</button>` : ''}
-                      ${(crateConfig.temp1_enabled && crateConfig.names?.temp1) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="temp1" data-val="${valToAdd}" style="flex:1;padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(255, 212, 71, 0.2);border-color:var(--yellow);color:var(--yellow);">+ ${crateConfig.names.temp1.toUpperCase()}</button>` : ''}
-                      ${(crateConfig.temp2_enabled && crateConfig.names?.temp2) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="temp2" data-val="${valToAdd}" style="flex:1;padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(255, 212, 71, 0.2);border-color:var(--yellow);color:var(--yellow);">+ ${crateConfig.names.temp2.toUpperCase()}</button>` : ''}
+                    <div style="display:flex;gap:0.25rem;">
+                      ${(crateConfig.genres_enabled !== false && crateConfig.names?.genres) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="genres" data-val="${valToAdd}" style="flex:1;padding:0.18rem 0.35rem;font-size:0.62rem;width:auto;margin-top:0;border-width:1px;border-style:solid;${styleForCrateBtn(crateConfig.names.genres)}">+ ${crateConfig.names.genres.toUpperCase()}</button>` : ''}
+                      ${(crateConfig.temp1_enabled && crateConfig.names?.temp1) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="temp1" data-val="${valToAdd}" style="flex:1;padding:0.18rem 0.35rem;font-size:0.62rem;width:auto;margin-top:0;border-width:1px;border-style:solid;${styleForCrateBtn(crateConfig.names.temp1)}">+ ${crateConfig.names.temp1.toUpperCase()}</button>` : ''}
+                      ${(crateConfig.temp2_enabled && crateConfig.names?.temp2) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="temp2" data-val="${valToAdd}" style="flex:1;padding:0.18rem 0.35rem;font-size:0.62rem;width:auto;margin-top:0;border-width:1px;border-style:solid;${styleForCrateBtn(crateConfig.names.temp2)}">+ ${crateConfig.names.temp2.toUpperCase()}</button>` : ''}
                     </div>
-                    <div style="display:flex;gap:0.3rem;">
-                      ${(crateConfig.temp3_enabled && crateConfig.names?.temp3) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="temp3" data-val="${valToAdd}" style="flex:1;padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(255, 212, 71, 0.2);border-color:var(--yellow);color:var(--yellow);">+ ${crateConfig.names.temp3.toUpperCase()}</button>` : ''}
-                      ${(crateConfig.temp4_enabled && crateConfig.names?.temp4) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="temp4" data-val="${valToAdd}" style="flex:1;padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(255, 212, 71, 0.2);border-color:var(--yellow);color:var(--yellow);">+ ${crateConfig.names.temp4.toUpperCase()}</button>` : ''}
-                      ${(crateConfig.temp5_enabled && crateConfig.names?.temp5) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="temp5" data-val="${valToAdd}" style="flex:1;padding:0.25rem 0.5rem;font-size:0.7rem;width:auto;margin-top:0;background:rgba(255, 212, 71, 0.2);border-color:var(--yellow);color:var(--yellow);">+ ${crateConfig.names.temp5.toUpperCase()}</button>` : ''}
+                    <div style="display:flex;gap:0.25rem;">
+                      ${(crateConfig.temp3_enabled && crateConfig.names?.temp3) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="temp3" data-val="${valToAdd}" style="flex:1;padding:0.18rem 0.35rem;font-size:0.62rem;width:auto;margin-top:0;border-width:1px;border-style:solid;${styleForCrateBtn(crateConfig.names.temp3)}">+ ${crateConfig.names.temp3.toUpperCase()}</button>` : ''}
+                      ${(crateConfig.temp4_enabled && crateConfig.names?.temp4) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="temp4" data-val="${valToAdd}" style="flex:1;padding:0.18rem 0.35rem;font-size:0.62rem;width:auto;margin-top:0;border-width:1px;border-style:solid;${styleForCrateBtn(crateConfig.names.temp4)}">+ ${crateConfig.names.temp4.toUpperCase()}</button>` : ''}
+                      ${(crateConfig.temp5_enabled && crateConfig.names?.temp5) ? `<button class="add-to-crate-modal-btn action-btn" data-crate="temp5" data-val="${valToAdd}" style="flex:1;padding:0.18rem 0.35rem;font-size:0.62rem;width:auto;margin-top:0;border-width:1px;border-style:solid;${styleForCrateBtn(crateConfig.names.temp5)}">+ ${crateConfig.names.temp5.toUpperCase()}</button>` : ''}
                     </div>
                   </div>
                 </div>`;
@@ -2143,6 +2143,26 @@
       });
     }
 
+    function styleForCrateBtn(name) {
+      const label = String(name || '').toUpperCase().trim();
+      const palette = {
+        'NEW RELEASES': { bg: 'var(--yellow)', c: '#000', border: 'var(--yellow)' },
+        'NEW IN-STORE': { bg: 'var(--yellow)', c: '#000', border: 'var(--yellow)' },
+        'NEW ONLINE': { bg: 'var(--yellow)', c: '#000', border: 'var(--yellow)' },
+        'COOL STUFF': { bg: '#1a4a9c', c: 'var(--yellow)', border: 'var(--blue)' },
+        'HOT': { bg: '#1a4a9c', c: 'var(--yellow)', border: 'var(--blue)' },
+        'RARE': { bg: '#1a4a9c', c: 'var(--yellow)', border: 'var(--blue)' },
+        'BEST SELLERS': { bg: 'rgba(46,204,113,0.22)', c: '#a3f5b8', border: '#2ecc71' },
+        'BEST ONLINE': { bg: 'rgba(46,204,113,0.22)', c: '#a3f5b8', border: '#2ecc71' },
+        'BEST IN STORE': { bg: 'rgba(46,204,113,0.22)', c: '#a3f5b8', border: '#2ecc71' },
+        'OUR PICKS': { bg: 'var(--red)', c: '#fff', border: 'var(--red)' },
+        'STUFF': { bg: 'var(--red)', c: '#fff', border: 'var(--red)' },
+        'BOBBLES': { bg: 'var(--red)', c: '#fff', border: 'var(--red)' }
+      };
+      const s = palette[label] || { bg: 'rgba(255,255,255,0.08)', c: '#B6C0D7', border: 'rgba(255,255,255,0.2)' };
+      return `background:${s.bg};color:${s.c};border-color:${s.border};`;
+    }
+
     function escapeHtml(str) {
       return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
@@ -2192,7 +2212,10 @@
         let rowsHtml = '';
         if (hasItems) {
           rowsHtml = rawItems.map(item => {
-            const btnHtml = item.buttons.map(b => `<button class="add-btn" data-crate="${b.crate}" data-val="${b.val}">${b.label}</button>`).join('');
+            const btnHtml = item.buttons.map(b => {
+              const cleanLabel = b.label.trim().startsWith('+ ') ? b.label.trim().slice(2).toUpperCase().trim() : b.label.trim().toUpperCase();
+              return `<button class="add-btn" data-crate="${b.crate}" data-val="${b.val}" style="${styleForCrateBtn(cleanLabel)};padding:0.25rem 0.45rem;font-size:0.68rem;border-width:1px;border-style:solid;border-radius:4px;cursor:pointer;font-family:Oswald,sans-serif;text-transform:uppercase;letter-spacing:0.5px;">${b.label}</button>`;
+            }).join('');
             return `
               <tr>
                 <td><strong>${escapeHtml(item.title)}</strong><br><span class="meta">${escapeHtml(item.artist || 'Unknown')} &mdash; ${escapeHtml(item.format || 'N/A')}</span></td>
@@ -2301,7 +2324,7 @@
           textarea.value = refsList.join(', ');
           saveFeaturedData(false);
         } else {
-          alert(\`Already in the \${crate.toUpperCase()} crate.\`);
+          alert(`Already in the ${crate.toUpperCase()} crate.`);
         }
       } else if (e.data.action === 'runSearch') {
         if (featuredModalSearchInput) {
