@@ -17,6 +17,8 @@ CREATE TABLE IF NOT EXISTS Inventory (
   Modified TEXT,
   SRP TEXT,
   Image_URL TEXT,
+  Discogs_ID TEXT,
+  Discogs_url TEXT,
   Genre TEXT,
   Country TEXT
 );

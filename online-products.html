@@ -88,6 +88,7 @@
       padding: 0.8rem 1.5rem;
       border-radius: 8px;
       font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
@@ -96,7 +97,10 @@
       text-decoration: none;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
+      min-width: 150px;
+      min-height: 46px;
     }
 
     .action-btn:hover {
@@ -525,8 +529,8 @@
         <a href="index.html" class="action-btn">
           &larr; Dashboard
         </a>
-        <a href="warehouse.html" class="action-btn">
-          Warehouse Ops
+        <a href="instore-products.html" class="action-btn">
+          In-Store Editor
         </a>
       </div>
     </header>
@@ -867,7 +871,7 @@
           style="padding: 0.3rem 0.6rem; font-size: 0.8rem; height: 30px;">Zero Out</button>
         <button type="button" id="btn-discogs-auto" class="action-btn"
           style="padding: 0.3rem 0.6rem; height: 30px; border-color: #2ecc71; color: #2ecc71; background: rgba(0,0,0,0.2); font-weight: 700; font-size: 0.8rem;">
-          Auto Pop
+          Lookup
         </button>
 
         <input type="text" id="discogs-lookup-id" placeholder="DiscogsID"
@@ -1015,12 +1019,8 @@
 
     fPrice.addEventListener('blur', () => {
       const valStr = fPrice.value.trim();
-      if (valStr !== '') {
-        const num = parseFloat(valStr);
-        if (!isNaN(num) && num > 0) {
-          const dollars = Math.floor(num);
-          fPrice.value = (dollars + 0.98).toFixed(2);
-        }
+      if (valStr !== '' && !valStr.includes('.')) {
+        fPrice.value = valStr + '.98';
       }
     });
 

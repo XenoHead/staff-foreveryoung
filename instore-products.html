@@ -109,6 +109,8 @@
       align-items: center;
       justify-content: center;
       font-size: 0.9rem;
+      min-width: 150px;
+      min-height: 46px;
     }
 
     .action-btn:hover {
@@ -615,11 +617,7 @@
           </div>
           <div>
             <label style="display: block; font-size: 0.85rem; color: #B6C0D7; margin-bottom: 5px;">UPC</label>
-            <div style="display: flex; gap: 5px;">
-              <input type="text" id="f-upc" style="flex: 1; height: 28px;">
-              <button type="button" id="btn-discogs-upc-lookup" class="action-btn"
-                style="height: 28px; padding: 0 10px; font-size: 0.75rem; margin-top: 0; background: var(--blue); color: var(--yellow); border: 1px solid var(--yellow);">Lookup</button>
-            </div>
+            <input type="text" id="f-upc">
           </div>
           <div>
             <label style="display: block; font-size: 0.85rem; color: #B6C0D7; margin-bottom: 5px;">Quantity</label>
@@ -644,14 +642,22 @@
         </form>
       </div>
 
-      <div class="modal-footer">
+      <div class="modal-footer" style="flex-wrap: wrap; gap: 0.4rem;">
         <button id="btn-delete" class="action-btn danger"
-          style="margin-right: auto; background: var(--red); color: white; border: none; padding: 0.6rem 1.2rem; font-size: 0.85rem;">Zero
+          style="margin-right: auto; background: var(--red); color: white; border: none; padding: 0.3rem 0.6rem; font-size: 0.8rem;">Zero
           Out</button>
-        <button id="btn-cancel" class="action-btn"
-          style="border: 1px solid #B6C0D7; color: #B6C0D7; padding: 0.6rem 1.2rem; font-size: 0.85rem;">Cancel</button>
-        <button id="btn-save" class="action-btn success"
-          style="border: none; padding: 0.6rem 1.2rem; font-size: 0.85rem;">Save</button>
+
+        <button type="button" id="btn-discogs-upc-lookup" class="action-btn"
+          style="padding: 0.3rem 0.6rem; font-size: 0.8rem; border-color: var(--yellow); color: var(--yellow); background: rgba(0,0,0,0.2); font-weight: 700;">
+          Lookup
+        </button>
+
+        <div style="display: flex; gap: 0.4rem; margin-left: auto;">
+          <button id="btn-cancel" class="action-btn"
+            style="border: 1px solid #B6C0D7; color: #B6C0D7; padding: 0.3rem 0.6rem; font-size: 0.8rem;">Cancel</button>
+          <button id="btn-save" class="action-btn success"
+            style="border: none; padding: 0.3rem 0.6rem; font-size: 0.8rem;">Save</button>
+        </div>
       </div>
     </div>
   </div>
@@ -909,6 +915,16 @@
       });
     }
 
+    if (fSrp) {
+      fSrp.addEventListener('blur', () => {
+        const raw = fSrp.value.trim();
+        if (raw === '') return;
+        if (!raw.includes('.')) {
+          fSrp.value = raw + '.98';
+        }
+      });
+    }
+
     function showStatus(msg, isSuccess = true) {
       statusBanner.textContent = msg;
       statusBanner.className = `status-banner ${isSuccess ? 'success' : 'error'}`;
@@ -936,6 +952,8 @@
         currentImageUrl = item.Image_URL || item.Front_Image_URL || '';
         if (fImageUrl) fImageUrl.value = currentImageUrl;
         if (fImgPreview) fImgPreview.src = currentImageUrl || 'images/fyr-logo.png';
+        pendingDiscogsId = item.Discogs_ID || '';
+        pendingDiscogsUrl = item.Discogs_url || '';
         btnDelete.style.display = 'block';
       } else {
         modalTitleText.textContent = "Add In-Store Product";
@@ -945,6 +963,8 @@
         currentImageUrl = '';
         if (fImageUrl) fImageUrl.value = '';
         if (fImgPreview) fImgPreview.src = 'images/fyr-logo.png';
+        pendingDiscogsId = '';
+        pendingDiscogsUrl = '';
         btnDelete.style.display = 'none';
       }
       editorModal.style.display = 'flex';
@@ -980,7 +1000,9 @@
         Year: fYear.value.trim(),
         OOP: fOop.value,
         SRP: fSrp.value.trim(),
-        Image_URL: fImageUrl ? fImageUrl.value.trim() : currentImageUrl
+        Image_URL: fImageUrl ? fImageUrl.value.trim() : currentImageUrl,
+        Discogs_ID: pendingDiscogsId,
+        Discogs_url: pendingDiscogsUrl
       };
 
       try {
@@ -1044,6 +1066,9 @@
       }
     });
 
+    let pendingDiscogsId = '';
+    let pendingDiscogsUrl = '';
+
     // Discogs UPC Lookup Elements
     const btnDiscogsUpcLookup = document.getElementById('btn-discogs-upc-lookup');
     const discogsMatchModal = document.getElementById('discogs-match-modal');
@@ -1071,15 +1096,19 @@
         btnDiscogsUpcLookup.disabled = true;
         btnDiscogsUpcLookup.textContent = "Looking...";
 
-        const response = await fetch('/api/enrich', {
+        const artist = fArtist.value.trim();
+        const title = fTitle.value.trim();
+        const format = fFormat.value.trim();
+
+        const response = await fetch('/api/instore-enrich', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ barcode: upc })
+          body: JSON.stringify({ barcode: upc, artist, title, format })
         });
         const data = await response.json();
 
-        if (data.success && data.details) {
-          pendingMatchData = data.details;
+        if (data.success && data.result) {
+          pendingMatchData = data.result;
 
           // Populate match preview
           matchImg.src = pendingMatchData.Front_Image_URL || 'images/fyr-logo.png';
@@ -1093,7 +1122,7 @@
           // Open match modal
           discogsMatchModal.style.display = 'flex';
         } else {
-          alert("No match found on Discogs for this UPC.");
+          alert(data.error || "No match found on Discogs for this UPC/artist/title.");
         }
       } catch (err) {
         console.error("Discogs Lookup Error:", err);
@@ -1135,6 +1164,10 @@
           if (fImageUrl) fImageUrl.value = currentImageUrl;
           if (fImgPreview) fImgPreview.src = currentImageUrl;
         }
+
+        // Store Discogs metadata for the save payload
+        pendingDiscogsId = pendingMatchData.Discogs_ID || '';
+        pendingDiscogsUrl = pendingMatchData.Discogs_url || '';
 
         showStatus("Discogs details applied!", true);
       }

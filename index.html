@@ -809,8 +809,14 @@
 
       <div
         style="padding: 1rem 1.5rem; border-bottom: 1px solid rgba(255, 255, 255, 0.1); background: rgba(0, 0, 0, 0.2);">
-        <h3 style="font-family: 'Oswald', sans-serif; color: var(--yellow); margin-bottom: 0.5rem; font-size: 1.1rem;">
-          Search & Add to Crates</h3>
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+          <h3 style="font-family: 'Oswald', sans-serif; color: var(--yellow); font-size: 1.1rem; margin: 0;">
+            Search & Add to Crates</h3>
+          <button id="btn-popout-search-results" type="button" title="Open search results in a larger window"
+            style="display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; padding: 0; background: rgba(44,108,255,0.35); border: 1px solid var(--blue); border-radius: 6px; color: #7aadff; cursor: pointer; font-size: 0.85rem; flex-shrink: 0;">
+            ↗
+          </button>
+        </div>
         <div style="display: flex; gap: 0.5rem;">
           <input type="text" id="featured-modal-search-input" class="search-input" style="flex: 1;"
             placeholder="Search artist, title, UPC, or Ref #...">
@@ -1471,6 +1477,7 @@
     const featuredModalSearchResults = document.getElementById('featured-modal-search-results');
     const btnFeaturedModalSearch = document.getElementById('btn-featured-modal-search');
     const btnSaveAllFeatured = document.getElementById('btn-save-all-featured');
+    const btnPopoutSearchResults = document.getElementById('btn-popout-search-results');
     const featuredModalStatus = document.getElementById('featured-modal-status');
 
     // Open Featured Modal
@@ -2135,6 +2142,181 @@
         }
       });
     }
+
+    function escapeHtml(str) {
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    if (btnPopoutSearchResults) {
+      btnPopoutSearchResults.addEventListener('click', () => {
+        const q = featuredModalSearchInput ? featuredModalSearchInput.value.trim() : '';
+        const filterVal = featuredModalSearchFilter ? featuredModalSearchFilter.value : 'all';
+        const w = window.open('', 'CrateSearchResults', 'width=1100,height=850,resizable=yes,scrollbars=yes');
+        if (!w) return;
+
+        const rawItems = [];
+        (featuredModalSearchResults.querySelectorAll(':scope > div') || []).forEach(row => {
+          const titleEl = row.querySelector('strong');
+          if (!titleEl) return;
+
+          const title = titleEl.textContent.trim();
+          const artist = (() => {
+            const span = titleEl.parentElement ? titleEl.parentElement.querySelector('span:nth-of-type(1)') : null;
+            if (span && span.style.color === 'var(--yellow)') return span.textContent.replace(/^—\s*/, '').trim();
+            return '';
+          })();
+
+          const metaSpan = row.querySelector('span[style*="font-size:0.7rem"]');
+          let ref = '', upc = '', format = 'N/A';
+          if (metaSpan) {
+            const meta = metaSpan.textContent.trim();
+            const refMatch = meta.match(/Ref:\s*([^|]+)/);
+            const upcMatch = meta.match(/UPC:\s*([^|]+)/);
+            if (refMatch) ref = refMatch[1].trim();
+            if (upcMatch) upc = upcMatch[1].trim();
+          }
+
+          const formatMatch = row.textContent.match(/\(([A-Za-z0-9\s]+)\)/);
+          if (formatMatch) format = formatMatch[1].trim();
+
+          const buttons = [];
+          row.querySelectorAll('.add-to-crate-modal-btn').forEach(btn => {
+            buttons.push({ crate: btn.getAttribute('data-crate') || '', val: btn.getAttribute('data-val') || '', label: btn.textContent.trim() });
+          });
+
+          if (buttons.length) rawItems.push({ title, artist, ref, upc, format, buttons });
+        });
+
+        const crateNames = crateConfig.names || {};
+        const hasItems = rawItems.length > 0;
+        let rowsHtml = '';
+        if (hasItems) {
+          rowsHtml = rawItems.map(item => {
+            const btnHtml = item.buttons.map(b => `<button class="add-btn" data-crate="${b.crate}" data-val="${b.val}">${b.label}</button>`).join('');
+            return `
+              <tr>
+                <td><strong>${escapeHtml(item.title)}</strong><br><span class="meta">${escapeHtml(item.artist || 'Unknown')} &mdash; ${escapeHtml(item.format || 'N/A')}</span></td>
+                <td><span class="meta">${escapeHtml(item.ref || 'N/A')}</span></td>
+                <td><span class="meta">${escapeHtml(item.upc || 'N/A')}</span></td>
+                <td class="btns">${btnHtml}</td>
+              </tr>`;
+          }).join('');
+        }
+
+        const noResultsHtml = !hasItems
+          ? `<div class="empty">No search results to show yet${q ? ` for &quot;<strong>${escapeHtml(q)}</strong>&quot;` : ''}. Run a search in the crate editor first.</div>`
+          : '';
+
+        w.document.write(`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Crate Search Results</title>
+  <style>
+    :root {
+      --bg:#0b111a; --panel:rgba(16,26,43,0.95); --blue:#2c6cff; --yellow:#FFD447; --green:#2ecc71; --red:#c12a30; --muted:#B6C0D7; --cream:#F9F6EE;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--cream);font-family:Oswald,system-ui,sans-serif;padding:1rem}
+    h1{font-size:1.3rem;color:var(--yellow);margin:0 0 0.75rem}
+    .toolbar{display:flex;gap:0.5rem;align-items:center;margin-bottom:0.75rem;flex-wrap:wrap}
+    input[type="text"],select{padding:0.5rem 0.75rem;background:rgba(0,0,0,0.5);border:1px solid var(--blue);color:#fff;border-radius:6px;font-size:0.9rem}
+    input[type="text"]{min-width:220px;flex:1}
+    button.btn{background:var(--blue);color:#fff;border:1px solid var(--blue);border-radius:6px;padding:0.5rem 1rem;font-family:Oswald,sans-serif;text-transform:uppercase;letter-spacing:0.5px;cursor:pointer}
+    button.btn:hover{background:#fff;color:var(--bg)}
+    table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--blue);border-radius:8px;overflow:hidden}
+    th,td{padding:0.6rem 0.75rem;text-align:left;border-bottom:1px solid rgba(255,255,255,0.08)}
+    th{background:rgba(0,0,0,0.3);color:var(--yellow);font-weight:600}
+    td{font-size:0.9rem}
+    td.btns{display:flex;flex-wrap:wrap;gap:0.35rem;min-width:260px}
+    .add-btn{padding:0.25rem 0.55rem;border-radius:4px;border:1px solid rgba(255,255,255,0.25);background:rgba(0,0,0,0.35);color:#fff;cursor:pointer;font-size:0.75rem;font-family:Oswald,sans-serif;text-transform:uppercase;letter-spacing:0.5px}
+    .add-btn:hover{background:rgba(44,108,255,0.5);border-color:var(--blue)}
+    .add-btn[data-crate="instore"]{background:rgba(46,204,113,0.15);border-color:#2ecc71;color:#2ecc71}
+    .add-btn[data-crate="instore"]:hover{background:#2ecc71;color:#fff}
+    .add-btn[data-crate="online"]{background:rgba(44,108,255,0.2);border-color:var(--blue);color:#7aadff}
+    .add-btn[data-crate="online"]:hover{background:var(--blue);color:#fff}
+    .add-btn[data-crate="rare"]{background:rgba(193,42,48,0.2);border-color:var(--red);color:var(--red)}
+    .add-btn[data-crate="rare"]:hover{background:var(--red);color:#fff}
+    .meta{color:var(--muted);font-size:0.8rem}
+    .empty{text-align:center;padding:2rem;color:var(--muted);font-style:italic}
+    .copied{color:var(--green);font-size:0.8rem;margin-left:0.5rem}
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <h1>🎵 Crate Search Results${q ? ' &mdash; ' + escapeHtml(q) : ''}</h1>
+  <div class="toolbar">
+    <input id="popout-search-input" type="text" value="${escapeHtml(q)}" placeholder="Search artist, title, UPC, or Ref #...">
+    <select id="popout-search-filter"><option value="all"${filterVal==='all'?' selected':''}>All</option><option value="online"${filterVal==='online'?' selected':''}>Online Only</option><option value="instore"${filterVal==='instore'?' selected':''}>In Store Only</option></select>
+    <button id="popout-run-search" class="btn">Search</button>
+    <span id="popout-status"></span>
+  </div>
+  ${noResultsHtml}
+  ${hasItems ? `<table><thead><tr><th>Release</th><th>Ref #</th><th>UPC</th><th>Add to Crate</th></tr></thead><tbody>${rowsHtml}</tbody></table>` : ''}
+  <script>
+    const crateNames = ${JSON.stringify(crateNames)};
+    function notify(msg){ const s=document.getElementById('popout-status'); s.textContent=msg; s.className='copied'; setTimeout(()=>{s.textContent='';s.className='';},2000); }
+    function broadcast(action, payload){ if(window.opener && !window.opener.closed){ window.opener.postMessage({source:'crate-search-popout', action, payload}, '*'); } }
+    document.querySelectorAll('.add-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        broadcast('addToCrate', {crate:btn.getAttribute('data-crate'), val:btn.getAttribute('data-val')});
+        const original=btn.textContent; btn.textContent=btn.getAttribute('data-crate')==='instore'?'✓ INSTORE':'✓ ADDED'; btn.style.opacity='0.7';
+        setTimeout(()=>{btn.textContent=original; btn.style.opacity='1';},1200);
+      });
+    });
+    document.getElementById('popout-run-search').addEventListener('click', ()=>{
+      const q = document.getElementById('popout-search-input').value.trim();
+      const f = document.getElementById('popout-search-filter').value;
+      if(!q){ notify('Enter a search term.'); return; }
+      broadcast('runSearch', {query:q, filter:f});
+      notify('Running search in crate editor...');
+    });
+    ['popout-search-input'].forEach(id=>{
+      document.getElementById(id).addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); document.getElementById('popout-run-search').click(); } });
+    });
+  <\/script>
+</body>
+</html>`);
+        w.document.close();
+      });
+    }
+
+    // Listen for pop-out add-to-crate messages
+    window.addEventListener('message', (e) => {
+      if (!e.data || e.data.source !== 'crate-search-popout') return;
+      if (e.data.action === 'addToCrate') {
+        const crate = e.data.payload.crate;
+        const val = e.data.payload.val;
+        const textareas = {
+          'new': featuredRefsNew, 'new_releases': featuredRefsNewReleases, 'instore': featuredRefsInstore,
+          'online': featuredRefsOnline, 'hot': featuredRefsHot, 'rare': featuredRefsRare,
+          'temp1': featuredRefsTemp1, 'temp2': featuredRefsTemp2, 'temp3': featuredRefsTemp3,
+          'temp4': featuredRefsTemp4, 'temp5': featuredRefsTemp5, 'genres': featuredRefsGenres
+        };
+        let textarea = textareas[crate];
+        if (!textarea) return;
+        let refsList = textarea.value.split(',').map(r => r.trim()).filter(Boolean);
+        if (!refsList.includes(val)) {
+          refsList.push(val);
+          textarea.value = refsList.join(', ');
+          saveFeaturedData(false);
+        } else {
+          alert(\`Already in the \${crate.toUpperCase()} crate.\`);
+        }
+      } else if (e.data.action === 'runSearch') {
+        if (featuredModalSearchInput) {
+          featuredModalSearchInput.value = e.data.payload.query || '';
+        }
+        if (featuredModalSearchFilter) {
+          featuredModalSearchFilter.value = e.data.payload.filter || 'all';
+        }
+        searchFeaturedModal();
+      }
+    });
 
     // Call on load: ensure crate config is loaded first, then load featured details
     loadCrateConfig().then(() => loadFeaturedData());

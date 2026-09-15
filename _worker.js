@@ -56,6 +56,10 @@ export default {
       if (path === '/api/enrich' && method === 'POST')
         return await handleEnrich(request, env);
 
+      // /api/instore-enrich
+      if (path === '/api/instore-enrich' && method === 'POST')
+        return await handleInstoreEnrich(request, env);
+
       // /api/online-search
       if (path === '/api/online-search' && method === 'GET')
         return await handleOnlineSearch(request, env);
@@ -132,7 +136,10 @@ async function enrichSearchDiscogs(artist, title, format, barcode, description, 
       const resp = await enrichFetchWithRetry(searchUrl, { headers });
       if (!resp.ok) return null;
       const data = await resp.json();
-      return (data.results && data.results.length > 0) ? data.results[0].id : null;
+      if (!data.results || data.results.length === 0) return null;
+      // Prefer actual releases over masters, because master IDs point to wrong release details.
+      const release = data.results.find(r => r.type === 'release') || data.results[0];
+      return release.id || null;
     } catch (e) { return null; }
   };
 
@@ -178,9 +185,9 @@ async function enrichFetchReleaseDetails(releaseId, token) {
   let frontImg = '', backImg = '';
   if (data.images?.length) {
     const primary = data.images.find(i => i.type === 'primary') || data.images[0];
-    frontImg = primary.uri || '';
-    const secondary = data.images.find(i => i.type === 'secondary');
-    if (secondary) backImg = secondary.uri;
+    frontImg = primary.resource_url || primary.uri || primary.uri150 || '';
+    const secondary = data.images.find(i => i.type === 'secondary') || data.images.find(i => i !== primary) || data.images[1];
+    if (secondary) backImg = secondary.resource_url || secondary.uri || secondary.uri150 || '';
   }
 
   let label = '', catno = '';
@@ -677,7 +684,7 @@ async function handleOnlineUpdate(request, env) {
   const fields = [Artist, Title, Format, Discogs_ID, Discogs_url, Price, Description, Condition_Media,
     Condition_Sleeve, cleanSellerRef, Quantity, Label, Release_Catalog_Number,
     Release_Country, Release_Date, Genre, Front_Image_URL, Back_Image_URL,
-    YouTube_Audio_Image_URLs, Bar_Code, Number_In_Set];
+    YouTube_Audio_Image_URLs, cleanBarcode, Number_In_Set];
 
   if (targetId) {
     await db.prepare(`UPDATE Online_Inventory SET
@@ -713,23 +720,27 @@ async function handleInstoreUpdate(request, env) {
   }
 
   const id = body.id ? parseInt(body.id) : null;
-  const { Artist = '', Title = '', Format = '', Vendor = '', Vendor_Number = '', UPC = '', Year = '', OOP = '', Image_URL = '' } = body;
+  const {
+    Artist = '', Title = '', Format = '', Vendor = '',
+    Vendor_Number = '', UPC = '', Year = '', OOP = '',
+    Image_URL = '', Discogs_ID = '', Discogs_url = ''
+  } = body;
   const SRP = body.SRP || '';
   const Quantity = body.Quantity !== undefined && body.Quantity !== '' ? parseInt(body.Quantity) : 0;
 
   if (!Title && !Artist) return json({ error: 'Artist or Title must be provided.' }, 400);
 
-  const fields = [Artist, Title, Format, Vendor, Vendor_Number, UPC, Quantity, Year, OOP, SRP, Image_URL];
+  const fields = [Artist, Title, Format, Vendor, Vendor_Number, UPC, Quantity, Year, OOP, SRP, Image_URL, Discogs_ID, Discogs_url];
 
   if (id) {
     await db.prepare(`UPDATE Inventory SET
-      Artist=?,Title=?,Format=?,Vendor=?,Vendor_Number=?,UPC=?,Quantity=?,Year=?,OOP=?,SRP=?,Image_URL=? WHERE id=?`
+      Artist=?,Title=?,Format=?,Vendor=?,Vendor_Number=?,UPC=?,Quantity=?,Year=?,OOP=?,SRP=?,Image_URL=?,Discogs_ID=?,Discogs_url=? WHERE id=?`
     ).bind(...fields, id).run();
     return json({ success: true, message: 'In-Store product updated successfully.', id });
   } else {
     await db.prepare(`INSERT INTO Inventory
-      (Artist,Title,Format,Vendor,Vendor_Number,UPC,Quantity,Year,OOP,SRP,Image_URL)
-      VALUES (?,?,?,?,?,?,?,?,?,?,?)`
+      (Artist,Title,Format,Vendor,Vendor_Number,UPC,Quantity,Year,OOP,SRP,Image_URL,Discogs_ID,Discogs_url)
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`
     ).bind(...fields).run();
     const newRow = await db.prepare('SELECT last_insert_rowid() as id').first();
     return json({ success: true, message: 'In-Store product created successfully.', id: newRow?.id });
@@ -875,4 +886,45 @@ async function handleTickerPost(request, env) {
   const text = await request.text();
   await db.prepare(`INSERT INTO Settings (key,value) VALUES ('ticker',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value`).bind(text).run();
   return json({ success: true });
+}
+
+// ─── In-Store Discogs Enrich ───────────────────────────────────────────────
+
+async function handleInstoreEnrich(request, env) {
+  try {
+    const body = await request.json();
+    const { artist = '', title = '', format = '', barcode = '', discogs_id = '' } = body;
+    const token = env.DISCOGS_TOKEN || '';
+
+    let releaseId = discogs_id;
+    if (!releaseId) {
+      releaseId = await enrichSearchDiscogs(artist, title, format, barcode, '', token);
+    }
+
+    if (!releaseId) {
+      return json({ success: false, error: 'No Discogs match found for this UPC/artist/title.' });
+    }
+
+    const details = await enrichFetchReleaseDetails(releaseId, token);
+
+    return json({
+      success: true,
+      result: {
+        Artist: details.Artist || '',
+        Title: details.Title || '',
+        Format: details.Format || '',
+        Label: details.Label || '',
+        Release_Catalog_Number: details.Release_Catalog_Number || '',
+        Release_Date: details.Release_Date || '',
+        Release_Country: details.Release_Country || '',
+        Bar_Code: details.Bar_Code || '',
+        Front_Image_URL: details.Front_Image_URL || '',
+        Back_Image_URL: details.Back_Image_URL || '',
+        Discogs_ID: details.Discogs_ID || '',
+        Discogs_url: details.Discogs_url || '',
+      }
+    });
+  } catch (err) {
+    return json({ success: false, error: err.message }, 500);
+  }
 }
