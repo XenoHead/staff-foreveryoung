@@ -166,7 +166,7 @@
 
     .main-btn {
       width: 280px !important;
-      height: 50px !important;
+      height: 55x !important;
       background: var(--blue) !important;
       color: var(--yellow) !important;
       border: 1px solid var(--yellow) !important;
@@ -595,10 +595,6 @@
 
           <div class="status-msg" id="status-msg" style="text-align: center;">Punch added successfully!</div>
         </div>
-        <!-- Bottom crate list that mirrors the accordion labels -->
-        <div id="crate-bottom-list" style="margin-top: 0.75rem; display: flex; flex-direction: column; gap: 0.25rem;">
-          <!-- populated by JS -->
-        </div>
       </div>
     </div>
 
@@ -843,11 +839,11 @@
           <div class="crate-tab"
             style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden;">
             <button class="crate-tab-header" data-crate-tab="new-releases"
-              style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: none; border: none; color: var(--yellow); font-family: 'Oswald', sans-serif; font-size: 1rem; cursor: pointer; text-align: left;">
-              <span>🆕</span><span class="crate-tab-arrow" style="transition: transform 0.2s;">▼</span>
+              style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: none; border: none; color: var(--yellow); font-family: 'Oswald', sans-serif; font-size: 1rem; cursor: pointer; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.08);">
+              <span>🆕 New Releases</span><span class="crate-tab-arrow" style="transition: transform 0.2s; transform: rotate(180deg);">▼</span>
             </button>
             <div class="crate-tab-body" data-crate-body="new-releases"
-              style="display: none; padding: 0.75rem 1rem 1rem;">
+              style="display: block; padding: 0.75rem 1rem 1rem;">
               <div
                 style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem; flex-wrap: wrap;">
                 <button type="button" class="nr-sub-tab active" data-nr-tab="new_releases"
@@ -910,10 +906,10 @@
           <div class="crate-tab"
             style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden;">
             <button class="crate-tab-header" data-crate-tab="new"
-              style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: none; border: none; color: var(--yellow); font-family: 'Oswald', sans-serif; font-size: 1rem; cursor: pointer; text-align: left;">
-              <span>⭐</span><span class="crate-tab-arrow" style="transition: transform 0.2s;">▼</span>
+              style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: none; border: none; color: var(--yellow); font-family: 'Oswald', sans-serif; font-size: 1rem; cursor: pointer; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.08);">
+              <span>⭐ Employee Picks</span><span class="crate-tab-arrow" style="transition: transform 0.2s; transform: rotate(180deg);">▼</span>
             </button>
-            <div class="crate-tab-body" data-crate-body="new" style="display: none; padding: 0.75rem 1rem 1rem;">
+            <div class="crate-tab-body" data-crate-body="new" style="display: block; padding: 0.75rem 1rem 1rem;">
               <label style="display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 4px;">Reference IDs
                 (comma-separated):</label>
               <textarea id="featured-refs-new"
@@ -928,10 +924,10 @@
           <div class="crate-tab"
             style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden;">
             <button class="crate-tab-header" data-crate-tab="hot"
-              style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: none; border: none; color: var(--yellow); font-family: 'Oswald', sans-serif; font-size: 1rem; cursor: pointer; text-align: left;">
-              <span>🔥</span><span class="crate-tab-arrow" style="transition: transform 0.2s;">▼</span>
+              style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: none; border: none; color: var(--yellow); font-family: 'Oswald', sans-serif; font-size: 1rem; cursor: pointer; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.08);">
+              <span>🔥 Hot Albums</span><span class="crate-tab-arrow" style="transition: transform 0.2s; transform: rotate(180deg);">▼</span>
             </button>
-            <div class="crate-tab-body" data-crate-body="hot" style="display: none; padding: 0.75rem 1rem 1rem;">
+            <div class="crate-tab-body" data-crate-body="hot" style="display: block; padding: 0.75rem 1rem 1rem;">
               <label style="display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 4px;">Reference IDs
                 (comma-separated):</label>
               <textarea id="featured-refs-hot"
@@ -946,10 +942,10 @@
           <div class="crate-tab"
             style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden;">
             <button class="crate-tab-header" data-crate-tab="rare"
-              style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: none; border: none; color: var(--yellow); font-family: 'Oswald', sans-serif; font-size: 1rem; cursor: pointer; text-align: left;">
-              <span>💎</span><span class="crate-tab-arrow" style="transition: transform 0.2s;">▼</span>
+              style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: none; border: none; color: var(--yellow); font-family: 'Oswald', sans-serif; font-size: 1rem; cursor: pointer; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.08);">
+              <span>💎 Rare Finds</span><span class="crate-tab-arrow" style="transition: transform 0.2s; transform: rotate(180deg);">▼</span>
             </button>
-            <div class="crate-tab-body" data-crate-body="rare" style="display: none; padding: 0.75rem 1rem 1rem;">
+            <div class="crate-tab-body" data-crate-body="rare" style="display: block; padding: 0.75rem 1rem 1rem;">
               <label style="display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 4px;">Reference IDs
                 (comma-separated):</label>
               <textarea id="featured-refs-rare"
@@ -977,10 +973,10 @@
           <div class="crate-tab"
             style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden;">
             <button class="crate-tab-header" data-crate-tab="genres"
-              style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: none; border: none; color: var(--yellow); font-family: 'Oswald', sans-serif; font-size: 1rem; cursor: pointer; text-align: left;">
-              <span>🎵</span><span class="crate-tab-arrow" style="transition: transform 0.2s;">▼</span>
+              style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: none; border: none; color: var(--yellow); font-family: 'Oswald', sans-serif; font-size: 1rem; cursor: pointer; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.08);">
+              <span>🎵 Genres</span><span class="crate-tab-arrow" style="transition: transform 0.2s; transform: rotate(180deg);">▼</span>
             </button>
-            <div class="crate-tab-body" data-crate-body="genres" style="display: none; padding: 0.75rem 1rem 1rem;">
+            <div class="crate-tab-body" data-crate-body="genres" style="display: block; padding: 0.75rem 1rem 1rem;">
               <label style="display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 4px;">Genre list
                 (comma-separated):</label>
               <textarea id="featured-refs-genres"
@@ -996,9 +992,9 @@
             style="border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; overflow: hidden; display: none;">
             <button class="crate-tab-header" data-crate-tab="temp1">
               <span>✨ Extra Crate 1</span>
-              <span class="crate-tab-arrow" style="transition: transform 0.2s;">▼</span>
+              <span class="crate-tab-arrow" style="transition: transform 0.2s; transform: rotate(180deg);">▼</span>
             </button>
-            <div class="crate-tab-body" data-crate-body="temp1" style="display: none; padding: 0.75rem 1rem 1rem;">
+            <div class="crate-tab-body" data-crate-body="temp1" style="display: block; padding: 0.75rem 1rem 1rem;">
               <label style="display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 4px;">Items
                 (comma-separated):</label>
               <textarea id="featured-refs-temp1"
@@ -1014,9 +1010,9 @@
             style="border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; overflow: hidden; display: none;">
             <button class="crate-tab-header" data-crate-tab="temp2">
               <span>✨ Extra Crate 2</span>
-              <span class="crate-tab-arrow" style="transition: transform 0.2s;">▼</span>
+              <span class="crate-tab-arrow" style="transition: transform 0.2s; transform: rotate(180deg);">▼</span>
             </button>
-            <div class="crate-tab-body" data-crate-body="temp2" style="display: none; padding: 0.75rem 1rem 1rem;">
+            <div class="crate-tab-body" data-crate-body="temp2" style="display: block; padding: 0.75rem 1rem 1rem;">
               <label style="display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 4px;">Items
                 (comma-separated):</label>
               <textarea id="featured-refs-temp2"
@@ -1113,7 +1109,7 @@
       <div class="modal-toolbar">
         <div>
           <label style="display: block; color: var(--yellow); margin-bottom: 5px;">UPC:</label>
-          <input type="text" id="search-upc" class="search-input input-watch" placeholder="e.g. 843930148806">
+        <!-- Crate Accordions -->
         </div>
         <div>
           <label style="display: block; color: var(--yellow); margin-bottom: 5px;">Artist:</label>
@@ -1133,6 +1129,10 @@
           <button id="btn-do-search" class="action-btn"
             style="width: auto; padding: 0.6rem 2rem; opacity: 0.5; cursor: not-allowed;" disabled>Search
             Database</button>
+        </div>
+        <!-- Bottom crate list that mirrors the accordion labels -->
+        <div id="crate-bottom-list" style="margin-top: 0.75rem; display: flex; flex-direction: column; gap: 0.25rem;">
+          <!-- populated by JS -->
         </div>
       </div>
 
@@ -1478,7 +1478,8 @@
       btnFeaturedCrates.addEventListener('click', async () => {
         featuredModal.style.display = 'flex';
         await loadCrateConfig();
-        console.log('After loadCrateConfig, crateConfig:', JSON.stringify(crateConfig));
+        renderBottomCrateList(crateConfig.names || {});
+        collapseAllAccordions();
         loadFeaturedData();
       });
     }
@@ -1605,6 +1606,75 @@
       } catch (e) { }
     }
 
+    function collapseAllAccordions() {
+      document.querySelectorAll('.crate-tab-body').forEach(body => body.style.display = 'none');
+      document.querySelectorAll('.crate-tab-header').forEach(btn => {
+        const arrow = btn.querySelector('.crate-tab-arrow');
+        if (arrow) arrow.style.transform = '';
+        btn.style.borderBottom = '';
+      });
+    }
+
+    function renderBottomCrateList(names) {
+      const order = ['new_releases','instore','online','new','hot','rare','genres','temp1','temp2','temp3','temp4','temp5'];
+      const emojis = { 'new_releases':'🆕','instore':'🏪','online':'🌐','new':'⭐','hot':'🔥','rare':'💎','genres':'🎵','temp1':'✨','temp2':'✨','temp3':'✨','temp4':'✨','temp5':'✨' };
+      const container = document.getElementById('crate-bottom-list');
+      if (!container) return;
+      container.innerHTML = '';
+      order.forEach(key => {
+        const enabled = (key === 'new_releases' || key === 'instore' || key === 'online') || !!crateConfig[`${key}_enabled`];
+        const label = names && names[key] ? names[key] : (key === 'new_releases' ? 'New Releases' : key.charAt(0).toUpperCase() + key.slice(1));
+        if (!enabled) return;
+        const row = document.createElement('div');
+        row.style.display = 'flex';
+        row.style.alignItems = 'center';
+        row.style.gap = '0.6rem';
+        row.style.padding = '0.25rem 0.5rem';
+        row.style.borderRadius = '6px';
+        row.style.background = 'rgba(255,255,255,0.02)';
+        row.style.border = '1px solid rgba(255,255,255,0.04)';
+        const emoji = document.createElement('div');
+        emoji.textContent = emojis[key] || '';
+        emoji.style.width = '28px';
+        emoji.style.textAlign = 'center';
+        const text = document.createElement('div');
+        text.textContent = label;
+        text.style.color = '#B6C0D7';
+        text.style.fontSize = '0.9rem';
+        row.appendChild(emoji);
+        row.appendChild(text);
+        // toggle button to open matching accordion
+        const toggle = document.createElement('button');
+        toggle.textContent = '▼';
+        toggle.style.marginLeft = 'auto';
+        toggle.style.background = 'transparent';
+        toggle.style.border = 'none';
+        toggle.style.color = 'var(--yellow)';
+        toggle.style.cursor = 'pointer';
+        toggle.style.fontSize = '1rem';
+        toggle.title = 'Open section';
+        toggle.addEventListener('click', () => {
+          const body = document.querySelector(`[data-crate-body="${key}"]`);
+          const header = document.querySelector(`.crate-tab-header[data-crate-tab="${key}"]`);
+          if (body && header) {
+            const isOpen = body.style.display !== 'none';
+            // collapse all first
+            collapseAllAccordions();
+            if (!isOpen) {
+              body.style.display = 'block';
+              const arrow = header.querySelector('.crate-tab-arrow');
+              if (arrow) arrow.style.transform = 'rotate(180deg)';
+              header.style.borderBottom = '1px solid rgba(255,255,255,0.08)';
+            }
+            // scroll into view
+            header.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        });
+        row.appendChild(toggle);
+        container.appendChild(row);
+      });
+    }
+
     function updateCheckboxStates() {
       const pairs = [
         [cnameNew, cnameNewEnabled],
@@ -1640,7 +1710,7 @@
         'new': names['new'] || 'Employee Picks',
         'hot': names['hot'] || 'Hot Albums',
         'rare': names['rare'] || 'Rare Finds',
-        'genres': names['genres'] || '',
+        'genres': names['genres'] || 'Genres',
         'temp1': names['temp1'] || '',
         'temp2': names['temp2'] || '',
         'temp3': names['temp3'] || '',
@@ -1680,77 +1750,10 @@
           parentAccordion.style.display = isEnabled[key] ? 'block' : 'none';
         }
 
-        const span = btn.querySelector('span:first-child');
-        if (span) {
-          const label = map[key] || '';
-          span.textContent = label ? `${emojis[key] || ''} ${label}` : '';
+        if (map[key]) {
+          const span = btn.querySelector('span:first-child');
+          if (span) span.textContent = (emojis[key] || '') + ' ' + map[key];
         }
-      });
-    }
-
-    function collapseAllAccordions() {
-      document.querySelectorAll('.crate-tab-body').forEach(body => body.style.display = 'none');
-      document.querySelectorAll('.crate-tab-header').forEach(btn => {
-        const arrow = btn.querySelector('.crate-tab-arrow');
-        if (arrow) arrow.style.transform = '';
-        btn.style.borderBottom = '';
-      });
-    }
-
-    function renderBottomCrateList(names) {
-      const order = ['new_releases','instore','online','new','hot','rare','genres','temp1','temp2','temp3','temp4','temp5'];
-      const emojis = { 'new_releases':'🆕','instore':'🏪','online':'🌐','new':'⭐','hot':'🔥','rare':'💎','genres':'🎵','temp1':'✨','temp2':'✨','temp3':'✨','temp4':'✨','temp5':'✨' };
-      const container = document.getElementById('crate-bottom-list');
-      if (!container) return;
-      container.innerHTML = '';
-      order.forEach(key => {
-        const enabled = (key === 'new_releases' || key === 'instore' || key === 'online') || !!crateConfig[`${key}_enabled`];
-        const label = names && names[key] ? names[key] : (key === 'new_releases' ? 'New Releases' : key.charAt(0).toUpperCase() + key.slice(1));
-        if (!enabled) return;
-        const row = document.createElement('div');
-        row.style.display = 'flex';
-        row.style.alignItems = 'center';
-        row.style.gap = '0.6rem';
-        row.style.padding = '0.25rem 0.5rem';
-        row.style.borderRadius = '6px';
-        row.style.background = 'rgba(255,255,255,0.02)';
-        row.style.border = '1px solid rgba(255,255,255,0.04)';
-        const emoji = document.createElement('div');
-        emoji.textContent = emojis[key] || '';
-        emoji.style.width = '28px';
-        emoji.style.textAlign = 'center';
-        const text = document.createElement('div');
-        text.textContent = label;
-        text.style.color = '#B6C0D7';
-        text.style.fontSize = '0.9rem';
-        row.appendChild(emoji);
-        row.appendChild(text);
-        const toggle = document.createElement('button');
-        toggle.textContent = '▼';
-        toggle.style.marginLeft = 'auto';
-        toggle.style.background = 'transparent';
-        toggle.style.border = 'none';
-        toggle.style.color = 'var(--yellow)';
-        toggle.style.cursor = 'pointer';
-        toggle.style.fontSize = '1rem';
-        toggle.title = 'Open section';
-        toggle.addEventListener('click', () => {
-          const body = document.querySelector(`[data-crate-body="${key}"]`);
-          const header = document.querySelector(`.crate-tab-header[data-crate-tab="${key}"]`);
-          if (body && header) {
-            const isOpen = body.style.display !== 'none';
-            collapseAllAccordions();
-            if (!isOpen) {
-              body.style.display = 'block';
-              const arrow = header.querySelector('.crate-tab-arrow');
-              if (arrow) arrow.style.transform = 'rotate(180deg)';
-              header.style.borderBottom = '1px solid rgba(255,255,255,0.08)';
-            }
-            header.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }
-        });
-        row.appendChild(toggle);
-        container.appendChild(row);
       });
     }
 
@@ -1769,9 +1772,9 @@
             new_releases: cnameNewReleases.value.trim() || 'New Releases',
             instore: cnameInstore ? cnameInstore.value.trim() || 'In Store' : 'In Store',
             online: cnameOnline ? cnameOnline.value.trim() || 'Online' : 'Online',
-            new: cnameNew.value.trim() || 'Employee Picks',
-            hot: cnameHot.value.trim() || 'Hot Albums',
-            rare: cnameRare.value.trim() || 'Rare Finds',
+            new: cnameNew.value.trim(),
+            hot: cnameHot.value.trim(),
+            rare: cnameRare.value.trim(),
             genres: cnameGenres.value.trim(),
             temp1: cnameTemp1.value.trim(),
             temp2: cnameTemp2.value.trim(),
@@ -1869,7 +1872,6 @@
           renderCrateItems('temp5', data.temp5?.items || [], featuredListTemp5);
           renderCrateItems('genres', data.genres?.items || [], featuredListGenres);
         }
-        updateAccordionLabels(crateConfig.names || {});
       } catch (err) {
         console.error("Error loading featured items", err);
       }
@@ -1884,8 +1886,9 @@
 
       listElement.innerHTML = items.map(item => {
         let artHtml = '';
-        if (item.Front_Image_URL && item.Front_Image_URL !== 'NULL' && item.Front_Image_URL.startsWith('http')) {
-          artHtml = `<img src="${item.Front_Image_URL}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">`;
+        const imgUrl = item.Front_Image_URL || item.Image_URL || item.image || item.Image;
+        if (imgUrl && imgUrl !== 'NULL' && imgUrl !== 'undefined' && imgUrl.trim() !== '') {
+          artHtml = `<img src="${imgUrl}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">`;
         } else {
           artHtml = `<div style="width: 40px; height: 40px; background: var(--blue); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: bold; color: #fff;">${item.Format || 'LP'}</div>`;
         }
@@ -1952,7 +1955,7 @@
         featuredModalStatus.textContent = 'Saving featured crates...';
       }
 
-      const refsBody = {
+      const body = {
         new: featuredRefsNew.value.trim(),
         new_releases: featuredRefsNewReleases.value.trim(),
         instore: featuredRefsInstore ? featuredRefsInstore.value.trim() : '',
@@ -1968,46 +1971,6 @@
       };
 
       try {
-        let config = crateConfig && crateConfig.names ? crateConfig : { names: {} };
-        if (!config.names || Object.keys(config.names).length === 0) {
-          const cfgRes = await fetch('/api/featured?type=config');
-          const cfgData = await cfgRes.json();
-          if (cfgData.success && cfgData.config) config = cfgData.config;
-        }
-
-        const enabledOverrides = {
-          new: !!refsBody.new,
-          new_releases: !!refsBody.new_releases,
-          instore: !!refsBody.instore,
-          online: !!refsBody.online,
-          hot: !!refsBody.hot,
-          rare: !!refsBody.rare,
-          genres: !!refsBody.genres,
-          temp1: !!refsBody.temp1,
-          temp2: !!refsBody.temp2,
-          temp3: !!refsBody.temp3,
-          temp4: !!refsBody.temp4,
-          temp5: !!refsBody.temp5,
-        };
-
-        const mergedConfig = {
-          names: { ...(config.names || {}) },
-          new_enabled: enabledOverrides.new || !!config.new_enabled,
-          hot_enabled: enabledOverrides.hot || !!config.hot_enabled,
-          rare_enabled: enabledOverrides.rare || !!config.rare_enabled,
-          genres_enabled: enabledOverrides.genres || !!config.genres_enabled,
-          temp1_enabled: enabledOverrides.temp1 || !!config.temp1_enabled,
-          temp2_enabled: enabledOverrides.temp2 || !!config.temp2_enabled,
-          temp3_enabled: enabledOverrides.temp3 || !!config.temp3_enabled,
-          temp4_enabled: enabledOverrides.temp4 || !!config.temp4_enabled,
-          temp5_enabled: enabledOverrides.temp5 || !!config.temp5_enabled,
-        };
-
-        const body = {
-          ...refsBody,
-          config: mergedConfig
-        };
-
         const res = await fetch('/api/featured', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -2015,8 +1978,6 @@
         });
         const data = await res.json();
         if (data.success) {
-          crateConfig = mergedConfig;
-          updateAccordionLabels(crateConfig.names);
           if (showMessage) {
             featuredModalStatus.textContent = 'Featured crates updated successfully!';
             featuredModalStatus.className = 'status-msg success';

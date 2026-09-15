@@ -434,8 +434,9 @@
 
     .modal-body-scroll {
       flex: 1;
-      overflow-y: auto;
+      overflow-y: scroll;
       padding: 1.5rem;
+      min-height: 0;
     }
 
     .modal-footer {
@@ -601,7 +602,7 @@
           </div>
           <div>
             <label style="display: block; font-size: 0.85rem; color: #B6C0D7; margin-bottom: 5px;">Format</label>
-            <input type="text" id="f-format" required>
+            <input type="text" id="f-format">
           </div>
           <div>
             <label style="display: block; font-size: 0.85rem; color: #B6C0D7; margin-bottom: 5px;">Vendor /
@@ -628,6 +629,14 @@
           <div>
             <label style="display: block; font-size: 0.85rem; color: #B6C0D7; margin-bottom: 5px;">Year</label>
             <input type="text" id="f-year">
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; color: #B6C0D7; margin-bottom: 5px;">Genre</label>
+            <input type="text" id="f-genre">
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; color: #B6C0D7; margin-bottom: 5px;">Country</label>
+            <input type="text" id="f-country">
           </div>
           <div>
             <label style="display: block; font-size: 0.85rem; color: #B6C0D7; margin-bottom: 5px;">OOP (Out of
@@ -898,6 +907,8 @@
     const fYear = document.getElementById('f-year');
     const fOop = document.getElementById('f-oop');
     const fSrp = document.getElementById('f-srp');
+    const fGenre = document.getElementById('f-genre');
+    const fCountry = document.getElementById('f-country');
     const fImageUrl = document.getElementById('f-image-url');
     const fImgPreview = document.getElementById('f-img-preview');
     let currentImageUrl = '';
@@ -933,6 +944,8 @@
         fYear.value = item.Year || '';
         fOop.value = item.OOP || 'No';
         fSrp.value = item.SRP || '';
+        if (fGenre) fGenre.value = item.Genre || '';
+        if (fCountry) fCountry.value = item.Country || '';
         currentImageUrl = item.Image_URL || item.Front_Image_URL || '';
         if (fImageUrl) fImageUrl.value = currentImageUrl;
         if (fImgPreview) fImgPreview.src = currentImageUrl || 'images/fyr-logo.png';
@@ -980,6 +993,8 @@
         Year: fYear.value.trim(),
         OOP: fOop.value,
         SRP: fSrp.value.trim(),
+        Genre: fGenre ? fGenre.value.trim() : '',
+        Country: fCountry ? fCountry.value.trim() : '',
         Image_URL: fImageUrl ? fImageUrl.value.trim() : currentImageUrl
       };
 
@@ -1135,6 +1150,9 @@
           if (fImageUrl) fImageUrl.value = currentImageUrl;
           if (fImgPreview) fImgPreview.src = currentImageUrl;
         }
+
+        if (pendingMatchData.Genre && fGenre) fGenre.value = pendingMatchData.Genre;
+        if (pendingMatchData.Release_Country && fCountry) fCountry.value = pendingMatchData.Release_Country;
 
         showStatus("Discogs details applied!", true);
       }
