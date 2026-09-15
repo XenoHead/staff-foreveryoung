@@ -2147,10 +2147,6 @@
       return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
-    function escapeHtml(str) {
-      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-    }
-
     if (btnPopoutSearchResults) {
       btnPopoutSearchResults.addEventListener('click', () => {
         const q = featuredModalSearchInput ? featuredModalSearchInput.value.trim() : '';

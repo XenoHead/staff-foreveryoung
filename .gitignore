@@ -12,6 +12,7 @@ enrichment_log.txt
 # leftover dev DB state + node_modules (leftover from dual-DB testing)
 sync-agent/node_modules/
 .wrangler/
+extras/
 
 # generated/scratch images not referenced by the staff site
 Gemini_Generated_Image*.png
