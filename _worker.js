@@ -1106,6 +1106,7 @@ async function handleImportCsv(request, env) {
 
   const url = new URL(request.url);
   const verifySold = url.searchParams.get('verifySold') === '1';
+  const skipImageBackfill = url.searchParams.get('skipImageBackfill') === '1';
 
   let csvText;
   const ct = request.headers.get('content-type') || '';
@@ -1243,7 +1244,7 @@ async function handleImportCsv(request, env) {
     }
   }
 
-  const BATCH_SIZE = 3; // D1 limits bound params to ~100 per statement; 3 rows × 27 cols = 81 // 35 rows × 27 columns = 945 params, under SQLite/D1 limits
+  const BATCH_SIZE = 35; // D1 limits bound params to ~100 per statement; 35 rows × 27 cols = 945 params, under SQLite/D1 limits
   const batch = [];
   for (const row of rows) {
       // 1. Artist: remove (1), (2), etc.
@@ -1281,7 +1282,7 @@ async function handleImportCsv(request, env) {
         Artist: cleanArtist,
         Title: f(row, 'title'),
         Format: simpleFmt,
-        Discogs_ID: releaseId,
+        Discogs_ID: String(f(row, 'release_id') || ''),
         Discogs_url: discogsUrl,
         Price: p(f(row, 'price'), true),
         Description: cleanDesc,
@@ -1321,7 +1322,9 @@ async function handleImportCsv(request, env) {
   }
 
   // Fetch images asynchronously after rows exist; limit concurrency.
-  await backfillFrontImages(db);
+  if (!skipImageBackfill) {
+    await backfillFrontImages(db);
+  }
 
   async function insertBatch(database, rows) {
     if (!rows.length) return;
@@ -1363,7 +1366,7 @@ async function handleImportCsv(request, env) {
     success: true,
     rowsProcessed: total,
     batches: insertBatches,
-    message: 'Import complete. ' + total.toLocaleString() + ' rows processed across ' + insertBatches + ' batch(es). Image backfill started.',
+    message: 'Import complete. ' + total.toLocaleString() + ' rows processed across ' + insertBatches + ' batch(es).' + (skipImageBackfill ? ' Image backfill skipped.' : ' Image backfill started.'),
   });
 }
 

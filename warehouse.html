@@ -434,10 +434,15 @@
         </div>
       </div>
 
+      <label style="display: flex; align-items: center; gap: 0.5rem; color: #B6C0D7; font-size: 0.9rem; cursor: pointer;">
+        <input type="checkbox" id="csv-skip-images" checked style="width: 18px; height: 18px; accent-color: var(--yellow);" />
+        Skip Discogs image backfill (recommended for large imports)
+      </label>
+
       <button id="btn-import-csv" class="action-btn" style="width: 100%; max-width: 400px; padding: 1rem; font-size: 1.1rem; background: rgba(35, 84, 146, 0.5); border-color: var(--yellow);">
         <span style="font-size: 1.3rem; margin-right: 8px;">⬇</span> Import to Online Inventory
       </button>
-      <p style="font-size: 0.8rem; color: #B6C0D7;">Uploads the CSV to the Cloudflare Worker API and inserts into D1 Online_Inventory.</p>
+      <p style="font-size: 0.8rem; color: #B6C0D7;">Uploads the CSV to the Cloudflare Worker API and inserts into D1 Online_Inventory. Duplicate Listing_IDs update existing rows.</p>
 
       <div id="csv-import-status" class="status-msg"></div>
     </div>
@@ -978,7 +983,8 @@
       csvStatus.style.color = '#B6C0D7';
       csvStatus.textContent = 'Uploading to D1...';
 
-      const apiUrl = '/api/import-csv';
+      const skipImages = document.getElementById('csv-skip-images')?.checked ?? true;
+      const apiUrl = '/api/import-csv?skipImageBackfill=' + (skipImages ? '1' : '0');
 
       try {
         const response = await fetch(apiUrl, {
