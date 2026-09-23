@@ -768,8 +768,10 @@
               <span class="inline-label">UPC:</span>
               <input type="text" id="f-barcode" placeholder="UPC / Barcode" style="width: 150px;">
               <span class="spec-divider">-</span>
-              <span class="inline-label">Discogs Id:</span>
+              <span class="inline-label">Discogs Release Id:</span>
               <input type="text" id="f-discogs" placeholder="Discogs ID" style="width: 100px;">
+              <span class="inline-label">Discogs Listed:</span>
+              <input type="text" id="f-discogslisted" placeholder="Discogs ID Copy" readonly style="width: 100px; opacity: 0.8;">
             </div>
           </div>
 
@@ -797,8 +799,10 @@
                 <span class="inline-label">Country:</span>
                 <input type="text" id="f-country" placeholder="Country" style="width: 100px;">
                 <span class="spec-divider">-</span>
-                <span class="inline-label">Release date:</span>
+                <span class="inline-label">Date Listed:</span>
                 <input type="text" id="f-date" placeholder="Release Date / Year" style="width: 120px;">
+                <span class="inline-label">Date Released:</span>
+                <input type="text" id="f-datereleased" placeholder="Release Date / Year" style="width: 120px;">
               </div>
             </div>
           </div>
@@ -988,8 +992,10 @@
     const fCondMedia = document.getElementById('f-cond-media');
     const fCondSleeve = document.getElementById('f-cond-sleeve');
     const fDiscogs = document.getElementById('f-discogs');
+    const fDiscogsListed = document.getElementById('f-discogslisted');
     const fDiscogsUrl = document.getElementById('f-discogs-url');
     const fNumInSet = document.getElementById('f-num-in-set');
+    const fDateReleased = document.getElementById('f-datereleased');
     const fDescription = document.getElementById('f-description');
     const fBackImg = document.getElementById('f-back-img');
     const fAudioUrls = document.getElementById('f-audio-urls');
@@ -1004,6 +1010,7 @@
     fDiscogs.addEventListener('input', () => {
       const id = fDiscogs.value.trim();
       discogsLookupId.value = id;
+      fDiscogsListed.value = id;
       updateDiscogsGoButton();
     });
 
@@ -1066,9 +1073,11 @@
         fCatalog.value = item.Release_Catalog_Number || '';
         fCountry.value = item.Release_Country || '';
         fDate.value = item.Release_Date || '';
+        fDateReleased.value = item.Date_Released || '';
         fCondMedia.value = item.Condition_Media || '';
         fCondSleeve.value = item.Condition_Sleeve || '';
         fDiscogs.value = item.Discogs_ID || '';
+        fDiscogsListed.value = item.Discogs_ID || '';
         fDiscogsUrl.value = item.Discogs_url || '';
         fNumInSet.value = item.Number_In_Set || '';
         fDescription.value = item.Description || '';
@@ -1139,7 +1148,9 @@
           fNumInSet.value = info.Number_In_Set || '';
           fDescription.value = info.Description || '';
           fDiscogs.value = info.Discogs_ID || '';
+          fDiscogsListed.value = info.Discogs_ID || '';
           fDiscogsUrl.value = info.Discogs_url || '';
+          fDateReleased.value = info.Date_Released || info.Release_Date || fDateReleased.value;
 
           if (info.Front_Image_URL && info.Front_Image_URL !== 'NULL') {
             frontImgInput.value = info.Front_Image_URL;
@@ -1192,7 +1203,9 @@
           title: fTitle.value,
           format: fFormat.value,
           barcode: fBarcode.value,
-          description: fDescription.value
+          description: fDescription.value,
+          discogs_id: fDiscogs.value.trim() || null,
+          discogs_url: fDiscogsUrl.value.trim() || null
         };
 
         const res = await fetch('/api/enrich', {
@@ -1217,7 +1230,9 @@
           fNumInSet.value = info.Number_In_Set || fNumInSet.value;
           fDescription.value = info.Description || fDescription.value;
           fDiscogs.value = info.Discogs_ID || fDiscogs.value;
+          fDiscogsListed.value = info.Discogs_ID || fDiscogsListed.value;
           fDiscogsUrl.value = info.Discogs_url || fDiscogsUrl.value;
+          fDateReleased.value = info.Date_Released || info.Release_Date || fDateReleased.value;
 
           if (info.Front_Image_URL) {
             frontImgInput.value = info.Front_Image_URL;
@@ -1316,6 +1331,7 @@
         Discogs_ID: fDiscogs.value.trim(),
         Discogs_url: fDiscogsUrl.value.trim(),
         Number_In_Set: fNumInSet.value.trim(),
+        Date_Released: fDateReleased.value.trim(),
         Description: fDescription.value.trim(),
         Front_Image_URL: frontImgInput.value.trim() || 'NULL',
         Back_Image_URL: fBackImg.value.trim() || 'NULL',

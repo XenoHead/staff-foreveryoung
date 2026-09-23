@@ -318,18 +318,23 @@ async function enrichFetchReleaseDetails(releaseId, token) {
     Front_Image_URL: frontImg, Back_Image_URL: backImg,
     Label: label, Release_Catalog_Number: catno,
     Release_Country: country, Release_Date: dateStr.toString(),
+    Date_Released: dateStr.toString(),
     Genre: genre, YouTube_Audio_Image_URLs: audioUrls.join(', '),
-    Number_In_Set: numInSet, Description: fullDesc, Bar_Code: barcode,
+    Number_In_Set: numInSet, Description: fullDesc, Bar_Code: barcode
   };
 }
 
 async function handleEnrich(request, env) {
   try {
     const body = await request.json();
-    const { id, artist, title, format, barcode, description, discogs_id } = body;
+    const { id, artist, title, format, barcode, description, discogs_id, discogs_url } = body;
     const token = env.DISCOGS_TOKEN || '';
 
     let releaseId = discogs_id;
+    if (!releaseId && discogs_url) {
+      const resolved = await resolveReleaseIdFromDiscogsUrl(discogs_url);
+      releaseId = resolved?.releaseId || null;
+    }
     if (!releaseId) {
       releaseId = await enrichSearchDiscogs(artist, title, format, barcode, description, token);
     }
@@ -373,10 +378,51 @@ async function handleEnrich(request, env) {
   }
 }
 
+async function resolveReleaseIdFromDiscogsUrl(raw) {
+  if (!raw) return null;
+  const clean = raw.trim();
+  const listingMatch = clean.match(/(?:shop|sell)\/item\/(\d+)|\/offer\.\d+|listing_id=(\d+)/i);
+  const possibleListingId = listingMatch ? (listingMatch[1] || listingMatch[2]) : null;
+
+  // If input is a shop/listing URL or looks like a listing ID, try to fetch listing page and parse release ID
+  if (possibleListingId || /^\d{6,}$/.test(clean)) {
+    const listingId = possibleListingId || clean;
+    try {
+      const resp = await fetch(`https://www.discogs.com/sell/item/${listingId}`, {
+        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126.0.0.0 Safari/537.36', 'Accept': 'text/html' },
+        redirect: 'follow'
+      });
+      if (resp.ok) {
+        const html = await resp.text();
+        // Look for canonical/og URL to a release or master
+        let m = html.match(/<link[^>]+rel=["']canonical["'][^>]+href=["']([^"']+)/i);
+        if (!m) m = html.match(/<meta[^>]+property=["']og:url["'][^>]+content=["']([^"']+)/i);
+        if (m && m[1]) {
+          const releaseMatch = m[1].match(/\/(release|master)\/(\d+)/);
+          if (releaseMatch) return { releaseId: releaseMatch[2], listingId };
+        }
+        // Fallback: find first release/master reference in page
+        const fb = html.match(/\/(release|master)\/(\d+)/);
+        if (fb) return { releaseId: fb[2], listingId };
+      }
+    } catch (e) { console.warn('Discogs listing resolve failed:', e.message); }
+  }
+
+  // Plain release ID
+  const digits = clean.replace(/\D/g, '');
+  if (digits) return { releaseId: digits, listingId: possibleListingId || '' };
+  return null;
+}
+
 async function handleDiscogsLookup(request) {
   const url = new URL(request.url);
-  const releaseId = url.searchParams.get('id') || '';
-  if (!releaseId) return json({ error: 'Missing release ID.' }, 400);
+  const rawInput = url.searchParams.get('id') || url.searchParams.get('q') || '';
+  if (!rawInput) return json({ error: 'Missing release ID.' }, 400);
+
+  let resolved = await resolveReleaseIdFromDiscogsUrl(rawInput);
+  if (!resolved) resolved = { releaseId: rawInput.replace(/\D/g, ''), listingId: '' };
+  const { releaseId, listingId } = resolved;
+  if (!releaseId) return json({ error: 'Could not determine Discogs Release ID.' }, 400);
 
   const resp = await fetch(`https://api.discogs.com/releases/${releaseId}`, {
     headers: { 'User-Agent': 'ForeverYoungStaffPortal/1.0 +https://www.foreveryoungrecords.com' },
@@ -440,7 +486,7 @@ async function handleDiscogsLookup(request) {
     success: true, result: {
       Artist: artistStr, Title: titleStr, Format: formatStr, Genre: genreStr,
       Label: labelStr, Release_Catalog_Number: catalogStr, Release_Country: countryStr,
-      Release_Date: dateStr, Bar_Code: barcodeStr, Front_Image_URL: frontImg,
+      Release_Date: dateStr, Date_Released: dateStr, Bar_Code: barcodeStr, Front_Image_URL: frontImg,
       Back_Image_URL: backImg, YouTube_Audio_Image_URLs: youtubeStr,
       Number_In_Set: numInSet, Description: descLines.join('\n'), Discogs_ID: String(data.id),
       Discogs_url: `https://www.discogs.com/release/${data.id}`,
@@ -731,6 +777,9 @@ async function handleOnlineUpdate(request, env) {
   const body = await request.json();
   const action = url.searchParams.get('action') || '';
 
+  // Ensure new columns exist for saves that happen outside the CSV import path
+  try { await db.prepare(`ALTER TABLE Online_Inventory ADD COLUMN Date_Released TEXT`).run(); } catch (e) { /* ignore duplicate */ }
+
   if (action === 'delete') {
     const id = parseInt(body.id);
     if (!id) return json({ error: 'Missing product ID for deletion.' }, 400);
@@ -743,6 +792,7 @@ async function handleOnlineUpdate(request, env) {
     Condition_Media = '', Condition_Sleeve = '', Seller_Reference_Number = '', Label = '',
     Release_Catalog_Number = '', Release_Country = '', Release_Date = '', Genre = '',
     Front_Image_URL = '', Back_Image_URL = '', YouTube_Audio_Image_URLs = '', Bar_Code = '', Number_In_Set = '',
+    Date_Released = '',
   } = body;
   const Price = body.Price !== undefined && body.Price !== '' ? parseFloat(body.Price) : null;
   const Quantity = body.Quantity !== undefined && body.Quantity !== '' ? parseInt(body.Quantity) : 0;
@@ -769,22 +819,22 @@ async function handleOnlineUpdate(request, env) {
   const fields = [Artist, Title, Format, Discogs_ID, Discogs_url, Price, Description, Condition_Media,
     Condition_Sleeve, cleanSellerRef, Quantity, Label, Release_Catalog_Number,
     Release_Country, Release_Date, Genre, Front_Image_URL, Back_Image_URL,
-    YouTube_Audio_Image_URLs, cleanBarcode, Number_In_Set];
+    YouTube_Audio_Image_URLs, cleanBarcode, Number_In_Set, Date_Released];
 
   if (targetId) {
     await db.prepare(`UPDATE Online_Inventory SET
       Artist=?,Title=?,Format=?,Discogs_ID=?,Discogs_url=?,Price=?,Description=?,Condition_Media=?,
       Condition_Sleeve=?,Seller_Reference_Number=?,Quantity=?,Label=?,Release_Catalog_Number=?,
       Release_Country=?,Release_Date=?,Genre=?,Front_Image_URL=?,Back_Image_URL=?,
-      YouTube_Audio_Image_URLs=?,Bar_Code=?,Number_In_Set=? WHERE id=?`
+      YouTube_Audio_Image_URLs=?,Bar_Code=?,Number_In_Set=?,Date_Released=? WHERE id=?`
     ).bind(...fields, targetId).run();
     return json({ success: true, message: 'Product updated successfully.', id: targetId });
   } else {
     await db.prepare(`INSERT INTO Online_Inventory
       (Artist,Title,Format,Discogs_ID,Discogs_url,Price,Description,Condition_Media,Condition_Sleeve,
        Seller_Reference_Number,Quantity,Label,Release_Catalog_Number,Release_Country,Release_Date,
-       Genre,Front_Image_URL,Back_Image_URL,YouTube_Audio_Image_URLs,Bar_Code,Number_In_Set)
-      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+       Genre,Front_Image_URL,Back_Image_URL,YouTube_Audio_Image_URLs,Bar_Code,Number_In_Set,Date_Released)
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
     ).bind(...fields).run();
     const newRow = await db.prepare('SELECT last_insert_rowid() as id').first();
     return json({ success: true, message: 'Product created successfully.', id: newRow?.id });
@@ -1172,6 +1222,7 @@ async function handleImportCsv(request, env) {
   await ensureColumn('Online_Inventory', 'Weight', 'REAL');
   await ensureColumn('Online_Inventory', 'Format_Quantity', 'INTEGER');
   await ensureColumn('Online_Inventory', 'External_ID', 'TEXT');
+  await ensureColumn('Online_Inventory', 'Date_Released', 'TEXT');
   await ensureColumn('Online_Inventory_Import', 'Listing_ID', 'TEXT');
   await ensureColumn('Online_Inventory_Import', 'Status', 'TEXT');
   await ensureColumn('Online_Inventory_Import', 'Accept_Offer', 'TEXT');
@@ -1244,7 +1295,7 @@ async function handleImportCsv(request, env) {
     }
   }
 
-  const BATCH_SIZE = 35; // D1 limits bound params to ~100 per statement; 35 rows × 27 cols = 945 params, under SQLite/D1 limits
+  const BATCH_SIZE = 100; // Each row is a separate prepared statement, batched via D1 batch()
   const batch = [];
   for (const row of rows) {
       // 1. Artist: remove (1), (2), etc.
@@ -1329,10 +1380,14 @@ async function handleImportCsv(request, env) {
   async function insertBatch(database, rows) {
     if (!rows.length) return;
     const columns = Object.keys(rows[0]);
-    const placeholders = rows.map(() => `(${columns.map(() => '?').join(', ')})`).join(', ');
-    const flat = rows.flatMap(r => columns.map(c => r[c] === undefined ? null : r[c]));
-    const sql = `INSERT OR REPLACE INTO Online_Inventory (${columns.join(', ')}) VALUES ${placeholders}`;
-    await database.prepare(sql).bind(...flat).run();
+    const placeholders = columns.map(() => '?').join(', ');
+    const sql = `INSERT OR REPLACE INTO Online_Inventory (${columns.join(', ')}) VALUES (${placeholders})`;
+    const stmt = database.prepare(sql);
+    const batch = rows.map(r => {
+      const values = columns.map(c => r[c] === undefined ? null : r[c]);
+      return stmt.bind(...values);
+    });
+    await database.batch(batch);
   }
 
   async function backfillFrontImages(database) {

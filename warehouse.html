@@ -981,35 +981,62 @@
       csvStatus.style.display = 'block';
       csvStatus.className = 'status-msg';
       csvStatus.style.color = '#B6C0D7';
-      csvStatus.textContent = 'Uploading to D1...';
+      csvStatus.textContent = 'Preparing upload chunks...';
 
       const skipImages = document.getElementById('csv-skip-images')?.checked ?? true;
-      const apiUrl = '/api/import-csv?skipImageBackfill=' + (skipImages ? '1' : '0');
+      const baseUrl = '/api/import-csv?skipImageBackfill=' + (skipImages ? '1' : '0');
 
-      try {
-        const response = await fetch(apiUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ csv: csvFileText }),
-        });
-
-        const data = await response.json();
-
-        if (response.ok && data.success) {
-          csvStatus.className = 'status-msg success';
-          csvStatus.style.color = '#2ecc71';
-          csvStatus.textContent = data.message;
-        } else {
-          csvStatus.style.color = 'var(--red)';
-          csvStatus.textContent = 'Import error: ' + (data.error || response.statusText || 'Unknown error');
+      function splitCsvIntoChunks(fullText, rowsPerChunk) {
+        const lines = fullText.split(/\r?\n/);
+        if (lines.length === 0) return [];
+        const header = lines[0];
+        const dataLines = lines.slice(1).filter(l => l.trim() !== '');
+        const chunks = [];
+        for (let i = 0; i < dataLines.length; i += rowsPerChunk) {
+          const slice = dataLines.slice(i, i + rowsPerChunk);
+          chunks.push([header, ...slice].join('\n'));
         }
-      } catch (err) {
-        csvStatus.style.color = 'var(--red)';
-        csvStatus.textContent = 'Network error: ' + err.message + '. Is the Worker running locally?';
-      } finally {
-        csvBtn.style.opacity = '1';
-        csvBtn.disabled = false;
+        return chunks;
       }
+
+      // ~250 rows × 15 batch size inside worker = good chunk that stays under timeout
+      const CHUNK_ROWS = 250;
+      const chunks = splitCsvIntoChunks(csvFileText, CHUNK_ROWS);
+      let totalProcessed = 0;
+      let lastError = null;
+
+      for (let i = 0; i < chunks.length; i++) {
+        csvStatus.textContent = `Uploading chunk ${i + 1} of ${chunks.length}...`;
+        try {
+          const response = await fetch(baseUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ csv: chunks[i] }),
+          });
+          const data = await response.json();
+          if (!response.ok || !data.success) {
+            lastError = data.error || response.statusText || 'Unknown error';
+            csvStatus.style.color = 'var(--red)';
+            csvStatus.textContent = `Chunk ${i + 1} failed: ${lastError}`;
+            break;
+          }
+          totalProcessed += data.rowsProcessed || 0;
+        } catch (err) {
+          lastError = err.message;
+          csvStatus.style.color = 'var(--red)';
+          csvStatus.textContent = `Chunk ${i + 1} network error: ${err.message}`;
+          break;
+        }
+      }
+
+      if (!lastError) {
+        csvStatus.className = 'status-msg success';
+        csvStatus.style.color = '#2ecc71';
+        csvStatus.textContent = `Import complete. ${totalProcessed.toLocaleString()} rows processed in ${chunks.length} chunk(s).`;
+      }
+
+      csvBtn.style.opacity = '1';
+      csvBtn.disabled = false;
     });
 
   </script>
