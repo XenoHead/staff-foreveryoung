@@ -4,6 +4,8 @@ local-db-export.sql
 production_export.sql
 *.sql
 .env
+.dev.vars
+dev.vars
 enrichment_log.txt
 *.db
 *.sqlite

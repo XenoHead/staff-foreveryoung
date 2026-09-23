@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Warehouse Ops - Forever Young</title>
+  <title>Warehouse Ops</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -370,9 +370,9 @@
         <div style="display: flex; gap: 1rem; width: 100%; max-width: 400px; margin-bottom: 1rem; align-items: center;">
           <select id="file-type-select" class="vendor-dropdown" style="flex: 1; height: 50px;">
             <option value="" disabled selected>Select File Type...</option>
-            <option value="Sold">Sold</option>
+            <option value="Sell Sheets">Sold</option>
             <option value="Online Inv">Online Inv</option>
-            <option value="Stock">Stock</option>
+            <option value="In Store Inv">Stock</option>
           </select>
           
           <div class="file-input-wrapper" style="flex: 1;">
@@ -417,7 +417,33 @@
     </footer>
   </div>
 
-  <!-- Master Sales Modal -->
+  <!-- Manual CSV Upload -->
+  <div class="panel">
+    <h2>Manual CSV Upload</h2>
+    <p style="color: #B6C0D7; line-height: 1.5; font-size: 0.9rem;">
+      Upload a Discogs CSV export directly to the Online Inventory table.
+      The CSV must have a header row. Uses the live D1 — no local agent needed.
+    </p>
+    <div style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 1rem; align-items: center;">
+      <div style="display: flex; gap: 1rem; width: 100%; max-width: 400px; margin-bottom: 1rem; align-items: center;">
+        <div class="file-input-wrapper" style="flex: 1;">
+          <button class="action-btn upload-btn" style="width: 100%; height: 50px; padding: 0; font-size: 1.1rem; border-color: #2ecc71; color: #2ecc71;">
+            <span style="font-size: 1.2rem; margin-right: 5px;">📁</span> Browse CSV
+          </button>
+          <input type="file" id="csv-upload-input" accept=".csv" />
+        </div>
+      </div>
+
+      <button id="btn-import-csv" class="action-btn" style="width: 100%; max-width: 400px; padding: 1rem; font-size: 1.1rem; background: rgba(35, 84, 146, 0.5); border-color: var(--yellow);">
+        <span style="font-size: 1.3rem; margin-right: 8px;">⬇</span> Import to Online Inventory
+      </button>
+      <p style="font-size: 0.8rem; color: #B6C0D7;">Uploads the CSV to the Cloudflare Worker API and inserts into D1 Online_Inventory.</p>
+
+      <div id="csv-import-status" class="status-msg"></div>
+    </div>
+  </div>
+
+  <!-- Master Sales Panel -->
   <div id="master-sales-modal" class="modal-overlay" style="display: none;">
     <div class="modal-content" id="modal-window">
       <div class="modal-header">
@@ -900,6 +926,83 @@
       } finally {
         btn.style.opacity = '1';
         btn.innerHTML = '<span style="font-size: 1.5rem; margin-right: 10px;">↻</span> Sync Now';
+      }
+    });
+
+    // CSV Import Logic
+    const csvInput = document.getElementById('csv-upload-input');
+    const csvStatus = document.getElementById('csv-import-status');
+    const csvBtn = document.getElementById('btn-import-csv');
+    let csvFileText = null;
+
+    csvInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (!file.name.toLowerCase().endsWith('.csv')) {
+        csvStatus.style.display = 'block';
+        csvStatus.style.color = 'var(--red)';
+        csvStatus.textContent = 'Please select a .csv file.';
+        e.target.value = '';
+        csvFileText = null;
+        return;
+      }
+      csvStatus.style.display = 'block';
+      csvStatus.className = 'status-msg';
+      csvStatus.style.color = '#B6C0D7';
+      csvStatus.textContent = 'Reading file: ' + file.name + ' (' + (file.size / 1024 / 1024).toFixed(1) + ' MB)...';
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        csvFileText = ev.target.result;
+        csvStatus.textContent = 'File loaded: ' + file.name + ' (' + csvFileText.split('\n').length + ' lines). Click Import to send to D1.';
+      };
+      reader.onerror = () => {
+        csvStatus.style.color = 'var(--red)';
+        csvStatus.textContent = 'Error reading file.';
+        csvFileText = null;
+      };
+      reader.readAsText(file);
+    });
+
+    csvBtn.addEventListener('click', async () => {
+      if (!csvFileText) {
+        csvStatus.style.display = 'block';
+        csvStatus.style.color = 'var(--red)';
+        csvStatus.textContent = 'No file loaded. Browse and select a CSV first.';
+        return;
+      }
+
+      csvBtn.style.opacity = '0.5';
+      csvBtn.disabled = true;
+      csvStatus.style.display = 'block';
+      csvStatus.className = 'status-msg';
+      csvStatus.style.color = '#B6C0D7';
+      csvStatus.textContent = 'Uploading to D1...';
+
+      const apiUrl = '/api/import-csv';
+
+      try {
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ csv: csvFileText }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          csvStatus.className = 'status-msg success';
+          csvStatus.style.color = '#2ecc71';
+          csvStatus.textContent = data.message;
+        } else {
+          csvStatus.style.color = 'var(--red)';
+          csvStatus.textContent = 'Import error: ' + (data.error || response.statusText || 'Unknown error');
+        }
+      } catch (err) {
+        csvStatus.style.color = 'var(--red)';
+        csvStatus.textContent = 'Network error: ' + err.message + '. Is the Worker running locally?';
+      } finally {
+        csvBtn.style.opacity = '1';
+        csvBtn.disabled = false;
       }
     });
 

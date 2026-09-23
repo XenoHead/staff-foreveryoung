@@ -2,7 +2,9 @@
  * _worker.js — Forever Young Staff Portal
  * Consolidated Cloudflare Worker (replaces functions/api/*.js)
  * Run locally against the LIVE D1 database:
- *   npx wrangler dev --remote
+ *   npx wrangler dev _worker.js --port 8789  (standalone worker mode — no static serving)
+ *   OR
+ *   npx wrangler pages dev . --port 8789      (Pages mode — serves static + worker + real D1 via remote bindings)
  */
 
 const CORS = {
@@ -94,14 +96,97 @@ export default {
       if (path === '/api/sync' && method === 'POST')
         return await handleSync(request, env);
 
+      // /api/import-csv
+      if (path === '/api/import-csv') {
+        if (method === 'POST') return await handleImportCsv(request, env);
+        if (method === 'GET') {
+          const rows = await env.DB.prepare('SELECT * FROM Online_Inventory_Import LIMIT 5').all();
+          return json({ importedRows: rows });
+        }
+        return cors();
+      }
+
+      // /api/schema-test - check D1 schema and create table if needed
+      if (path === '/api/schema-test') {
+        let result = {};
+        try {
+          const tbl = await env.DB.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='Online_Inventory_Import'").all();
+          result.tableExists = tbl.length > 0;
+          if (!tbl.length > 0) {
+            // Attempt to create the table
+            try {
+              await env.DB.prepare(`CREATE TABLE IF NOT EXISTS Online_Inventory_Import (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                Artist TEXT, Title TEXT, Format TEXT, Discogs_ID TEXT, Discogs_url TEXT,
+                Price REAL, Description TEXT, Condition_Media TEXT, Condition_Sleeve TEXT,
+                Seller_Reference_Number TEXT, Quantity INTEGER DEFAULT 0, Label TEXT,
+                Release_Catalog_Number TEXT, Release_Country TEXT, Release_Date TEXT,
+                Genre TEXT, Front_Image_URL TEXT, Back_Image_URL TEXT,
+                YouTube_Audio_Image_URLs TEXT, Bar_Code TEXT, Number_In_Set TEXT,
+                Listing_ID TEXT, Status TEXT, Accept_Offer TEXT, Weight REAL,
+                Format_Quantity INTEGER, External_ID TEXT
+              );`).run();
+              result.tableCreated = true;
+              // Re-check
+              const tbl2 = await env.DB.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='Online_Inventory_Import'").all();
+              result.tableExists = tbl2.length > 0;
+              if (tbl2.length > 0) {
+                const cols = await env.DB.prepare("PRAGMA table_info(Online_Inventory_Import)").all();
+                result.columns = cols.map(c => ({ name: c.name, type: c.type }));
+              }
+            } catch (e) {
+              result.createError = e.message;
+            }
+          } else {
+            const cols = await env.DB.prepare("PRAGMA table_info(Online_Inventory_Import)").all();
+            result.columns = cols.map(c => ({ name: c.name, type: c.type }));
+          }
+        } catch (e) {
+          result.error = e.message;
+        }
+        return json(result);
+      }
+
+      // /api/reconcile-sold - verify Sold rows against Discogs shop pages
+      if (path === '/api/reconcile-sold' && method === 'POST')
+        return await handleReconcileSold(request, env);
+
+      // /api/parse-test - debug CSV parsing
+      if (path === '/api/parse-test' && method === 'POST') {
+        const body = await request.json();
+        const { rows, headerMap, lineCount } = parseCsv(body.csv || '');
+        const first = rows[0] || [];
+        return json({
+          lineCount,
+          rowCount: rows.length,
+          headerMap,
+          firstRow: first.slice(0, 10),
+          sample: {
+            artist: first[1] || '',
+            title: first[2] || '',
+            format: first[5] || '',
+            price: first[8] || '',
+            location: first[17] || '',
+            release_id: first[6] || ''
+          }
+        });
+      }
+
       // /api/ticker
       if (path === '/api/ticker') {
         if (method === 'GET') return await handleTickerGet(env);
         if (method === 'POST') return await handleTickerPost(request, env);
       }
 
-      // Static assets fallback
-      return env.ASSETS.fetch(request);
+      // Static assets fallback — only available in wrangler pages dev (Pages mode)
+      // In standalone wrangler dev _worker.js mode there is no ASSETS binding and no filesystem access
+      if (env.ASSETS) {
+        return env.ASSETS.fetch(request);
+      }
+      // No static serving in standalone worker mode — return a plain response
+      return new Response('Staff Portal — API running. Open /warehouse.html in Pages mode to use the UI.', {
+        headers: { 'Content-Type': 'text/plain' }
+      });
 
     } catch (err) {
       console.error(err);
@@ -927,4 +1012,487 @@ async function handleInstoreEnrich(request, env) {
   } catch (err) {
     return json({ success: false, error: err.message }, 500);
   }
+}
+
+// ─── Discogs marketplace listing availability helper ────────────────────────
+// Returns true only if the Discogs API says the listing is currently For Sale.
+async function isShopListingAvailable(listingId, env) {
+  const cleanId = String(listingId || '').replace(/[^0-9]/g, '');
+  if (!cleanId) return false;
+  try {
+    const token = env.DISCOGS_TOKEN || '';
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    const url = `https://api.discogs.com/marketplace/listings/${cleanId}` + (token ? `?token=${encodeURIComponent(token)}` : '');
+    const resp = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'User-Agent': 'ForeverYoungStaffPortal/1.0 +https://www.foreveryoungrecords.com',
+        'Accept': 'application/json'
+      },
+      signal: controller.signal
+    });
+    clearTimeout(timeout);
+
+    if (!resp.ok) return false;
+
+    const data = await resp.json();
+    // Discogs returns status "For Sale" for active listings and "Sold" for sold ones.
+    return data && data.status === 'For Sale';
+  } catch (e) {
+    console.warn('Marketplace listing check failed for', cleanId, e.message);
+    return false;
+  }
+}
+
+// ─── CSV Import to Online_Inventory ──────────────────────────────────────────
+
+async function handleImportCsv(request, env) {
+  const db = env.DB;
+
+  // Drop unique index for initial data load (recreate later)
+  try {
+    await db.prepare('DROP INDEX IF EXISTS idx_oi_srn;').run();
+  } catch (e) {
+    // Ignore
+  }
+
+  // Unique index on Listing_ID so INSERT OR REPLACE upserts instead of duplicating.
+  try {
+    await db.prepare(
+      'CREATE UNIQUE INDEX IF NOT EXISTS idx_online_inventory_listing_id ON Online_Inventory(Listing_ID);'
+    ).run();
+  } catch (e) {
+    console.warn('Could not create Listing_ID unique index:', e.message);
+  }
+
+  // Ensure Online_Inventory table exists with every column used below.
+  try {
+    await db.prepare(
+      `CREATE TABLE IF NOT EXISTS Online_Inventory (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Artist TEXT, Title TEXT, Format TEXT, Discogs_ID TEXT, Discogs_url TEXT,
+        Price REAL, Description TEXT, Condition_Media TEXT, Condition_Sleeve TEXT,
+        Seller_Reference_Number TEXT, Quantity INTEGER, Label TEXT,
+        Release_Catalog_Number TEXT, Release_Country TEXT, Release_Date TEXT,
+        Genre TEXT, Front_Image_URL TEXT, Back_Image_URL TEXT,
+        YouTube_Audio_Image_URLs TEXT, Bar_Code TEXT, Number_In_Set TEXT,
+        Listing_ID TEXT, Status TEXT, Accept_Offer TEXT, Weight REAL,
+        Format_Quantity INTEGER, External_ID TEXT
+      );`
+    ).run();
+  } catch (e) {
+    console.error('Table creation error:', e.message);
+  }
+
+  // Ensure Online_Inventory_Import table exists with every column used below.
+  try {
+    await db.prepare(
+      `CREATE TABLE IF NOT EXISTS Online_Inventory_Import (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Artist TEXT, Title TEXT, Format TEXT, Discogs_ID TEXT, Discogs_url TEXT,
+        Price REAL, Description TEXT, Condition_Media TEXT, Condition_Sleeve TEXT,
+        Seller_Reference_Number TEXT, Quantity INTEGER DEFAULT 0, Label TEXT,
+        Release_Catalog_Number TEXT, Release_Country TEXT, Release_Date TEXT,
+        Genre TEXT, Front_Image_URL TEXT, Back_Image_URL TEXT,
+        YouTube_Audio_Image_URLs TEXT, Bar_Code TEXT, Number_In_Set TEXT,
+        Listing_ID TEXT, Status TEXT, Accept_Offer TEXT, Weight REAL,
+        Format_Quantity INTEGER, External_ID TEXT
+      );`
+    ).run();
+  } catch (e) {
+    console.error('Table creation error:', e.message);
+  }
+
+  const url = new URL(request.url);
+  const verifySold = url.searchParams.get('verifySold') === '1';
+
+  let csvText;
+  const ct = request.headers.get('content-type') || '';
+  if (ct.includes('application/json')) {
+    const body = await request.json();
+    csvText = body.csv;
+    if (!csvText || typeof csvText !== 'string') {
+      return json({ success: false, error: 'Missing or invalid "csv" field' }, 400);
+    }
+  } else {
+    csvText = await request.text();
+    if (!csvText) return json({ success: false, error: 'Empty body' }, 400);
+  }
+
+  const MAX_SIZE = 50 * 1024 * 1024;
+  if (csvText.length > MAX_SIZE) {
+    return json({ success: false, error: `File too large: ${(csvText.length / 1024 / 1024).toFixed(1)} MB (max 50 MB)` }, 400);
+  }
+
+  // ── Parse CSV ──────────────────────────────────────────────────────────────
+  const { rows, headerMap } = parseCsv(csvText);
+
+  if (rows.length === 0) {
+    console.log('CSV parse: no data rows found');
+    return json({ success: false, error: 'No data rows found in CSV' }, 400);
+  }
+  console.log('CSV parse: ' + rows.length + ' data rows parsed, headerMap has ' + Object.keys(headerMap).length + ' entries');
+
+  // Helper to get a field by header name
+  function f(row, name) {
+    const idx = headerMap[name];
+    if (idx == null) return '';
+    const val = (row[idx] || '').trim();
+    if (!val && headerMap[name] != null) console.log('DEBUG f(): name=' + name + ' idx=' + idx + ' rowlen=' + row.length + ' val="' + val + '"');
+    return val;
+  }
+
+  // ── Column mapping (CSV index → Online_Inventory_Import) ─────────────────
+  // 0:listing_id  1:artist  2:title  3:label  4:catno  5:format
+  // 6:release_id  7:status  8:price  9:listed  10:comments
+  // 11:media_cond 12:sleeve_c 13:accept_of 14:external_id 15:weight
+  // 16:fmt_qty  17:location  18:quantity
+
+  let total = 0;
+  let insertBatches = 0;
+
+  // D1/SQLite doesn't support "ADD COLUMN IF NOT EXISTS". Add each column
+  // with a plain ALTER and ignore the duplicate-column error if it exists.
+  async function ensureColumn(table, col, type) {
+    try {
+      await db.prepare(`ALTER TABLE ${table} ADD COLUMN ${col} ${type};`).run();
+      console.log(`Added column ${col} to ${table}`);
+    } catch (e) {
+      const msg = (e && e.message) || String(e);
+      if (!/duplicate column|already exists|has no column|no such column|column.*already/.test(msg)) {
+        console.warn(`Could not add ${col} to ${table}:`, msg);
+      }
+    }
+  }
+  await ensureColumn('Online_Inventory', 'Listing_ID', 'TEXT');
+  await ensureColumn('Online_Inventory', 'Status', 'TEXT');
+  await ensureColumn('Online_Inventory', 'Accept_Offer', 'TEXT');
+  await ensureColumn('Online_Inventory', 'Weight', 'REAL');
+  await ensureColumn('Online_Inventory', 'Format_Quantity', 'INTEGER');
+  await ensureColumn('Online_Inventory', 'External_ID', 'TEXT');
+  await ensureColumn('Online_Inventory_Import', 'Listing_ID', 'TEXT');
+  await ensureColumn('Online_Inventory_Import', 'Status', 'TEXT');
+  await ensureColumn('Online_Inventory_Import', 'Accept_Offer', 'TEXT');
+  await ensureColumn('Online_Inventory_Import', 'Weight', 'REAL');
+  await ensureColumn('Online_Inventory_Import', 'Format_Quantity', 'INTEGER');
+  await ensureColumn('Online_Inventory_Import', 'External_ID', 'TEXT');
+
+  function determineFormat(rawFmt) {
+    // Preserve multi-disc/multi-cassette notation like "2xCD", "2 x LP", "3xCD".
+    const firstToken = String(rawFmt || '').split(',')[0].trim();
+    const lower = firstToken.toLowerCase().replace(/\s+/g, ''); // "2 x cd" -> "2xcd"
+
+    // Extract quantity prefix, e.g. "2x", "3x", "4x".
+    const multiMatch = lower.match(/^(\d+)x/);
+    const qtyPrefix = multiMatch ? multiMatch[1] + 'x' : '';
+    const body = lower.replace(/^\d+x/, ''); // strip prefix for base classification
+
+    let base = 'CD';
+    if (/^(dvd|video|vhs|blu-ray|bd)/.test(body)) {
+      base = 'DVD';
+    } else if (/^cass/.test(body)) {
+      base = 'Cassette';
+    } else if (/^(lp|vinyl|12")/.test(body)) {
+      base = 'LP';
+    } else if (/^(cd|hdcd|sacd)/.test(body)) {
+      base = 'CD';
+    }
+
+    return qtyPrefix + base;
+  }
+
+  function cleanDescription(rawDesc) {
+    let clean = String(rawDesc || '').trim();
+    if (!clean) return clean;
+
+    // Matches prefixes like:
+    //   - CD is - ...
+    //   - Digipak is - ...
+    //   CD - ...
+    //   2 CD Set is - ...
+    //   CASSETTE is factory sealed ...
+    const junkPrefix = /^(?:\d+\s+)?(?:CD|Digipak|Vinyl|Sleeve|Case|Pack|Booklet|Card|Jacket|LP|Cassette|DVD|HDCD|SACD|2xLP|3xLP|4xLP|2xCass)\s*(?:Set|s)?\s*(?:is\s+)?[-–]?\s*/i;
+
+    // Some descriptions have multiple prefix pieces; repeat until stable.
+    let prev;
+    do {
+      prev = clean;
+      clean = clean.replace(/^\s*[-–]\s*/, '');
+      clean = clean.replace(junkPrefix, '');
+    } while (clean !== prev);
+
+    return clean.trim();
+  }
+
+  async function fetchDiscogsImageUrl(releaseId) {
+    const cleanId = String(releaseId || '').replace(/[^0-9]/g, '');
+    if (!cleanId) return null;
+    try {
+      const resp = await fetch(`https://api.discogs.com/releases/${cleanId}`, {
+        headers: { 'User-Agent': 'ForeverYoungStaffPortal/1.0 +https://www.foreveryoungrecords.com' }
+      });
+      if (!resp.ok) return null;
+      const data = await resp.json();
+      const images = data.images || [];
+      const primary = images.find(img => img.type === 'primary') || images[0];
+      return primary ? primary.uri : null;
+    } catch (e) {
+      console.error('Discogs image fetch error for release', cleanId, e.message);
+      return null;
+    }
+  }
+
+  const BATCH_SIZE = 3; // D1 limits bound params to ~100 per statement; 3 rows × 27 cols = 81 // 35 rows × 27 columns = 945 params, under SQLite/D1 limits
+  const batch = [];
+  for (const row of rows) {
+      // 1. Artist: remove (1), (2), etc.
+      const cleanArtist = f(row, 'artist').replace(/\s*\((\d+)\)\s*$/, '').trim();
+
+      // 2. Description: remove leading "- Format is -" or "Format -" prefix junk.
+      const cleanDesc = cleanDescription(f(row, 'comments'));
+
+      // 3. Seller Reference Number comes from the CSV location column.
+      const sellerRef = f(row, 'location') || '';
+
+      // 4. Format: take the first value before the first comma, then canonicalize.
+      const simpleFmt = determineFormat(f(row, 'format'));
+
+      // 5. Discogs URL points to the shop listing page using listing_id.
+      const listingId = f(row, 'listing_id');
+      const discogsUrl = listingId
+        ? 'https://www.discogs.com/shop/item/' + listingId.replace(/[^0-9]/g, '')
+        : '';
+
+      // 6. If the listing is Sold, it is not available unless verification says otherwise.
+      let statusRaw = f(row, 'status');
+      const rawQty = f(row, 'quantity');
+      let quantity = /sold/i.test(statusRaw) ? 0 : p(rawQty);
+
+      if (verifySold && /sold/i.test(statusRaw)) {
+        const listingId = f(row, 'listing_id');
+        if (listingId && (await isShopListingAvailable(listingId, env))) {
+          statusRaw = 'For Sale';
+          quantity = Math.max(1, p(rawQty) || 1);
+        }
+      }
+
+      batch.push({
+        Artist: cleanArtist,
+        Title: f(row, 'title'),
+        Format: simpleFmt,
+        Discogs_ID: releaseId,
+        Discogs_url: discogsUrl,
+        Price: p(f(row, 'price'), true),
+        Description: cleanDesc,
+        Condition_Media: f(row, 'media_condition'),
+        Condition_Sleeve: f(row, 'sleeve_condition'),
+        Seller_Reference_Number: sellerRef,
+        Quantity: quantity,
+        Label: f(row, 'label'),
+        Release_Catalog_Number: f(row, 'catno'),
+        Release_Country: null,
+        Release_Date: f(row, 'listed'),
+        Genre: null,
+        Front_Image_URL: null,
+        Back_Image_URL: null,
+        YouTube_Audio_Image_URLs: null,
+        Bar_Code: null,
+        Number_In_Set: null,
+        Listing_ID: String(f(row, 'listing_id') || ''),
+        Status: statusRaw,
+        Accept_Offer: f(row, 'accept_offer'),
+        Weight: p(f(row, 'weight'), true),
+        Format_Quantity: p(f(row, 'format_quantity')),
+        External_ID: f(row, 'external_id')
+      });
+
+      if (batch.length === BATCH_SIZE) {
+        await insertBatch(db, batch);
+        total += batch.length;
+        insertBatches++;
+        batch.length = 0;
+      }
+  }
+  if (batch.length > 0) {
+    await insertBatch(db, batch);
+    total += batch.length;
+    insertBatches++;
+  }
+
+  // Fetch images asynchronously after rows exist; limit concurrency.
+  await backfillFrontImages(db);
+
+  async function insertBatch(database, rows) {
+    if (!rows.length) return;
+    const columns = Object.keys(rows[0]);
+    const placeholders = rows.map(() => `(${columns.map(() => '?').join(', ')})`).join(', ');
+    const flat = rows.flatMap(r => columns.map(c => r[c] === undefined ? null : r[c]));
+    const sql = `INSERT OR REPLACE INTO Online_Inventory (${columns.join(', ')}) VALUES ${placeholders}`;
+    await database.prepare(sql).bind(...flat).run();
+  }
+
+  async function backfillFrontImages(database) {
+    const batchSize = 50;
+    let offset = 0;
+    while (true) {
+      const rows = await database
+        .prepare('SELECT id, Discogs_ID FROM Online_Inventory WHERE Front_Image_URL IS NULL AND Discogs_ID IS NOT NULL LIMIT ? OFFSET ?')
+        .bind(batchSize, offset)
+        .all();
+      if (!rows.results || rows.results.length === 0) break;
+
+      const updates = [];
+      for (const r of rows.results) {
+        const imgUrl = await fetchDiscogsImageUrl(r.Discogs_ID);
+        if (imgUrl) {
+          updates.push(database.prepare('UPDATE Online_Inventory SET Front_Image_URL = ? WHERE id = ?').bind(imgUrl, r.id));
+        }
+      }
+      if (updates.length) {
+        const batch = await database.batch(updates);
+        console.log('Backfilled', batch.length, 'front images');
+      }
+      offset += batchSize;
+      // Be polite to Discogs API.
+      if (rows.results.length === batchSize) await new Promise(r => setTimeout(r, 1000));
+    }
+  }
+
+  return json({
+    success: true,
+    rowsProcessed: total,
+    batches: insertBatches,
+    message: 'Import complete. ' + total.toLocaleString() + ' rows processed across ' + insertBatches + ' batch(es). Image backfill started.',
+  });
+}
+
+function parseCsv(csvText) {
+  // Splits on physical lines, then parses each line respecting quoted fields.
+  const lines = csvText.split(/\r?\n/);
+  const rows = [];
+  const headerMap = {};
+  let lineCount = 0;
+
+  for (const rawLine of lines) {
+    const line = rawLine.trimEnd();
+    if (!line) continue;
+    lineCount++;
+
+    const row = [];
+    let i = 0;
+    while (i < line.length) {
+      if (line[i] === '"') {
+        // Quoted field
+        let val = '';
+        i++; // skip opening quote
+        while (i < line.length) {
+          if (line[i] === '"') {
+            if (i + 1 < line.length && line[i + 1] === '"') {
+              val += '"';
+              i += 2;
+            } else {
+              i++; // skip closing quote
+              break;
+            }
+          } else {
+            val += line[i];
+            i++;
+          }
+        }
+        row.push(val);
+        // skip trailing comma if present
+        if (i < line.length && line[i] === ',') i++;
+      } else {
+        const nextQuote = line.indexOf(',', i);
+        if (nextQuote === -1) {
+          row.push(line.slice(i));
+          break;
+        }
+        row.push(line.slice(i, nextQuote));
+        i = nextQuote + 1;
+      }
+    }
+
+    if (lineCount === 1) {
+      row.forEach((name, idx) => { headerMap[name.trim()] = idx; });
+      continue;
+    }
+    if (row.some(x => String(x).trim())) rows.push(row);
+  }
+
+  return { rows, headerMap, lineCount };
+}
+
+function q(v) {
+  if (v == null || v === '') return 'NULL';
+  return "'" + String(v).replace(/'/g, "''") + "'";
+}
+function p(v, flt) {
+  if (v == null || v === '') return 'NULL';
+  flt = flt === true;
+  const n = flt ? parseFloat(v) : parseInt(v, 10);
+  if (isNaN(n)) return 'NULL';
+  return flt ? n.toFixed(2) : n;
+}
+
+async function handleReconcileSold(request, env) {
+  const { searchParams } = new URL(request.url);
+  const limit = parseInt(searchParams.get('limit') || '1000', 10);
+  const batchSize = parseInt(searchParams.get('batchSize') || '5', 10);
+  const db = env.DB;
+
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+  // Pull Sold rows with a listing id.
+  const soldRows = await db
+    .prepare("SELECT id, Listing_ID FROM Online_Inventory WHERE Status = 'Sold' AND Listing_ID IS NOT NULL LIMIT ?")
+    .bind(limit)
+    .all();
+
+  const rows = soldRows.results || [];
+  let checked = 0;
+  let revived = 0;
+  let errors = 0;
+  const details = [];
+
+  for (let i = 0; i < rows.length; i += batchSize) {
+    const chunk = rows.slice(i, i + batchSize);
+    const updates = [];
+
+    await Promise.all(chunk.map(async (r) => {
+      checked++;
+      let available = false;
+      let errorMsg = null;
+      try {
+        available = await isShopListingAvailable(r.Listing_ID, env);
+      } catch (e) {
+        errorMsg = e.message;
+        errors++;
+      }
+      details.push({ id: r.id, listingId: r.Listing_ID, available, error: errorMsg });
+      if (available) {
+        revived++;
+        updates.push(db
+          .prepare("UPDATE Online_Inventory SET Status = 'For Sale', Quantity = 1 WHERE id = ?")
+          .bind(r.id));
+      }
+    }));
+
+    if (updates.length) {
+      await db.batch(updates);
+    }
+
+    // Rate-limit between chunks so Discogs doesn't block us.
+    if (i + batchSize < rows.length) await sleep(1500);
+  }
+
+  return json({
+    success: true,
+    checked,
+    revived,
+    errors,
+    details,
+    message: `Reconciled ${revived} of ${checked} Sold listings back to For Sale.`
+  });
 }

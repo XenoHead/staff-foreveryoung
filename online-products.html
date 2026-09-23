@@ -1004,18 +1004,28 @@
     fDiscogs.addEventListener('input', () => {
       const id = fDiscogs.value.trim();
       discogsLookupId.value = id;
-      if (id && /^\d+$/.test(id)) {
-        discogsGoBtn.href = `https://www.discogs.com/release/${id}`;
-        discogsGoBtn.style.display = 'inline-flex';
-      } else {
-        discogsGoBtn.style.display = 'none';
-      }
+      updateDiscogsGoButton();
+    });
+
+    // Keep Open URL link in sync when the URL text box is edited.
+    fDiscogsUrl.addEventListener('input', () => {
+      updateDiscogsGoButton();
     });
 
     discogsLookupId.addEventListener('input', () => {
       fDiscogs.value = discogsLookupId.value.trim();
       fDiscogs.dispatchEvent(new Event('input'));
     });
+
+    function updateDiscogsGoButton() {
+      const url = fDiscogsUrl.value.trim();
+      if (url) {
+        discogsGoBtn.href = url;
+        discogsGoBtn.style.display = 'inline-flex';
+      } else {
+        discogsGoBtn.style.display = 'none';
+      }
+    }
 
     fPrice.addEventListener('blur', () => {
       const valStr = fPrice.value.trim();

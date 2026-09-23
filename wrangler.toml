@@ -1,9 +1,8 @@
 name = "staff-foreveryoung"
 compatibility_date = "2024-03-20"
-pages_build_output_dir = "."
 
 [[d1_databases]]
 binding = "DB"
 database_name = "foreveryoung-db"
-database_id = "4977069b-0252-40ab-895f-103ff41a6d22"
+database_id = "93ac3813-324e-4ee5-b6d8-68f31955e06b"
 remote = true
